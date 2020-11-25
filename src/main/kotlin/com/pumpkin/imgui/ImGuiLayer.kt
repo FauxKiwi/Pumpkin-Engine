@@ -1,46 +1,54 @@
 package com.pumpkin.imgui
 
-import com.pumpkin.event.Event
 import com.pumpkin.layer.Layer
 import com.pumpkin.window.window
+import imgui.ConfigFlag
 import imgui.ImGui
+import imgui.classes.Context
+import imgui.impl.gl.ImplGL3
+import imgui.impl.glfw.ImplGlfw
 
 class ImGuiLayer : Layer("ImGui") {
-    private val ia = intArrayOf((window.clearColor[0] * 255).toInt(), (window.clearColor[1] * 255).toInt(), (window.clearColor[2] * 255).toInt())
-
     private var showDemoWindow = true
 
+    private lateinit var context: Context
+    private lateinit var implGL3: ImplGL3
+    private lateinit var implGlfw: ImplGlfw
+
     override fun onAttach() {
+        context = Context()
+        implGL3 = ImplGL3()
+        implGlfw = ImplGlfw(window.window)
+
+        ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableKeyboard.i or ConfigFlag.NavEnableGamepad.i
+
         ImGui.styleColorsDark()
     }
 
     override fun onDetach() {
-
+        implGlfw.shutdown()
+        implGL3.shutdown()
+        context.destroy()
     }
 
-    override fun onUpdate() {
-        ImGui.run {
-            newFrame()
-
-            if (showDemoWindow)
-                showDemoWindow(::showDemoWindow)
-
-
-            begin("Test Window")
-            checkbox("Demo window", ::showDemoWindow)
-            dragInt3("BGColor", ia, 1f, 0, 255)
-            window.clearColor[0] = ia[0] / 255f
-            window.clearColor[1] = ia[1] / 255f
-            window.clearColor[2] = ia[2] / 255f
-            end()
+    override fun onImGuiRender() {
+        if (showDemoWindow) {
+            ImGui.showDemoWindow(::showDemoWindow)
         }
+        ImGui.begin("Test")
+        ImGui.text("Hello world!")
+        ImGui.end()
+    }
 
+    fun begin() {
+        implGL3.newFrame()
+        implGlfw.newFrame()
+        ImGui.newFrame()
+    }
+
+    fun end() {
         ImGui.render()
 
-        window.implGl3.renderDrawData(ImGui.drawData!!)
-    }
-
-    override fun onEvent(event: Event) {
-
+        ImGui.drawData?.let { implGL3.renderDrawData(it) }
     }
 }

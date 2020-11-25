@@ -14,7 +14,7 @@ interface IWindow {
 
     fun init(windowProps: WindowProps)
     fun run()
-    fun onUpdate(stack: MemoryStack)
+    fun onUpdate()
     fun shutdown()
 
     fun getWidth(): Int

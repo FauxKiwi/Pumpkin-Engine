@@ -15,20 +15,23 @@ import org.lwjgl.system.MemoryStack
 open class Application {
     private var running: Boolean = false
     private lateinit var window: Window
-    internal lateinit var layerStack: LayerStack
+    private lateinit var layerStack: LayerStack
+    private lateinit var imGuiLayer: ImGuiLayer
 
     internal fun initI() {
         running = true
         layerStack = LayerStack()
+        imGuiLayer = ImGuiLayer()
         window = createWindow()
 
         window.init(WindowProps())
 
         window.setEventCallback(::onEvent)
 
-        init()
-
         logInfoCore("Initialized Program")
+
+        pushOverlay(imGuiLayer)
+        init()
 
         window.run()
     }
@@ -61,10 +64,17 @@ open class Application {
     }
 
     internal fun runI(stack: MemoryStack) {
-        window.onUpdate(stack)
+        window.onUpdate()
         for (layer in layerStack.layers) {
             layer.onUpdate()
         }
+
+        imGuiLayer.begin()
+        for (layer in layerStack.layers) {
+            layer.onImGuiRender()
+        }
+        imGuiLayer.end()
+
         run()
     }
 

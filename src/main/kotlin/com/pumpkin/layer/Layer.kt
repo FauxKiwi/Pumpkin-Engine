@@ -2,13 +2,15 @@ package com.pumpkin.layer
 
 import com.pumpkin.event.Event
 
-abstract class Layer(val debugName: String = "Layer") {
+open class Layer(val debugName: String = "Layer") {
 
-    abstract fun onAttach()
+    open fun onAttach() {}
 
-    abstract fun onDetach()
+    open fun onDetach() {}
 
-    abstract fun onUpdate()
+    open fun onUpdate() {}
 
-    abstract fun onEvent(event: Event)
+    open fun onImGuiRender() {}
+
+    open fun onEvent(event: Event) {}
 }

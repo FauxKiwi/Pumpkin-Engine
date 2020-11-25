@@ -39,7 +39,6 @@ class TestApplication : Application() {
 
     override fun init() {
         pushLayer(LogLayer())
-        pushOverlay(ImGuiLayer())
     }
 }
 

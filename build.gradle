@@ -15,7 +15,7 @@ compileKotlin {
 
 dependencies {
     ["gl", "glfw", "core"].each {
-        implementation "com.github.kotlin-graphics.imgui:$it:1.78"
+        implementation "com.github.kotlin-graphics.imgui:$it:1.79"
     }
 
     implementation "com.github.kotlin-graphics:gln:0.5.2"

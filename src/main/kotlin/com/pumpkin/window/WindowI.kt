@@ -25,10 +25,7 @@ import uno.glfw.glfw
 class Window : IWindow {
     private lateinit var data: WindowData
 
-    lateinit var window: GlfwWindow
-    lateinit var ctx: Context
-    lateinit var implGlfw: ImplGlfw
-    lateinit var implGl3: ImplGL3
+    internal lateinit var window: GlfwWindow
 
     var clearColor = Vec4(1f, 0f, 0f, 1f)
 
@@ -43,11 +40,6 @@ class Window : IWindow {
         setVSync(data.vSync)
 
         GL.createCapabilities()
-
-        ctx = Context()
-
-        implGlfw = ImplGlfw(window)
-        implGl3 = ImplGL3()
 
         window.windowSizeCB = this::windowSizeCallback
         window.windowCloseCB = this::windowCloseCallback
@@ -65,110 +57,104 @@ class Window : IWindow {
         DEBUG = false
     }
 
-override fun run() {
-    Thread {
+    override fun run() {
         window.loop(application!!::runI)
 
         application!!.shutdownI()
-    }.run()
-}
 
-override fun onUpdate(stack: MemoryStack) {
-    implGl3.newFrame()
-    implGlfw.newFrame()
-
-    glViewport(window.framebufferSize)
-    glClearColor(clearColor)
-    glClear(GL_COLOR_BUFFER_BIT)
-
-    for (layer in application!!.layerStack.layers) {
-        layer.onUpdate()
     }
-}
 
-override fun shutdown() {
-    implGl3.shutdown()
-    implGlfw.shutdown()
-    ctx.destroy()
-    window.destroy()
-    glfw.terminate()
-}
-
-override fun setEventCallback(callback: EventCallbackFunction) {
-    data.eventCallback = callback
-}
-
-override fun getHeight(): Int {
-    return window.size[0]
-}
-
-override fun getWidth(): Int {
-    return window.size[1]
-}
-
-override fun isVSync(): Boolean {
-    return glfw.swapInterval == VSync.ON
-}
-
-override fun setVSync(vSync: Boolean) {
-    glfw.swapInterval = if (vSync) VSync.ON else VSync.OFF
-}
-
-private fun errorCallback(error: glfw.Error, message: String) {
-    logErrorCore("GLFW error (${error.name}): $message")
-}
-
-private fun windowSizeCallback(size: Vec2i) {
-    data.width = size[0]
-    data.height = size[1]
-    glViewport(size)
-
-    val event = WindowResizeEvent(data.width, data.height)
-    data.eventCallback?.let { it(event) }
-}
-
-private fun windowCloseCallback() {
-    val event = WindowCloseEvent()
-    data.eventCallback?.let { it(event) }
-}
-
-private fun keyCallback(key: Int, action: Int) {
-    val event = when (action) {
-        GLFW.GLFW_PRESS -> KeyPressedEvent(key, 0)
-        GLFW.GLFW_RELEASE -> KeyReleasedEvent(key)
-        GLFW.GLFW_REPEAT -> KeyPressedEvent(key, 1)
-        else -> null
+    override fun onUpdate() {
+        glViewport(window.framebufferSize)
+        glClearColor(clearColor)
+        glClear(GL_COLOR_BUFFER_BIT)
     }
-    data.eventCallback?.let {
-        if (event != null) {
-            it(event)
+
+    override fun shutdown() {
+        glfw.terminate()
+    }
+
+    override fun setEventCallback(callback: EventCallbackFunction) {
+        data.eventCallback = callback
+    }
+
+    override fun getHeight(): Int {
+        return window.size[0]
+    }
+
+    override fun getWidth(): Int {
+        return window.size[1]
+    }
+
+    override fun isVSync(): Boolean {
+        return glfw.swapInterval == VSync.ON
+    }
+
+    override fun setVSync(vSync: Boolean) {
+        glfw.swapInterval = if (vSync) VSync.ON else VSync.OFF
+    }
+
+    private fun errorCallback(error: glfw.Error, message: String) {
+        logErrorCore("GLFW error (${error.name}): $message")
+    }
+
+    private fun windowSizeCallback(size: Vec2i) {
+        data.width = size[0]
+        data.height = size[1]
+        glViewport(size)
+
+        val event = WindowResizeEvent(data.width, data.height)
+        data.eventCallback?.let { it(event) }
+    }
+
+    private fun windowCloseCallback() {
+        val event = WindowCloseEvent()
+        data.eventCallback?.let { it(event) }
+    }
+
+    private fun keyCallback(key: Int, action: Int) {
+        val event = when (action) {
+            GLFW.GLFW_PRESS -> KeyPressedEvent(key, 0)
+            GLFW.GLFW_RELEASE -> KeyReleasedEvent(key)
+            GLFW.GLFW_REPEAT -> KeyPressedEvent(key, 1)
+            else -> null
+        }
+        data.eventCallback?.let {
+            if (event != null) {
+                it(event)
+            }
         }
     }
-}
 
-private fun mouseButtonCallback(button: Int, action: Int) {
-    val event = when (action) {
-        GLFW.GLFW_PRESS -> MouseButtonPressedEvent(button)
-        GLFW.GLFW_RELEASE -> MouseButtonReleasedEvent(button)
-        else -> null
-    }
-    data.eventCallback?.let {
-        if (event != null) {
-            it(event)
+    private fun mouseButtonCallback(button: Int, action: Int) {
+        val event = when (action) {
+            GLFW.GLFW_PRESS -> MouseButtonPressedEvent(button)
+            GLFW.GLFW_RELEASE -> MouseButtonReleasedEvent(button)
+            else -> null
+        }
+        data.eventCallback?.let {
+            if (event != null) {
+                it(event)
+            }
         }
     }
+
+    private fun scrollCallback(offset: Vec2d) {
+        val event = MouseScrolledEvent(offset[0].toFloat(), offset[1].toFloat())
+        data.eventCallback?.let { it(event) }
+    }
+
+    private fun cursorPosCallback(pos: Vec2) {
+        val event = MouseMoveEvent(pos[0], pos[1])
+        data.eventCallback?.let { it(event) }
+    }
 }
 
-private fun scrollCallback(offset: Vec2d) {
-    val event = MouseScrolledEvent(offset[0].toFloat(), offset[1].toFloat())
-    data.eventCallback?.let { it(event) }
-}
 
-private fun cursorPosCallback(pos: Vec2) {
-    val event = MouseMoveEvent(pos[0], pos[1])
-    data.eventCallback?.let { it(event) }
-}
-}
-
-
-data class WindowData(var title: String, var width: Int, var height: Int, var vSync: Boolean, var eventCallback: EventCallbackFunction?)
+data class WindowData(
+    var title: String,
+    var width: Int,
+    var height: Int,
+    var vSync: Boolean,
+    var eventCallback: EventCallbackFunction?
+)
