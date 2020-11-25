@@ -1,26 +1,41 @@
 import com.pumpkin.Application
 import com.pumpkin.application
 import com.pumpkin.event.Event
+import com.pumpkin.event.EventDispatcher
+import com.pumpkin.event.KeyPressedEvent
 import com.pumpkin.imgui.ImGuiLayer
+import com.pumpkin.input.PK_KEY_TAB
+import com.pumpkin.input.isKeyPressed
 import com.pumpkin.layer.Layer
 import com.pumpkin.logDebug
 
 class LogLayer : Layer() {
 
     override fun onAttach() {
-        logDebug("Attached layer")
+
     }
 
     override fun onDetach() {
-        logDebug("Detached layer")
+
     }
 
     override fun onUpdate() {
-        logDebug("Updated layer")
+        if (isKeyPressed(PK_KEY_TAB)) {
+            logDebug("Tab is pressed (poll)")
+        }
     }
 
     override fun onEvent(event: Event) {
-        logDebug("Received event: ${event.getName()}")
+        /*val dispatcher = EventDispatcher(event)
+        dispatcher.dispatch<KeyPressedEvent> {
+            logDebug("Tab is pressed (event)")
+            false
+        }*/
+        if (event is KeyPressedEvent) {
+            if (event.keyCode == PK_KEY_TAB) {
+                logDebug("Tab is pressed (event)")
+            }
+        }
     }
 }
 
