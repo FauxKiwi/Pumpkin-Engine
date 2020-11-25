@@ -13,7 +13,7 @@ class KeyPressedEvent(keyCode: Int, val repeatCount: Int) : KeyEvent(keyCode) {
     }
 
     override fun getCategoryFlags(): Int {
-        return EventCategory.Input.cid or EventCategory.Keyboard.cid
+        return EventCategory.Input.id or EventCategory.Keyboard.id
     }
 
     override fun toString(): String {
@@ -32,7 +32,7 @@ class KeyReleasedEvent(keyCode: Int) : KeyEvent(keyCode) {
     }
 
     override fun getCategoryFlags(): Int {
-        return EventCategory.Input.cid or EventCategory.Keyboard.cid
+        return EventCategory.Input.id or EventCategory.Keyboard.id
     }
 
     override fun toString(): String {

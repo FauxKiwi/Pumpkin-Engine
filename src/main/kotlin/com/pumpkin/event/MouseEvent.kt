@@ -11,7 +11,7 @@ class MouseMoveEvent(val x: Float, val y: Float) : Event() {
     }
 
     override fun getCategoryFlags(): Int {
-        return EventCategory.Input.cid or EventCategory.Mouse.cid
+        return EventCategory.Input.id or EventCategory.Mouse.id
     }
 
     override fun toString(): String {
@@ -30,7 +30,7 @@ class MouseScrolledEvent(val xOffset: Float, val yOffset: Float) : Event() {
     }
 
     override fun getCategoryFlags(): Int {
-        return EventCategory.Input.cid or EventCategory.Mouse.cid
+        return EventCategory.Input.id or EventCategory.Mouse.id
     }
 
     override fun toString(): String {
@@ -51,7 +51,7 @@ class MouseButtonPressedEvent(button: Int) : MouseButtonEvent(button) {
     }
 
     override fun getCategoryFlags(): Int {
-        return EventCategory.Input.cid or EventCategory.Mouse.cid or EventCategory.MouseButton.cid
+        return EventCategory.Input.id or EventCategory.Mouse.id or EventCategory.MouseButton.id
     }
 
     override fun toString(): String {
@@ -70,7 +70,7 @@ class MouseButtonReleasedEvent(button: Int) : MouseButtonEvent(button) {
     }
 
     override fun getCategoryFlags(): Int {
-        return EventCategory.Input.cid or EventCategory.Mouse.cid or EventCategory.MouseButton.cid
+        return EventCategory.Input.id or EventCategory.Mouse.id or EventCategory.MouseButton.id
     }
 
     override fun toString(): String {

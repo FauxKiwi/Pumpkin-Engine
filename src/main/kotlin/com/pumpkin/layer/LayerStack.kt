@@ -38,4 +38,8 @@ class LayerStack {
         layers.removeAt(index)
         layer.onDetach()
     }
+
+    internal fun getInsert(): Int {
+        return insert
+    }
 }

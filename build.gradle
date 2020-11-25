@@ -14,18 +14,6 @@ compileKotlin {
 }
 
 dependencies {
-    /*
-    Each renderer will need different dependencies.
-    Each one needs core.
-    OpenGL needs "gl", "glfw"
-    Vulkan needs "vk", "glfw"
-    JOGL needs "jogl"
-    OpenJFX needs "openjfx"
-
-    To get all the dependencies in one sweep, create an array of the strings needed and loop through them like below.
-    Any number of renderers can be added to the project like this however, you could all all of them with the array ["gl", "glfw", "core", "vk", "jogl", "openjfx"]
-    This example gets the OpenGL needed modules.
-     */
     ["gl", "glfw", "core"].each {
         implementation "com.github.kotlin-graphics.imgui:$it:1.78"
     }
@@ -39,23 +27,4 @@ dependencies {
     ["", "-jemalloc", "-glfw", "-opengl", "-remotery", "-stb", "-openal", "-opengles"].each {
         runtime "org.lwjgl:lwjgl$it:3.2.3:natives-windows"
     }
-
-    /*switch ( OperatingSystem.current() ) {
-        case OperatingSystem.WINDOWS:
-        ext.lwjglNatives = "natives-windows"
-            break
-        case OperatingSystem.LINUX:
-            ext.lwjglNatives = "natives-linux"
-            break
-        case OperatingSystem.MAC_OS:
-            ext.lwjglNatives = "natives-macos"
-            break
-    }*/
-
-    // Look up which modules and versions of LWJGL are required and add setup the approriate natives.
-    /*configurations.compile.resolvedConfiguration.getResolvedArtifacts().forEach {
-        if (it.moduleVersion.id.group == "org.lwjgl") {
-            runtime "org.lwjgl:${it.moduleVersion.id.name}:${it.moduleVersion.id.version}:${/*lwjglNatives"natives-windows"}"
-        }
-    }*/
 }

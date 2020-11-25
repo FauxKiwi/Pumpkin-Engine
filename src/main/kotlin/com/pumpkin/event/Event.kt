@@ -1,7 +1,5 @@
 package com.pumpkin.event
 
-import com.pumpkin.logWarn
-
 enum class EventType {
     None,
     WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
@@ -10,7 +8,7 @@ enum class EventType {
     MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 }
 
-enum class EventCategory(val cid: Int) {
+enum class EventCategory(val id: Int) {
     None(0),
     Application(1 shl 0),
     Input(1 shl 1),
@@ -18,15 +16,6 @@ enum class EventCategory(val cid: Int) {
     Mouse(1 shl 3),
     MouseButton(1 shl 4)
 }
-
-/*
-#define EVENT_CLASS_TYPE(type)
-static EventType GetStaticType() { return EventType.##type }
-open EventType GetEventType() const override { return GetStaticType() }
-open const String GetName() const override { return #type }
-
-#define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override {return category }
-*/
 
 abstract class Event {
     var handled = false
@@ -42,17 +31,17 @@ abstract class Event {
     }
 
     fun isInCategory(category: EventCategory): Boolean {
-        return (getCategoryFlags() and category.cid) > 0
+        return (getCategoryFlags() and category.id) > 0
     }
 }
 
 class EventDispatcher(var event: Event) {
 
-    inline fun <reified T> dispatch(function: EventFunction<T>) {
-        if (event is T) {
-            event.handled = function(event as T)
+    fun dispatch(eventType: EventType, function: EventFunction) {
+        if (event.getEventType() == eventType) {
+            event.handled = function(event)
         }
     }
 }
 
-typealias EventFunction<T> = (T) -> Boolean
+typealias EventFunction = (Event) -> Boolean

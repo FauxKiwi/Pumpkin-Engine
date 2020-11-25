@@ -11,7 +11,7 @@ class WindowResizeEvent(val width: Int, val height: Int) : Event() {
     }
 
     override fun getCategoryFlags(): Int {
-        return EventCategory.Application.cid
+        return EventCategory.Application.id
     }
 
     override fun toString(): String {
@@ -30,7 +30,7 @@ class WindowCloseEvent : Event() {
     }
 
     override fun getCategoryFlags(): Int {
-        return EventCategory.Application.cid
+        return EventCategory.Application.id
     }
 
     override fun toString(): String {

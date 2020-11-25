@@ -9,6 +9,7 @@ import glm_.vec2.Vec2i
 import glm_.vec4.Vec4
 import gln.glClearColor
 import gln.glViewport
+import imgui.DEBUG
 import imgui.classes.Context
 import imgui.impl.gl.ImplGL3
 import imgui.impl.glfw.ImplGlfw
@@ -60,6 +61,8 @@ class Window : IWindow {
         }
         window.scrollCB = this::scrollCallback
         window.cursorPosCB = this::cursorPosCallback
+
+        DEBUG = false
     }
 
 override fun run() {

@@ -2,6 +2,7 @@ package com.pumpkin
 
 import com.pumpkin.event.Event
 import com.pumpkin.event.EventDispatcher
+import com.pumpkin.event.EventType
 import com.pumpkin.event.WindowCloseEvent
 import com.pumpkin.imgui.ImGuiLayer
 import com.pumpkin.layer.Layer
@@ -44,7 +45,7 @@ open class Application {
 
     private fun onEvent(event: Event) {
         val dispatcher = EventDispatcher(event)
-        dispatcher.dispatch<WindowCloseEvent> {
+        dispatcher.dispatch(EventType.WindowClose) {
             running = false
             return@dispatch true
         }
@@ -70,6 +71,14 @@ open class Application {
     open fun run() = Unit
 
     internal fun shutdownI() {
+        val layers = layerStack.getInsert()
+        for ((i, layer) in layerStack.layers.withIndex()) {
+            if (i < layers) {
+                layerStack.popLayer(layer)
+            } else {
+                layerStack.popOverlay(layer)
+            }
+        }
         window.shutdown()
         shutdown()
     }
