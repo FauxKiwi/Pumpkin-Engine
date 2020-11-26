@@ -38,7 +38,7 @@ class ImGuiLayer : Layer("ImGui") {
         implGlfw = ImplGlfw.initForOpenGL(window.window, true)
         implGL3 = ImplGL3()
 
-        font = ImGui.io.fonts.addFontFromFileTTF("fonts/DroidSans.ttf", 16.0f);
+        font = ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Medium.ttf", 16.0f);
     }
 
     override fun onDetach() {
