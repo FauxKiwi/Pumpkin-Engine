@@ -94,4 +94,8 @@ open class Application {
     }
 
     open fun shutdown() = Unit
+
+    fun isRunning(): Boolean {
+        return running
+    }
 }

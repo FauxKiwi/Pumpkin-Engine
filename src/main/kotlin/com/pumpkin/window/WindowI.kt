@@ -58,7 +58,7 @@ class Window : IWindow {
     }
 
     override fun run() {
-        window.loop(application!!::runI)
+        window.loop(application!!::isRunning, application!!::runI)
 
         application!!.shutdownI()
 

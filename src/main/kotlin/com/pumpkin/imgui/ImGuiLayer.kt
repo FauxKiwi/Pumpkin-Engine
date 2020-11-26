@@ -4,6 +4,7 @@ import com.pumpkin.layer.Layer
 import com.pumpkin.window.window
 import imgui.*
 import imgui.classes.Context
+import imgui.font.Font
 import imgui.impl.gl.ImplGL3
 import imgui.impl.glfw.ImplGlfw
 import org.lwjgl.glfw.GLFW
@@ -15,6 +16,8 @@ class ImGuiLayer : Layer("ImGui") {
     private lateinit var context: Context
     private lateinit var implGlfw: ImplGlfw
     private lateinit var implGL3: ImplGL3
+
+    private var font: Font? = null
 
     override fun onAttach() {
         context = Context()
@@ -34,6 +37,8 @@ class ImGuiLayer : Layer("ImGui") {
 
         implGlfw = ImplGlfw.initForOpenGL(window.window, true)
         implGL3 = ImplGL3()
+
+        font = ImGui.io.fonts.addFontFromFileTTF("fonts/DroidSans.ttf", 16.0f);
     }
 
     override fun onDetach() {
@@ -46,7 +51,8 @@ class ImGuiLayer : Layer("ImGui") {
         if (showDemoWindow) {
             ImGui.showDemoWindow(::showDemoWindow)
         }
-        ImGui.dockSpace(1)
+        font?.let { ImGui.pushFont(it) }
+        font?.let { ImGui.setCurrentFont(it) }
         ImGui.begin("Test")
         ImGui.text("Hello world!")
         ImGui.end()
