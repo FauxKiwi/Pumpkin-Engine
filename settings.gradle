@@ -1,3 +1,9 @@
-
 rootProject.name = 'PumpkinEngineJVM'
 
+if (file('vendor/imgui/build.gradle.kts').exists()) includeBuild("vendor/imgui") {
+    dependencySubstitution { // Substitute the imgui projects you will be using, this example is for glfw
+        substitute module('com.github.kotlin-graphics.imgui:core') with project(':core')
+        substitute module('com.github.kotlin-graphics.imgui:gl') with project(':gl')
+        substitute module('com.github.kotlin-graphics.imgui:glwf') with project(':glfw')
+    }
+}

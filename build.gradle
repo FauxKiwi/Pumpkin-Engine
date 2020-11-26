@@ -13,6 +13,10 @@ compileKotlin {
     kotlinOptions.jvmTarget = '11'
 }
 
+java {
+    modularity.inferModulePath = true
+}
+
 dependencies {
     ["gl", "glfw", "core"].each {
         implementation "com.github.kotlin-graphics.imgui:$it:1.79"
@@ -27,4 +31,6 @@ dependencies {
     ["", "-jemalloc", "-glfw", "-opengl", "-remotery", "-stb", "-openal", "-opengles"].each {
         runtime "org.lwjgl:lwjgl$it:3.2.3:natives-windows"
     }
+
+
 }
