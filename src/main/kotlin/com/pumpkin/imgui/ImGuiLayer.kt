@@ -53,8 +53,9 @@ class ImGuiLayer : Layer("ImGui") {
         }
         font?.let { ImGui.pushFont(it) }
         font?.let { ImGui.setCurrentFont(it) }
-        ImGui.begin("Test")
-        ImGui.text("Hello world!")
+        ImGui.begin("Framerate")
+        ImGui.text("Your Framerate is: ${ImGui.io.framerate}")
+        ImGui.text("Update time: ${1000 / ImGui.io.framerate}")
         ImGui.end()
     }
 

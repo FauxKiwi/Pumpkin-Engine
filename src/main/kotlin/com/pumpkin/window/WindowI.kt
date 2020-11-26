@@ -3,21 +3,15 @@ package com.pumpkin.window
 import com.pumpkin.application
 import com.pumpkin.event.*
 import com.pumpkin.logErrorCore
+import com.pumpkin.render.GraphicsContext
+import com.pumpkin.render.OpenGLContext
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2d
 import glm_.vec2.Vec2i
-import glm_.vec4.Vec4
-import gln.glClearColor
 import gln.glViewport
 import imgui.DEBUG
-import imgui.classes.Context
-import imgui.impl.gl.ImplGL3
-import imgui.impl.glfw.ImplGlfw
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT
-import org.lwjgl.opengl.GL11.glClear
-import org.lwjgl.system.MemoryStack
 import uno.glfw.GlfwWindow
 import uno.glfw.VSync
 import uno.glfw.glfw
@@ -26,8 +20,7 @@ class Window : IWindow {
     private lateinit var data: WindowData
 
     internal lateinit var window: GlfwWindow
-
-    var clearColor = Vec4(1f, 0f, 0f, 1f)
+    private lateinit var context: GraphicsContext
 
     override fun init(windowProps: WindowProps) {
         data = WindowData(windowProps.title, windowProps.width, windowProps.height, true, null)
@@ -36,7 +29,9 @@ class Window : IWindow {
         glfw.errorCallback = this::errorCallback
 
         window = GlfwWindow(data.width, data.height, data.title)
-        window.makeContextCurrent()
+        context = OpenGLContext(window)
+        context.init()
+
         setVSync(data.vSync)
 
         GL.createCapabilities()
@@ -58,16 +53,16 @@ class Window : IWindow {
     }
 
     override fun run() {
-        window.loop(application!!::isRunning, application!!::runI)
+        //window.loop(application!!::isRunning, application!!::runI)
+        application!!.runI()
 
         application!!.shutdownI()
-
     }
 
     override fun onUpdate() {
+        glfw.pollEvents()
+        context.swapBuffers()
         glViewport(window.framebufferSize)
-        glClearColor(clearColor)
-        glClear(GL_COLOR_BUFFER_BIT)
     }
 
     override fun shutdown() {

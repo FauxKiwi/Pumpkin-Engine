@@ -10,7 +10,11 @@ import com.pumpkin.layer.LayerStack
 import com.pumpkin.window.Window
 import com.pumpkin.window.WindowProps
 import com.pumpkin.window.createWindow
+import glm_.vec4.Vec4
+import gln.glClearColor
+import org.lwjgl.opengl.GL11
 import org.lwjgl.system.MemoryStack
+import uno.glfw.stak
 
 open class Application {
     private var running: Boolean = false
@@ -63,19 +67,25 @@ open class Application {
         }
     }
 
-    internal fun runI(stack: MemoryStack) {
-        window.onUpdate()
-        for (layer in layerStack.layers) {
-            layer.onUpdate()
-        }
+    internal fun runI() {
+        while (running) {
+            glClearColor(Vec4(1.0, 0.0, 0.0, 1.0))
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
 
-        imGuiLayer.begin()
-        for (layer in layerStack.layers) {
-            layer.onImGuiRender()
-        }
-        imGuiLayer.end()
+            for (layer in layerStack.layers) {
+                layer.onUpdate()
+            }
 
-        run()
+            imGuiLayer.begin()
+            for (layer in layerStack.layers) {
+                layer.onImGuiRender()
+            }
+            imGuiLayer.end()
+
+            run()
+
+            window.onUpdate()
+        }
     }
 
     open fun run() = Unit
@@ -94,8 +104,4 @@ open class Application {
     }
 
     open fun shutdown() = Unit
-
-    fun isRunning(): Boolean {
-        return running
-    }
 }
