@@ -2,27 +2,38 @@ package com.pumpkin.imgui
 
 import com.pumpkin.layer.Layer
 import com.pumpkin.window.window
-import imgui.ConfigFlag
-import imgui.ImGui
+import imgui.*
 import imgui.classes.Context
 import imgui.impl.gl.ImplGL3
 import imgui.impl.glfw.ImplGlfw
+import org.lwjgl.glfw.GLFW
+import uno.glfw.glfw
 
 class ImGuiLayer : Layer("ImGui") {
     private var showDemoWindow = true
 
     private lateinit var context: Context
-    private lateinit var implGL3: ImplGL3
     private lateinit var implGlfw: ImplGlfw
+    private lateinit var implGL3: ImplGL3
 
     override fun onAttach() {
         context = Context()
-        implGL3 = ImplGL3()
-        implGlfw = ImplGlfw(window.window)
 
-        ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableKeyboard.i or ConfigFlag.NavEnableGamepad.i
+        ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableKeyboard     // Enable Keyboard Controls
+//        ImGui.io.configFlags = io.configFlags or ConfigFlag.NavEnableGamepad    // Enable Gamepad Controls
+        ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.DockingEnable         // Enable Docking
+        ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.ViewportsEnable
 
         ImGui.styleColorsDark()
+
+        val style = context.style
+        if (ImGui.io.configFlags has ConfigFlag.ViewportsEnable) {
+            style.windowRounding = 0f
+            style.colors[Col.WindowBg].w = 1f
+        }
+
+        implGlfw = ImplGlfw.initForOpenGL(window.window, true)
+        implGL3 = ImplGL3()
     }
 
     override fun onDetach() {
@@ -35,6 +46,7 @@ class ImGuiLayer : Layer("ImGui") {
         if (showDemoWindow) {
             ImGui.showDemoWindow(::showDemoWindow)
         }
+        ImGui.dockSpace(1)
         ImGui.begin("Test")
         ImGui.text("Hello world!")
         ImGui.end()
@@ -50,5 +62,12 @@ class ImGuiLayer : Layer("ImGui") {
         ImGui.render()
 
         ImGui.drawData?.let { implGL3.renderDrawData(it) }
+
+        if (ImGui.io.configFlags has ConfigFlag.ViewportsEnable) {
+            val backupCurrentContext = glfw.currentContext
+            ImGui.updatePlatformWindows()
+            ImGui.renderPlatformWindowsDefault()
+            GLFW.glfwMakeContextCurrent(backupCurrentContext.value)
+        }
     }
 }
