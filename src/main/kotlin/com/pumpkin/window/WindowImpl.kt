@@ -32,6 +32,7 @@ class Window : IWindow {
         context = OpenGLContext(window)
         context.init()
 
+
         setVSync(data.vSync)
 
         GL.createCapabilities()

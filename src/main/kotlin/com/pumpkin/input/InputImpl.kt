@@ -3,10 +3,10 @@ package com.pumpkin.input
 import com.pumpkin.window.window
 import glm_.vec2.Vec2
 
-object InputI : AbstractInput {
+object InputImpl : AbstractInput {
 
     init {
-        instance = InputI
+        instance = InputImpl
     }
 
     override fun isKeyPressed(keycode: Int): Boolean {

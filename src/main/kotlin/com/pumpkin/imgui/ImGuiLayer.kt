@@ -43,13 +43,6 @@ class ImGuiLayer : Layer("ImGui") {
         style.colors[Col.WindowBg].w = 1f
         style.frameRounding = 3.33f
 
-        for (col in Col.values()) {
-            val color = style.colors[col]
-            val b = color.b
-            color.b = color.g
-            color.g = b
-        }
-
         implGlfw = ImplGlfw/*.initForOpenGL(window.window, true)*/(window.window)
         implGL3 = ImplGL3()
 

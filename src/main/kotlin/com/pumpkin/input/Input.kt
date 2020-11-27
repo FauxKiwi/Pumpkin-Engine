@@ -2,7 +2,7 @@ package com.pumpkin.input
 
 import glm_.vec2.Vec2
 
-internal var instance: AbstractInput = InputI
+internal var instance: AbstractInput = InputImpl
 
 fun isKeyPressed(keycode: Int): Boolean {
     return instance.isKeyPressed(keycode)
