@@ -3,7 +3,6 @@ package com.pumpkin
 import com.pumpkin.event.Event
 import com.pumpkin.event.EventDispatcher
 import com.pumpkin.event.EventType
-import com.pumpkin.event.WindowCloseEvent
 import com.pumpkin.imgui.ImGuiLayer
 import com.pumpkin.layer.Layer
 import com.pumpkin.layer.LayerStack
@@ -11,16 +10,20 @@ import com.pumpkin.window.Window
 import com.pumpkin.window.WindowProps
 import com.pumpkin.window.createWindow
 import glm_.vec4.Vec4
-import gln.glClearColor
-import org.lwjgl.opengl.GL11
-import org.lwjgl.system.MemoryStack
-import uno.glfw.stak
+import gln.*
+import gln.identifiers.GlBuffer
+import gln.identifiers.GlVertexArray
+import org.lwjgl.opengl.GL15C
 
 open class Application {
     private var running: Boolean = false
     private lateinit var window: Window
     private lateinit var layerStack: LayerStack
     private lateinit var imGuiLayer: ImGuiLayer
+
+    private var vertexArray = GlVertexArray()
+    private var vertexBuffer = GlBuffer()
+    private var indexBuffer = GlBuffer()
 
     internal fun initI() {
         running = true
@@ -35,6 +38,32 @@ open class Application {
         logInfoCore("Initialized Program")
 
         pushOverlay(imGuiLayer)
+
+        val vertices = floatArrayOf(
+            -0.5f, -0.5f, 0f,
+            0.5f, -0.5f, 0f,
+            0.0f, 0.5f, 0.0f
+        )
+
+        val indices = intArrayOf(0, 1, 2)
+
+        gl {
+            genVertexArrays(::vertexArray)
+            bindVertexArray(vertexArray)
+
+            genBuffers(::vertexBuffer)
+            bindBuffer(BufferTarget.ARRAY, vertexBuffer)
+
+            GL15C.glBufferData(GL15C.GL_ARRAY_BUFFER, vertices, GL15C.GL_STATIC_DRAW)
+            enableVertexAttribArray(0)
+            vertexAttribPointer(0, 3, VertexAttrType.FLOAT, false, 0, 0)
+
+            genBuffers(::indexBuffer)
+            bindBuffer(BufferTarget.ELEMENT_ARRAY, indexBuffer)
+
+            GL15C.glBufferData(GL15C.GL_ELEMENT_ARRAY_BUFFER, indices, GL15C.GL_STATIC_DRAW)
+        }
+
         init()
 
         window.run()
@@ -69,8 +98,13 @@ open class Application {
 
     internal fun runI() {
         while (running) {
-            glClearColor(Vec4(1.0, 0.0, 0.0, 1.0))
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT)
+            glClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f))
+            gl.clear(ClearBufferMask.COLOR_BUFFER_BIT)
+
+            gl.bindVertexArray(vertexArray)
+            gl.drawElements(DrawMode.TRIANGLES, 3)
+            //gl.drawArrays(DrawMode.TRIANGLES, 0, 3)
+            //GL15.glDrawElements(GL15C.GL_TRIANGLES, 3, GL15C.GL_UNSIGNED_INT, 0)
 
             for (layer in layerStack.layers) {
                 layer.onUpdate()
