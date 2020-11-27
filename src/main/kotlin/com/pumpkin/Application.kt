@@ -6,6 +6,7 @@ import com.pumpkin.event.EventType
 import com.pumpkin.imgui.ImGuiLayer
 import com.pumpkin.layer.Layer
 import com.pumpkin.layer.LayerStack
+import com.pumpkin.render.Shader
 import com.pumpkin.window.Window
 import com.pumpkin.window.WindowProps
 import com.pumpkin.window.createWindow
@@ -24,6 +25,7 @@ open class Application {
     private var vertexArray = GlVertexArray()
     private var vertexBuffer = GlBuffer()
     private var indexBuffer = GlBuffer()
+    private lateinit var shader: Shader
 
     internal fun initI() {
         running = true
@@ -62,6 +64,28 @@ open class Application {
             bindBuffer(BufferTarget.ELEMENT_ARRAY, indexBuffer)
 
             GL15C.glBufferData(GL15C.GL_ELEMENT_ARRAY_BUFFER, indices, GL15C.GL_STATIC_DRAW)
+
+            val vertexSrc = """
+                #version 330 core
+                
+                layout(location = 0) in vec3 position;
+                
+                void main() {
+                    gl_Position = vec4(position, 1.0);
+                }
+            """.trimIndent()
+
+            val fragmentSrc = """
+               #version 330 core
+                
+               out vec4 color;
+                
+                void main() {
+                    color = vec4(1.0, 0.0, 0.0, 1.0);
+                }
+            """.trimIndent()
+
+            shader = Shader(vertexSrc, fragmentSrc)
         }
 
         init()
@@ -100,6 +124,8 @@ open class Application {
         while (running) {
             glClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f))
             gl.clear(ClearBufferMask.COLOR_BUFFER_BIT)
+
+            shader.bind()
 
             gl.bindVertexArray(vertexArray)
             gl.drawElements(DrawMode.TRIANGLES, 3)
