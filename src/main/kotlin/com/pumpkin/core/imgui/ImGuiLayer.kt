@@ -24,24 +24,20 @@ class ImGuiLayer : Layer("ImGui") {
 
         ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableKeyboard     // Enable Keyboard Controls
         ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableGamepad    // Enable Gamepad Controls
-        //ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.DockingEnable         // Enable Docking
+        ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.DockingEnable         // Enable Docking
         //ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.ViewportsEnable
 
         ImGui.styleColorsDark()
 
         style = context.style
-        /*if (ImGui.io.configFlags has ConfigFlag.ViewportsEnable) {
-            style.windowRounding = 0f
-            style.colors[Col.WindowBg].w = 1f
-        }*/
         style.windowRounding = 0f
         style.colors[Col.WindowBg].w = 1f
         style.frameRounding = 3.33f
 
-        implGlfw = ImplGlfw/*.initForOpenGL(window.window, true)*/(Window.getWindow().window)
+        implGlfw = ImplGlfw.initForOpenGL(Window.getWindow().window, true)/*(Window.getWindow().window)*/
         implGL3 = ImplGL3()
 
-        font = ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Medium.ttf", 16.0f);
+        font = ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Medium.ttf", 16.0f)
     }
 
     override fun onDetach() {
@@ -51,11 +47,12 @@ class ImGuiLayer : Layer("ImGui") {
     }
 
     override fun onImGuiRender() {
+        font?.let { ImGui.pushFont(it) }
+        font?.let { ImGui.setCurrentFont(it) }
+
         if (showDemoWindow) {
             ImGui.showDemoWindow(::showDemoWindow)
         }
-        font?.let { ImGui.pushFont(it) }
-        font?.let { ImGui.setCurrentFont(it) }
         with(ImGui) {
             begin("Framerate")
             text("Your Framerate is: ${ImGui.io.framerate}")
