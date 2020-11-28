@@ -3,6 +3,7 @@ package com.pumpkin.core
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.EventDispatcher
 import com.pumpkin.core.event.EventType
+import com.pumpkin.core.event.WindowCloseEvent
 import com.pumpkin.core.imgui.ImGuiLayer
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.layer.LayerStack
@@ -136,7 +137,7 @@ open class Application {
 
     private fun onEvent(event: Event) {
         val dispatcher = EventDispatcher(event)
-        dispatcher.dispatch(EventType.WindowClose) {
+        dispatcher.dispatch<WindowCloseEvent> {
             running = false
             return@dispatch true
         }

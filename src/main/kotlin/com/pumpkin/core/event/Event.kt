@@ -37,11 +37,11 @@ abstract class Event {
 
 class EventDispatcher(var event: Event) {
 
-    fun dispatch(eventType: EventType, function: EventFunction) {
-        if (event.getEventType() == eventType) {
-            event.handled = function(event)
+    inline fun <reified T: Event> dispatch(noinline function: EventFunction<T>) {
+        if (event is T) {
+            event.handled = function(event as T)
         }
     }
 }
 
-typealias EventFunction = (Event) -> Boolean
+typealias EventFunction<T> = (T) -> Boolean

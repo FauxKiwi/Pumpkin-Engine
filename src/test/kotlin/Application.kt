@@ -2,6 +2,7 @@ import com.pumpkin.core.Application
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.EventDispatcher
 import com.pumpkin.core.event.EventType
+import com.pumpkin.core.event.KeyPressedEvent
 import com.pumpkin.core.input.PK_KEY_TAB
 import com.pumpkin.core.input.isKeyPressed
 import com.pumpkin.core.layer.Layer
@@ -25,7 +26,7 @@ class LogLayer : Layer() {
 
     override fun onEvent(event: Event) {
         val dispatcher = EventDispatcher(event)
-        dispatcher.dispatch(EventType.KeyPressed) {
+        dispatcher.dispatch<KeyPressedEvent> {
             logDebug("Tab is pressed (event)")
             false
         }
@@ -40,6 +41,5 @@ class TestApplication : Application() {
 }
 
 fun main() {
-    //application = TestApplication()
     Application set TestApplication()
 }
