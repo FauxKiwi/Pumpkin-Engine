@@ -1,14 +1,12 @@
-import com.pumpkin.Application
-import com.pumpkin.application
-import com.pumpkin.event.Event
-import com.pumpkin.event.EventDispatcher
-import com.pumpkin.event.EventType
-import com.pumpkin.event.KeyPressedEvent
-import com.pumpkin.imgui.ImGuiLayer
-import com.pumpkin.input.PK_KEY_TAB
-import com.pumpkin.input.isKeyPressed
-import com.pumpkin.layer.Layer
-import com.pumpkin.logDebug
+import com.pumpkin.core.Application
+import com.pumpkin.core.application
+import com.pumpkin.core.event.Event
+import com.pumpkin.core.event.EventDispatcher
+import com.pumpkin.core.event.EventType
+import com.pumpkin.core.input.PK_KEY_TAB
+import com.pumpkin.core.input.isKeyPressed
+import com.pumpkin.core.layer.Layer
+import com.pumpkin.core.logDebug
 
 class LogLayer : Layer() {
 
