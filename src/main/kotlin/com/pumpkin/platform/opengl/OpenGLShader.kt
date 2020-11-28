@@ -19,7 +19,7 @@ class OpenGLShader(vertexSrc: String, fragmentSrc: String) : Shader {
 
         if (!vertexShader.compileStatus)
         {
-            logErrorCore("Shader compile error: ${gl.getShaderInfoLog(vertexShader)}")
+            logErrorCore("Vertex shader compile error: ${gl.getShaderInfoLog(vertexShader)}")
 
             gl.deleteShader(vertexShader)
         }
@@ -32,7 +32,7 @@ class OpenGLShader(vertexSrc: String, fragmentSrc: String) : Shader {
 
         if (!fragmentShader.compileStatus)
         {
-            logErrorCore("Shader compile error: ${gl.getShaderInfoLog(fragmentShader)}")
+            logErrorCore("Fragment shader compile error: ${gl.getShaderInfoLog(fragmentShader)}")
 
             gl.deleteShader(fragmentShader)
             gl.deleteShader(vertexShader)

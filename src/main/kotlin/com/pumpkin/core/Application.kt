@@ -6,9 +6,7 @@ import com.pumpkin.core.event.EventType
 import com.pumpkin.core.imgui.ImGuiLayer
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.layer.LayerStack
-import com.pumpkin.core.render.IndexBuffer
-import com.pumpkin.core.render.Shader
-import com.pumpkin.core.render.VertexBuffer
+import com.pumpkin.core.render.*
 import com.pumpkin.core.window.Window
 import com.pumpkin.core.window.WindowProps
 import glm_.vec4.Vec4
@@ -16,6 +14,21 @@ import gln.*
 import gln.identifiers.GlVertexArray
 
 open class Application {
+    companion object {
+        private lateinit var application: Application
+
+        infix fun set(application: Application) {
+            this.application = application
+            main()
+        }
+
+        fun get(): Application = application
+
+        private fun main() {
+            application.initI()
+        }
+    }
+
     private var running: Boolean = false
     private lateinit var window: Window
     private lateinit var layerStack: LayerStack
@@ -41,9 +54,9 @@ open class Application {
         pushOverlay(imGuiLayer)
 
         val vertices = floatArrayOf(
-            -0.5f, -0.5f, 0f,
-            0.5f, -0.5f, 0f,
-            0.0f, 0.5f, 0.0f
+            -0.5f, -0.5f, 0f,   1f, 0f, 1f, 1f,
+            0.5f, -0.5f, 0f,    0f, 1f, 1f, 1f,
+            0.0f, 0.5f, 0f,     1f, 1f, 0f, 1f,
         )
 
         val indices = intArrayOf(0, 1, 2)
@@ -57,8 +70,19 @@ open class Application {
             vertexBuffer = VertexBuffer.create(vertices)
 
             //GL15C.glBufferData(GL15C.GL_ARRAY_BUFFER, vertices, GL15C.GL_STATIC_DRAW)
-            enableVertexAttribArray(0)
-            vertexAttribPointer(0, 3, VertexAttrType.FLOAT, false, 0, 0)
+            //enableVertexAttribArray(0)
+            //vertexAttribPointer(0, 3, VertexAttrType.FLOAT, false, 0, 0)
+            val layout = BufferLayout(mutableListOf(
+                BufferElement(ShaderDataType.Float3, "a_Position"),
+                BufferElement(ShaderDataType.Float4, "a_Color")
+            ))
+            vertexBuffer.setLayout(layout)
+
+            val layout2 = vertexBuffer.getLayout()
+            for ((i, element) in layout2.withIndex()) {
+                enableVertexAttribArray(i)
+                vertexAttribPointer(i, element.dataType.componentCount(), element.dataType.toVertexAttrType(), element.normalized, layout2.getStride(), element.offset)
+            }
 
             //genBuffers(::indexBuffer)
             //bindBuffer(BufferTarget.ELEMENT_ARRAY, indexBuffer)
@@ -69,26 +93,26 @@ open class Application {
             val vertexSrc = """
                 #version 330 core
                 
-                layout(location = 0) in vec3 position;
+                layout(location = 0) in vec3 a_Position;
+                layout(location = 1) in vec4 a_Color;
                 
-                out vec3 positionOut;
+                out vec4 v_Color;
                 
                 void main() {
-                    positionOut = position * 0.5 + 0.5;
-                    
-                    gl_Position = vec4(position, 1.0);
+                    v_Color = a_Color;
+                    gl_Position = vec4(a_Position, 1.0);
                 }
             """.trimIndent()
 
             val fragmentSrc = """
                 #version 330 core
                
-                in vec3 positionOut;
+                in vec4 v_Color;
                 
                 out vec4 color;
                 
                 void main() {
-                    color = vec4(positionOut, 1.0);
+                    color = v_Color;
                 }
             """.trimIndent()
 

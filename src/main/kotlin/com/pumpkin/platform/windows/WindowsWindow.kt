@@ -1,6 +1,6 @@
 package com.pumpkin.platform.windows
 
-import com.pumpkin.core.application
+import com.pumpkin.core.Application
 import com.pumpkin.core.event.*
 import com.pumpkin.core.logErrorCore
 import com.pumpkin.core.render.GraphicsContext
@@ -58,9 +58,9 @@ class WindowsWindow : Window {
 
     override fun run() {
         //window.loop(application!!::isRunning, application!!::runI)
-        application!!.runI()
+        Application.get().runI()
 
-        application!!.shutdownI()
+        Application.get().shutdownI()
     }
 
     override fun onUpdate() {

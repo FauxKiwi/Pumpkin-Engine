@@ -1,5 +1,4 @@
 import com.pumpkin.core.Application
-import com.pumpkin.core.application
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.EventDispatcher
 import com.pumpkin.core.event.EventType
@@ -41,5 +40,6 @@ class TestApplication : Application() {
 }
 
 fun main() {
-    application = TestApplication()
+    //application = TestApplication()
+    Application set TestApplication()
 }
