@@ -1,8 +1,9 @@
 package com.pumpkin.input
 
+import com.pumpkin.windows.WindowsInput
 import glm_.vec2.Vec2
 
-internal var instance: AbstractInput = InputImpl
+internal var instance: AbstractInput = WindowsInput
 
 fun isKeyPressed(keycode: Int): Boolean {
     return instance.isKeyPressed(keycode)

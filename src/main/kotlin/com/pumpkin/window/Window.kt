@@ -1,16 +1,20 @@
 package com.pumpkin.window
 
 import com.pumpkin.event.Event
-import org.lwjgl.system.MemoryStack
+import com.pumpkin.windows.WindowsWindow
 
-internal lateinit var window: Window
+interface Window {
 
-fun createWindow(): Window {
-    window = Window()
-    return window
-}
+    companion object {
+        private lateinit var window: WindowsWindow
 
-interface IWindow {
+        fun createWindow(): WindowsWindow {
+            window = WindowsWindow()
+            return window
+        }
+
+        fun getWindow() = window
+    }
 
     fun init(windowProps: WindowProps)
     fun run()

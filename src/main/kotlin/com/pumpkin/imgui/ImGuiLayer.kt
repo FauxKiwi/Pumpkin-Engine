@@ -1,18 +1,13 @@
 package com.pumpkin.imgui
 
 import com.pumpkin.layer.Layer
-import com.pumpkin.window.window
-import glm_.vec4.Vec4
+import com.pumpkin.window.Window
 import imgui.*
-import imgui.classes.Color
 import imgui.classes.Context
 import imgui.classes.Style
 import imgui.font.Font
 import imgui.impl.gl.ImplGL3
 import imgui.impl.glfw.ImplGlfw
-import imgui.internal.classes.ColorMod
-import org.lwjgl.glfw.GLFW
-import uno.glfw.glfw
 
 class ImGuiLayer : Layer("ImGui") {
     private var showDemoWindow = true
@@ -43,7 +38,7 @@ class ImGuiLayer : Layer("ImGui") {
         style.colors[Col.WindowBg].w = 1f
         style.frameRounding = 3.33f
 
-        implGlfw = ImplGlfw/*.initForOpenGL(window.window, true)*/(window.window)
+        implGlfw = ImplGlfw/*.initForOpenGL(window.window, true)*/(Window.getWindow().window)
         implGL3 = ImplGL3()
 
         font = ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Medium.ttf", 16.0f);

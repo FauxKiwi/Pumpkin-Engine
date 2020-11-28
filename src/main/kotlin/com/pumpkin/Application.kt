@@ -6,15 +6,14 @@ import com.pumpkin.event.EventType
 import com.pumpkin.imgui.ImGuiLayer
 import com.pumpkin.layer.Layer
 import com.pumpkin.layer.LayerStack
+import com.pumpkin.render.IndexBuffer
 import com.pumpkin.render.Shader
+import com.pumpkin.render.VertexBuffer
 import com.pumpkin.window.Window
 import com.pumpkin.window.WindowProps
-import com.pumpkin.window.createWindow
 import glm_.vec4.Vec4
 import gln.*
-import gln.identifiers.GlBuffer
 import gln.identifiers.GlVertexArray
-import org.lwjgl.opengl.GL15C
 
 open class Application {
     private var running: Boolean = false
@@ -23,15 +22,15 @@ open class Application {
     private lateinit var imGuiLayer: ImGuiLayer
 
     private var vertexArray = GlVertexArray()
-    private var vertexBuffer = GlBuffer()
-    private var indexBuffer = GlBuffer()
+    private lateinit var vertexBuffer: VertexBuffer /*= GlBuffer()*/
+    private lateinit var indexBuffer: IndexBuffer /*= GlBuffer()*/
     private lateinit var shader: Shader
 
     internal fun initI() {
         running = true
         layerStack = LayerStack()
         imGuiLayer = ImGuiLayer()
-        window = createWindow()
+        window = Window.createWindow()
 
         window.init(WindowProps())
 
@@ -53,39 +52,47 @@ open class Application {
             genVertexArrays(::vertexArray)
             bindVertexArray(vertexArray)
 
-            genBuffers(::vertexBuffer)
-            bindBuffer(BufferTarget.ARRAY, vertexBuffer)
+            //genBuffers(::vertexBuffer)
+            //bindBuffer(BufferTarget.ARRAY, vertexBuffer)
+            vertexBuffer = VertexBuffer.create(vertices)
 
-            GL15C.glBufferData(GL15C.GL_ARRAY_BUFFER, vertices, GL15C.GL_STATIC_DRAW)
+            //GL15C.glBufferData(GL15C.GL_ARRAY_BUFFER, vertices, GL15C.GL_STATIC_DRAW)
             enableVertexAttribArray(0)
             vertexAttribPointer(0, 3, VertexAttrType.FLOAT, false, 0, 0)
 
-            genBuffers(::indexBuffer)
-            bindBuffer(BufferTarget.ELEMENT_ARRAY, indexBuffer)
+            //genBuffers(::indexBuffer)
+            //bindBuffer(BufferTarget.ELEMENT_ARRAY, indexBuffer)
+            indexBuffer = IndexBuffer.create(indices)
 
-            GL15C.glBufferData(GL15C.GL_ELEMENT_ARRAY_BUFFER, indices, GL15C.GL_STATIC_DRAW)
+            //GL15C.glBufferData(GL15C.GL_ELEMENT_ARRAY_BUFFER, indices, GL15C.GL_STATIC_DRAW)
 
             val vertexSrc = """
                 #version 330 core
                 
                 layout(location = 0) in vec3 position;
                 
+                out vec3 positionOut;
+                
                 void main() {
+                    positionOut = position * 0.5 + 0.5;
+                    
                     gl_Position = vec4(position, 1.0);
                 }
             """.trimIndent()
 
             val fragmentSrc = """
-               #version 330 core
+                #version 330 core
+               
+                in vec3 positionOut;
                 
-               out vec4 color;
+                out vec4 color;
                 
                 void main() {
-                    color = vec4(1.0, 0.0, 0.0, 1.0);
+                    color = vec4(positionOut, 1.0);
                 }
             """.trimIndent()
 
-            shader = Shader(vertexSrc, fragmentSrc)
+            shader = Shader.create(vertexSrc, fragmentSrc)
         }
 
         init()
