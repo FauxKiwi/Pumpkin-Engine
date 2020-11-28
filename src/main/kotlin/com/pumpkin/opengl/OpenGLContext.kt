@@ -1,6 +1,7 @@
-package com.pumpkin.render
+package com.pumpkin.opengl
 
 import com.pumpkin.logInfoCore
+import com.pumpkin.render.GraphicsContext
 import gln.VERSION
 import uno.glfw.GlfwWindow
 

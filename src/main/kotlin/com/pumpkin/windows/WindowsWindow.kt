@@ -1,10 +1,13 @@
-package com.pumpkin.window
+package com.pumpkin.windows
 
 import com.pumpkin.application
 import com.pumpkin.event.*
 import com.pumpkin.logErrorCore
 import com.pumpkin.render.GraphicsContext
-import com.pumpkin.render.OpenGLContext
+import com.pumpkin.opengl.OpenGLContext
+import com.pumpkin.window.EventCallbackFunction
+import com.pumpkin.window.Window
+import com.pumpkin.window.WindowProps
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2d
 import glm_.vec2.Vec2i
@@ -16,10 +19,10 @@ import uno.glfw.GlfwWindow
 import uno.glfw.VSync
 import uno.glfw.glfw
 
-class Window : IWindow {
+class WindowsWindow : Window {
     private lateinit var data: WindowData
 
-    internal lateinit var window: GlfwWindow
+    lateinit var window: GlfwWindow
     private lateinit var context: GraphicsContext
 
     override fun init(windowProps: WindowProps) {
