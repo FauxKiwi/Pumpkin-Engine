@@ -3,6 +3,8 @@ package com.pumpkin.platform.windows
 import com.pumpkin.core.Application
 import com.pumpkin.core.event.*
 import com.pumpkin.core.logErrorCore
+import com.pumpkin.core.logInfo
+import com.pumpkin.core.logInfoCore
 import com.pumpkin.core.render.GraphicsContext
 import com.pumpkin.platform.opengl.OpenGLContext
 import com.pumpkin.core.window.EventCallbackFunction
@@ -34,7 +36,7 @@ class WindowsWindow : Window {
         window = GlfwWindow(data.width, data.height, data.title)
         context = OpenGLContext(window)
         context.init()
-
+        logInfoCore("Created Window \"${data.title}\" (${data.width} x ${data.height})")
 
         setVSync(data.vSync)
 
@@ -52,6 +54,8 @@ class WindowsWindow : Window {
         }
         window.scrollCB = this::scrollCallback
         window.cursorPosCB = this::cursorPosCallback
+
+        logInfoCore("Installed Callbacks for Window \"${data.title}\"")
 
         DEBUG = false
     }
