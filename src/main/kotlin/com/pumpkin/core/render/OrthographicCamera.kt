@@ -21,8 +21,7 @@ class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
         }
 
     private fun recalculateViewMatrix() {
-        viewMatrix = glm.rotate(Mat4.identity, -rotation, Vec3(0, 0, 1))
-        glm.translate(viewMatrix, -position)
+        viewMatrix = glm.translate(Mat4.identity, -position) * glm.rotate(Mat4.identity, -rotation, Vec3(0, 0, 1))
         viewProjectionMatrix = projectionMatrix * viewMatrix
     }
 }

@@ -1,15 +1,13 @@
 import com.pumpkin.core.Application
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.EventDispatcher
-import com.pumpkin.core.event.EventType
 import com.pumpkin.core.event.KeyPressedEvent
-import com.pumpkin.core.input.PK_KEY_TAB
-import com.pumpkin.core.input.isKeyPressed
+import com.pumpkin.core.input.*
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.logDebug
 import com.pumpkin.core.render.*
+import glm_.vec3.Vec3
 import glm_.vec4.Vec4
-import gln.gl
 
 class LogLayer : Layer() {
 
@@ -22,15 +20,25 @@ class LogLayer : Layer() {
     }
 
     override fun onUpdate() {
-        if (isKeyPressed(PK_KEY_TAB)) {
-            logDebug("Tab is pressed (poll)")
-        }
+        if (isKeyPressed(PK_KEY_A))
+            Application.get().camera.position = Application.get().camera.position - Vec3(0.05f, 0f, 0f)
+
+        if (isKeyPressed(PK_KEY_D))
+            Application.get().camera.position = Application.get().camera.position + Vec3(0.05f, 0f, 0f)
+
+        if (isKeyPressed(PK_KEY_S))
+            Application.get().camera.position = Application.get().camera.position - Vec3(0f, 0.05f, 0f)
+
+        if (isKeyPressed(PK_KEY_W))
+            Application.get().camera.position = Application.get().camera.position + Vec3(0f, 0.05f, 0f)
+
     }
 
     override fun onEvent(event: Event) {
         val dispatcher = EventDispatcher(event)
         dispatcher.dispatch<KeyPressedEvent> {
-            logDebug("Tab is pressed (event)")
+            if (it.keyCode == PK_KEY_TAB)
+                logDebug("Tab is pressed (event)")
             false
         }
     }
@@ -164,5 +172,5 @@ class TestApplication : Application() {
 }
 
 fun main() {
-    Application set TestApplication()
+    Application.set(TestApplication())
 }

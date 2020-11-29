@@ -14,7 +14,7 @@ open class Application {
     companion object {
         private lateinit var application: Application
 
-        infix fun set(application: Application) {
+        fun set(application: Application) {
             this.application = application
             main()
         }
@@ -31,7 +31,7 @@ open class Application {
     private lateinit var layerStack: LayerStack
     private lateinit var imGuiLayer: ImGuiLayer
 
-    protected val camera = OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f)
+    val camera = OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f)
 
     internal fun initI() {
         running = true
