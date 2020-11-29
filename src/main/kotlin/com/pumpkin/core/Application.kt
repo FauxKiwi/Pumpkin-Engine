@@ -37,8 +37,8 @@ open class Application {
 
     private lateinit var shader: Shader
     private lateinit var vertexArray: VertexArray
-    /*private lateinit var blueShader: Shader
-    private lateinit var squareVA: VertexArray*/
+    private lateinit var blueShader: Shader
+    private lateinit var squareVA: VertexArray
 
     internal fun initI() {
         running = true
@@ -62,6 +62,15 @@ open class Application {
 
         val indices = intArrayOf(0, 1, 2)
 
+        val squareVertices = floatArrayOf(
+            -0.75f, -0.75f, 0f,
+            0.75f, -0.75f, 0f,
+            0.75f, 0.75f, 0f,
+            -0.75f, 0.75f, 0f,
+        )
+
+        val squareIndices = intArrayOf(0, 1, 2, 2, 3, 0)
+
         gl {
             vertexArray = VertexArray.create()
 
@@ -77,6 +86,22 @@ open class Application {
 
             val indexBuffer = IndexBuffer.create(indices)
             vertexArray.indexBuffer = indexBuffer
+
+
+            squareVA = VertexArray.create()
+
+            val squareVB = VertexBuffer.create(squareVertices)
+            val squareLayout = BufferLayout(
+                mutableListOf(
+                    BufferElement(ShaderDataType.Float3, "a_Position")
+                )
+            )
+            squareVB.layout = squareLayout
+            squareVA.addVertexBuffer(squareVB)
+
+            val squareIB = IndexBuffer.create(squareIndices)
+            squareVA.indexBuffer = squareIB
+
 
             val vertexSrc = """
                 #version 330 core
@@ -105,6 +130,28 @@ open class Application {
             """.trimIndent()
 
             shader = Shader.create(vertexSrc, fragmentSrc)
+
+            val b_vertexSrc = """
+                #version 330 core
+                
+                layout(location = 0) in vec3 a_Position;
+                
+                void main() {
+                    gl_Position = vec4(a_Position, 1.0);
+                }
+            """.trimIndent()
+
+            val b_fragmentSrc = """
+                #version 330 core
+                
+                out vec4 color;
+                
+                void main() {
+                    color = vec4(0.2, 0.3, 0.8, 1.0);
+                }
+            """.trimIndent()
+
+            blueShader = Shader.create(b_vertexSrc, b_fragmentSrc)
         }
 
         init()
@@ -144,10 +191,13 @@ open class Application {
             glClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f))
             gl.clear(ClearBufferMask.COLOR_BUFFER_BIT)
 
-            shader.bind()
+            blueShader.bind()
+            squareVA.bind()
+            gl.drawElements(DrawMode.TRIANGLES, squareVA.indexBuffer!!.count)
 
+            shader.bind()
             vertexArray.bind()
-            gl.drawElements(DrawMode.TRIANGLES, 3)
+            gl.drawElements(DrawMode.TRIANGLES, vertexArray.indexBuffer!!.count)
 
             for (layer in layerStack.layers) {
                 layer.onUpdate()

@@ -88,6 +88,8 @@ interface VertexBuffer {
 }
 
 interface IndexBuffer {
+    val count: Int
+
     companion object {
         fun create(indices: IntArray /*UIntArray*/): IndexBuffer = when (Renderer.getAPI()) {
             RenderAPI.None -> {

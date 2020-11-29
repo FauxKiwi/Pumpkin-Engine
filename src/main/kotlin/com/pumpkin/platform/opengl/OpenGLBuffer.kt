@@ -35,6 +35,7 @@ class OpenGLVertexBuffer(vertices: FloatArray) : VertexBuffer {
 }
 
 class OpenGLIndexBuffer(indices: IntArray/*UIntArray*/) : IndexBuffer {
+    override val count: Int = indices.size
     private val rendererID = gl.createBuffers()
 
     init {
