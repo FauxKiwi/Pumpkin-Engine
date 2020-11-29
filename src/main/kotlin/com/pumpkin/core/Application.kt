@@ -188,16 +188,17 @@ open class Application {
 
     internal fun runI() {
         while (running) {
-            glClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f))
-            gl.clear(ClearBufferMask.COLOR_BUFFER_BIT)
+            RendererCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f))
+            RendererCommand.clear()
+
+            Renderer.beginScene()
 
             blueShader.bind()
-            squareVA.bind()
-            gl.drawElements(DrawMode.TRIANGLES, squareVA.indexBuffer!!.count)
-
+            Renderer.submit(squareVA)
             shader.bind()
-            vertexArray.bind()
-            gl.drawElements(DrawMode.TRIANGLES, vertexArray.indexBuffer!!.count)
+            Renderer.submit(vertexArray)
+
+            Renderer.endScene()
 
             for (layer in layerStack.layers) {
                 layer.onUpdate()

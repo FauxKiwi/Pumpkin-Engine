@@ -74,11 +74,11 @@ interface VertexBuffer {
 
     companion object {
         fun create(vertices: FloatArray): VertexBuffer = when (Renderer.getAPI()) {
-            RenderAPI.None -> {
+            RendererAPI.API.None -> {
                 logErrorCore("Having no render API is currently not supported")
                 throw Throwable()
             }
-            RenderAPI.OpenGL -> OpenGLVertexBuffer(vertices)
+            RendererAPI.API.OpenGL -> OpenGLVertexBuffer(vertices)
         }
     }
 
@@ -92,11 +92,11 @@ interface IndexBuffer {
 
     companion object {
         fun create(indices: IntArray /*UIntArray*/): IndexBuffer = when (Renderer.getAPI()) {
-            RenderAPI.None -> {
+            RendererAPI.API.None -> {
                 logErrorCore("Having no render API is currently not supported")
                 throw Throwable()
             }
-            RenderAPI.OpenGL -> OpenGLIndexBuffer(indices)
+            RendererAPI.API.OpenGL -> OpenGLIndexBuffer(indices)
         }
     }
 

@@ -10,7 +10,7 @@ import imgui.impl.gl.ImplGL3
 import imgui.impl.glfw.ImplGlfw
 
 class ImGuiLayer : Layer("ImGui") {
-    private var showDemoWindow = true
+    private var showDemoWindow = false
 
     private lateinit var context: Context
     private lateinit var implGlfw: ImplGlfw

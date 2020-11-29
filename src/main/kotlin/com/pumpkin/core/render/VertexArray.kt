@@ -9,11 +9,11 @@ interface VertexArray {
 
     companion object {
         fun create(): VertexArray = when (Renderer.getAPI()) {
-            RenderAPI.None -> {
+            RendererAPI.API.None -> {
                 logErrorCore("Having no render API is currently not supported")
                 throw Throwable()
             }
-            RenderAPI.OpenGL -> OpenGLVertexArray()
+            RendererAPI.API.OpenGL -> OpenGLVertexArray()
         }
     }
 

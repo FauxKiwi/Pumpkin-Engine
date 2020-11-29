@@ -1,13 +1,15 @@
 package com.pumpkin.core.render
 
-enum class RenderAPI {
-    None, OpenGL
-}
+object Renderer {
 
-class Renderer {
-    companion object {
-        private val renderAPI = RenderAPI.OpenGL
+    fun beginScene() = Unit
 
-        fun getAPI() = renderAPI
+    fun endScene() = Unit
+
+    fun submit(vertexArray: VertexArray) {
+        vertexArray.bind()
+        RendererCommand.drawIndexed(vertexArray)
     }
+
+    inline fun getAPI() = RendererCommand.rendererAPI.api
 }
