@@ -11,7 +11,10 @@ import org.lwjgl.opengl.GL15C
 
 class OpenGLVertexBuffer(vertices: FloatArray) : VertexBuffer {
     private val rendererID = gl.createBuffers()
-    private var layout: BufferLayout? = null
+    override var layout: BufferLayout? = null
+    get() {
+        return field ?: throw Throwable().also { logErrorCore("No Layout specified") }
+    }
 
     init {
         gl.bindBuffer(BufferTarget.ARRAY, rendererID)
@@ -28,12 +31,6 @@ class OpenGLVertexBuffer(vertices: FloatArray) : VertexBuffer {
 
     override fun unbind() {
         gl.bindBuffer(BufferTarget.ARRAY, GlBuffer())
-    }
-
-    override fun getLayout(): BufferLayout = layout ?: throw Throwable("No layout specified")
-
-    override fun setLayout(layout: BufferLayout) {
-        this.layout = layout
     }
 }
 

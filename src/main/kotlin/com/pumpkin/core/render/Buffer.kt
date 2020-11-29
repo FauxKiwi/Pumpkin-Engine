@@ -70,6 +70,8 @@ class BufferLayout(private val elements: MutableList<BufferElement>) : Iterable<
 }
 
 interface VertexBuffer {
+    var layout: BufferLayout?
+
     companion object {
         fun create(vertices: FloatArray): VertexBuffer = when (Renderer.getAPI()) {
             RenderAPI.None -> {
@@ -83,10 +85,6 @@ interface VertexBuffer {
     fun bind()
 
     fun unbind()
-
-    fun getLayout(): BufferLayout
-
-    fun setLayout(layout: BufferLayout)
 }
 
 interface IndexBuffer {

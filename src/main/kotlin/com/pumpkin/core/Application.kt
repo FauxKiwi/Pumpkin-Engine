@@ -35,10 +35,10 @@ open class Application {
     private lateinit var layerStack: LayerStack
     private lateinit var imGuiLayer: ImGuiLayer
 
-    private var vertexArray = GlVertexArray()
-    private lateinit var vertexBuffer: VertexBuffer /*= GlBuffer()*/
-    private lateinit var indexBuffer: IndexBuffer /*= GlBuffer()*/
     private lateinit var shader: Shader
+    private lateinit var vertexArray: VertexArray
+    /*private lateinit var blueShader: Shader
+    private lateinit var squareVA: VertexArray*/
 
     internal fun initI() {
         running = true
@@ -55,41 +55,28 @@ open class Application {
         pushOverlay(imGuiLayer)
 
         val vertices = floatArrayOf(
-            -0.5f, -0.5f, 0f,   1f, 0f, 1f, 1f,
-            0.5f, -0.5f, 0f,    0f, 1f, 1f, 1f,
-            0.0f, 0.5f, 0f,     1f, 1f, 0f, 1f,
+            -0.5f, -0.5f, 0f, 1f, 0f, 1f, 1f,
+            0.5f, -0.5f, 0f, 0f, 1f, 1f, 1f,
+            0.0f, 0.5f, 0f, 1f, 1f, 0f, 1f,
         )
 
         val indices = intArrayOf(0, 1, 2)
 
         gl {
-            genVertexArrays(::vertexArray)
-            bindVertexArray(vertexArray)
+            vertexArray = VertexArray.create()
 
-            //genBuffers(::vertexBuffer)
-            //bindBuffer(BufferTarget.ARRAY, vertexBuffer)
-            vertexBuffer = VertexBuffer.create(vertices)
+            val vertexBuffer = VertexBuffer.create(vertices)
+            val layout = BufferLayout(
+                mutableListOf(
+                    BufferElement(ShaderDataType.Float3, "a_Position"),
+                    BufferElement(ShaderDataType.Float4, "a_Color")
+                )
+            )
+            vertexBuffer.layout = layout
+            vertexArray.addVertexBuffer(vertexBuffer)
 
-            //GL15C.glBufferData(GL15C.GL_ARRAY_BUFFER, vertices, GL15C.GL_STATIC_DRAW)
-            //enableVertexAttribArray(0)
-            //vertexAttribPointer(0, 3, VertexAttrType.FLOAT, false, 0, 0)
-            val layout = BufferLayout(mutableListOf(
-                BufferElement(ShaderDataType.Float3, "a_Position"),
-                BufferElement(ShaderDataType.Float4, "a_Color")
-            ))
-            vertexBuffer.setLayout(layout)
-
-            val layout2 = vertexBuffer.getLayout()
-            for ((i, element) in layout2.withIndex()) {
-                enableVertexAttribArray(i)
-                vertexAttribPointer(i, element.dataType.componentCount(), element.dataType.toVertexAttrType(), element.normalized, layout2.getStride(), element.offset)
-            }
-
-            //genBuffers(::indexBuffer)
-            //bindBuffer(BufferTarget.ELEMENT_ARRAY, indexBuffer)
-            indexBuffer = IndexBuffer.create(indices)
-
-            //GL15C.glBufferData(GL15C.GL_ELEMENT_ARRAY_BUFFER, indices, GL15C.GL_STATIC_DRAW)
+            val indexBuffer = IndexBuffer.create(indices)
+            vertexArray.indexBuffer = indexBuffer
 
             val vertexSrc = """
                 #version 330 core
@@ -139,7 +126,7 @@ open class Application {
         val dispatcher = EventDispatcher(event)
         dispatcher.dispatch<WindowCloseEvent> {
             running = false
-            return@dispatch true
+            true
         }
         if (event.handled) {
             return
@@ -159,10 +146,8 @@ open class Application {
 
             shader.bind()
 
-            gl.bindVertexArray(vertexArray)
+            vertexArray.bind()
             gl.drawElements(DrawMode.TRIANGLES, 3)
-            //gl.drawArrays(DrawMode.TRIANGLES, 0, 3)
-            //GL15.glDrawElements(GL15C.GL_TRIANGLES, 3, GL15C.GL_UNSIGNED_INT, 0)
 
             for (layer in layerStack.layers) {
                 layer.onUpdate()
