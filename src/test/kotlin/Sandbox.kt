@@ -6,12 +6,18 @@ import com.pumpkin.core.input.*
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.render.*
 import com.pumpkin.core.window.Window
+import glm_.glm
+import glm_.mat4x4.Mat4
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
+import imgui.ImGui
 
 class LogLayer : Layer() {
     private var cameraMoveSpeed = 30f
     private var cameraRotationSpeed = 180f
+
+    private val cameraPosition = Vec3()
+    private var cameraRotation = 0f
 
     override fun onAttach() {
         logDebug("Layer attached")
@@ -23,22 +29,33 @@ class LogLayer : Layer() {
 
     override fun onUpdate(ts: Timestep) {
         if (isKeyPressed(PK_KEY_A))
-            Application.get().camera.position = Application.get().camera.position - Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
+            cameraPosition -= Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
 
         if (isKeyPressed(PK_KEY_D))
-            Application.get().camera.position = Application.get().camera.position + Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
+            cameraPosition += Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
 
         if (isKeyPressed(PK_KEY_S))
-            Application.get().camera.position = Application.get().camera.position - Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
+            cameraPosition -= Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
 
         if (isKeyPressed(PK_KEY_W))
-            Application.get().camera.position = Application.get().camera.position + Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
+            cameraPosition += Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
 
         if (isKeyPressed(PK_KEY_Q))
-            Application.get().camera.rotation -= cameraRotationSpeed * ts
+            cameraRotation -= cameraRotationSpeed * ts
 
         if (isKeyPressed(PK_KEY_E))
-            Application.get().camera.rotation += cameraRotationSpeed * ts
+            cameraRotation += cameraRotationSpeed * ts
+
+        Application.get().camera.position = cameraPosition
+        Application.get().camera.rotation = cameraRotation
+    }
+
+    override fun onImGuiRender() {
+        ImGui.begin("Camera: Transform")
+        ImGui.dragFloat("Position X", cameraPosition::x, 0.01f)
+        ImGui.dragFloat("Position Y", cameraPosition::y, 0.01f)
+        ImGui.dragFloat("Rotation", ::cameraRotation)
+        ImGui.end()
     }
 
     override fun onEvent(event: Event) {
@@ -57,8 +74,10 @@ class TestApplication : Application() {
     private lateinit var blueShader: Shader
     private lateinit var squareVA: VertexArray
 
+    private val scale: Mat4 = glm.scale(Mat4.identity, Vec3(0.1f))
+
     override fun init() {
-        Window.getWindow().setVSync(false)
+        //Window.getWindow().setVSync(false)
 
         pushLayer(LogLayer())
 
@@ -71,10 +90,10 @@ class TestApplication : Application() {
         val indices = intArrayOf(0, 1, 2)
 
         val squareVertices = floatArrayOf(
-            -0.75f, -0.75f, 0f,
-            0.75f, -0.75f, 0f,
-            0.75f, 0.75f, 0f,
-            -0.75f, 0.75f, 0f,
+            -0.5f, -0.5f, 0f,
+            0.5f, -0.5f, 0f,
+            0.5f, 0.5f, 0f,
+            -0.5f, 0.5f, 0f,
         )
 
         val squareIndices = intArrayOf(0, 1, 2, 2, 3, 0)
@@ -120,10 +139,11 @@ class TestApplication : Application() {
                 out vec4 v_Color;
                 
                 uniform mat4 u_ViewProjection;
+                uniform mat4 u_Transform;
                 
                 void main() {
                     v_Color = a_Color;
-                    gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+                    gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
                 }
             """.trimIndent()
 
@@ -147,9 +167,10 @@ class TestApplication : Application() {
                 layout(location = 0) in vec3 a_Position;
                 
                 uniform mat4 u_ViewProjection;
+                uniform mat4 u_Transform;
                 
                 void main() {
-                    gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+                    gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
                 }
             """.trimIndent()
 
@@ -173,7 +194,14 @@ class TestApplication : Application() {
 
         Renderer.beginScene(camera)
 
-        Renderer.submit(blueShader, squareVA)
+        //Renderer.submit(blueShader, squareVA)
+        for (y in 0..20) {
+            for (x in 0..20) {
+                val pos = Vec3(x * 0.11f, y * 0.11f, 0f)
+                val transform: Mat4 = glm.translate(Mat4.identity, pos) * scale
+                Renderer.submit(blueShader, squareVA, transform)
+            }
+        }
         Renderer.submit(shader, vertexArray)
 
         Renderer.endScene()

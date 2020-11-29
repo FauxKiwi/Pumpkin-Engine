@@ -71,7 +71,7 @@ class OpenGLShader(vertexSrc: String, fragmentSrc: String) : Shader {
         gl.useProgram(GlProgram.NULL)
     }
 
-    override fun uploadUniformMat4(name: String, matrix: Mat4) {
+    override fun uploadUniform(name: String, matrix: Mat4) {
         val location = gl.getUniformLocation(rendererID, name)
         gl.uniform(location, matrix)
     }

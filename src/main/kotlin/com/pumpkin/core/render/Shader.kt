@@ -19,5 +19,5 @@ interface Shader {
 
     fun unbind()
 
-    fun uploadUniformMat4(name: String, matrix: Mat4)
+    fun uploadUniform(name: String, matrix: Mat4)
 }
