@@ -9,7 +9,29 @@ import gln.gl
 import gln.identifiers.GlVertexArray
 
 class OpenGLVertexArray : VertexArray {
-    override val vertexBuffers: MutableList<VertexBuffer> = mutableListOf()
+    override val vertexBuffers: MutableList<VertexBuffer> = object : ArrayList<VertexBuffer>() {
+        override fun add(element: VertexBuffer): Boolean {
+            if (element.layout == null) {
+                logErrorCore("Vertex buffer has no layout")
+                throw Throwable()
+            }
+            gl.bindVertexArray(rendererID)
+            element.bind()
+            val layout: BufferLayout = element.layout!!
+            for ((index, bufferElement) in layout.withIndex()) {
+                gl.enableVertexAttribArray(index)
+                gl.vertexAttribPointer(
+                    index,
+                    bufferElement.dataType.componentCount(),
+                    bufferElement.dataType.toVertexAttrType(),
+                    bufferElement.normalized,
+                    layout.getStride(),
+                    bufferElement.offset
+                )
+            }
+            return super.add(element)
+        }
+    }
     override var indexBuffer: IndexBuffer? = null
     set(value) {
         if (value == null) {
@@ -20,6 +42,7 @@ class OpenGLVertexArray : VertexArray {
         value.bind()
         field = value
     }
+
 
     private var rendererID = gl.createVertexArrays()
 
@@ -33,27 +56,5 @@ class OpenGLVertexArray : VertexArray {
 
     override fun unbind() {
         gl.bindVertexArray(GlVertexArray())
-    }
-
-    override fun addVertexBuffer(vertexBuffer: VertexBuffer) {
-        if (vertexBuffer.layout == null) {
-            logErrorCore("Vertex buffer has no layout")
-            throw Throwable()
-        }
-        gl.bindVertexArray(rendererID)
-        vertexBuffer.bind()
-        val layout: BufferLayout = vertexBuffer.layout!!
-        for ((i, element) in layout.withIndex()) {
-            gl.enableVertexAttribArray(i)
-            gl.vertexAttribPointer(
-                i,
-                element.dataType.componentCount(),
-                element.dataType.toVertexAttrType(),
-                element.normalized,
-                layout.getStride(),
-                element.offset
-            )
-        }
-        vertexBuffers.add(vertexBuffer)
     }
 }

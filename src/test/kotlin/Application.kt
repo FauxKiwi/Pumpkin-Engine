@@ -73,7 +73,7 @@ class TestApplication : Application() {
             )
         )
         vertexBuffer.layout = layout
-        vertexArray.addVertexBuffer(vertexBuffer)
+        vertexArray.vertexBuffers.add(vertexBuffer)
 
         val indexBuffer = IndexBuffer.create(indices)
         vertexArray.indexBuffer = indexBuffer
@@ -88,7 +88,7 @@ class TestApplication : Application() {
             )
         )
         squareVB.layout = squareLayout
-        squareVA.addVertexBuffer(squareVB)
+        squareVA.vertexBuffers.add(squareVB)
 
         val squareIB = IndexBuffer.create(squareIndices)
         squareVA.indexBuffer = squareIB

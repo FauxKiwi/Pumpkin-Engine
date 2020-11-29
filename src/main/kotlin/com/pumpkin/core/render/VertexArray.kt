@@ -20,6 +20,4 @@ interface VertexArray {
     fun bind()
 
     fun unbind()
-
-    fun addVertexBuffer(vertexBuffer: VertexBuffer)
 }
