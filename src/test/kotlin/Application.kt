@@ -1,15 +1,17 @@
-import com.pumpkin.core.Application
+import com.pumpkin.core.*
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.EventDispatcher
 import com.pumpkin.core.event.KeyPressedEvent
 import com.pumpkin.core.input.*
 import com.pumpkin.core.layer.Layer
-import com.pumpkin.core.logDebug
 import com.pumpkin.core.render.*
+import com.pumpkin.core.window.Window
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
 
 class LogLayer : Layer() {
+    private var cameraMoveSpeed = 30f
+    private var cameraRotationSpeed = 180f
 
     override fun onAttach() {
         logDebug("Layer attached")
@@ -19,19 +21,24 @@ class LogLayer : Layer() {
         logDebug("Layer detached")
     }
 
-    override fun onUpdate() {
+    override fun onUpdate(ts: Timestep) {
         if (isKeyPressed(PK_KEY_A))
-            Application.get().camera.position = Application.get().camera.position - Vec3(0.05f, 0f, 0f)
+            Application.get().camera.position = Application.get().camera.position - Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
 
         if (isKeyPressed(PK_KEY_D))
-            Application.get().camera.position = Application.get().camera.position + Vec3(0.05f, 0f, 0f)
+            Application.get().camera.position = Application.get().camera.position + Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
 
         if (isKeyPressed(PK_KEY_S))
-            Application.get().camera.position = Application.get().camera.position - Vec3(0f, 0.05f, 0f)
+            Application.get().camera.position = Application.get().camera.position - Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
 
         if (isKeyPressed(PK_KEY_W))
-            Application.get().camera.position = Application.get().camera.position + Vec3(0f, 0.05f, 0f)
+            Application.get().camera.position = Application.get().camera.position + Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
 
+        if (isKeyPressed(PK_KEY_Q))
+            Application.get().camera.rotation -= cameraRotationSpeed * ts
+
+        if (isKeyPressed(PK_KEY_E))
+            Application.get().camera.rotation += cameraRotationSpeed * ts
     }
 
     override fun onEvent(event: Event) {
@@ -51,6 +58,8 @@ class TestApplication : Application() {
     private lateinit var squareVA: VertexArray
 
     override fun init() {
+        Window.getWindow().setVSync(false)
+
         pushLayer(LogLayer())
 
         val vertices = floatArrayOf(

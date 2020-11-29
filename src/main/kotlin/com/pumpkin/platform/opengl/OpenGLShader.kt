@@ -44,19 +44,19 @@ class OpenGLShader(vertexSrc: String, fragmentSrc: String) : Shader {
         gl.attachShader(rendererID, vertexShader)
         gl.attachShader(rendererID, fragmentShader)
 
-        gl.linkProgram(rendererID);
+        gl.linkProgram(rendererID)
 
         if (!rendererID.linkStatus)
         {
             logErrorCore("Shader link error ${gl.getProgramInfoLog(rendererID)}")
 
-            gl.deleteProgram(rendererID);
-            gl.deleteShader(vertexShader);
-            gl.deleteShader(fragmentShader);
+            gl.deleteProgram(rendererID)
+            gl.deleteShader(vertexShader)
+            gl.deleteShader(fragmentShader)
         }
 
-        gl.detachShader(rendererID, vertexShader);
-        gl.detachShader(rendererID, fragmentShader);
+        gl.detachShader(rendererID, vertexShader)
+        gl.detachShader(rendererID, fragmentShader)
     }
 
     protected fun finalize() {

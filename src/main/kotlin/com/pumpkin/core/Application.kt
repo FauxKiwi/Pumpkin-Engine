@@ -9,6 +9,7 @@ import com.pumpkin.core.layer.LayerStack
 import com.pumpkin.core.render.OrthographicCamera
 import com.pumpkin.core.window.Window
 import com.pumpkin.core.window.WindowProps
+import uno.glfw.glfw
 
 open class Application {
     companion object {
@@ -26,7 +27,9 @@ open class Application {
         }
     }
 
-    private var running: Boolean = false
+    private var running = false
+    private var lastFrameTime = 0f
+
     private lateinit var window: Window
     private lateinit var layerStack: LayerStack
     private lateinit var imGuiLayer: ImGuiLayer
@@ -81,10 +84,14 @@ open class Application {
 
     internal fun runI() {
         while (running) {
+            val time: Float = glfw.time.toFloat()
+            val timestep: Timestep = time - lastFrameTime
+            lastFrameTime = time
+
             run()
 
             for (layer in layerStack.layers) {
-                layer.onUpdate()
+                layer.onUpdate(timestep)
             }
 
             imGuiLayer.begin()
@@ -114,3 +121,5 @@ open class Application {
 
     open fun shutdown() = Unit
 }
+
+typealias Timestep = Float

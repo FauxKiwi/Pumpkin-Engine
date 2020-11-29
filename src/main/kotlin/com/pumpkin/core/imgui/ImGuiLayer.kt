@@ -24,7 +24,7 @@ class ImGuiLayer : Layer("ImGui") {
 
         ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableKeyboard     // Enable Keyboard Controls
         ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableGamepad    // Enable Gamepad Controls
-        ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.DockingEnable         // Enable Docking
+        //ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.DockingEnable         // Enable Docking
         //ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.ViewportsEnable
 
         ImGui.styleColorsDark()
@@ -47,9 +47,6 @@ class ImGuiLayer : Layer("ImGui") {
     }
 
     override fun onImGuiRender() {
-        font?.let { ImGui.pushFont(it) }
-        font?.let { ImGui.setCurrentFont(it) }
-
         if (showDemoWindow) {
             ImGui.showDemoWindow(::showDemoWindow)
         }
