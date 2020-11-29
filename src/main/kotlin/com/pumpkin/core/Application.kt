@@ -6,10 +6,9 @@ import com.pumpkin.core.event.WindowCloseEvent
 import com.pumpkin.core.imgui.ImGuiLayer
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.layer.LayerStack
-import com.pumpkin.core.render.RendererCommand
+import com.pumpkin.core.render.OrthographicCamera
 import com.pumpkin.core.window.Window
 import com.pumpkin.core.window.WindowProps
-import glm_.vec4.Vec4
 
 open class Application {
     companion object {
@@ -31,6 +30,8 @@ open class Application {
     private lateinit var window: Window
     private lateinit var layerStack: LayerStack
     private lateinit var imGuiLayer: ImGuiLayer
+
+    protected val camera = OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f)
 
     internal fun initI() {
         running = true

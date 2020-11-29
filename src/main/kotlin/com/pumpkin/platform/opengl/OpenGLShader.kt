@@ -2,6 +2,7 @@ package com.pumpkin.platform.opengl
 
 import com.pumpkin.core.logErrorCore
 import com.pumpkin.core.render.Shader
+import glm_.mat4x4.Mat4
 import gln.ShaderType
 import gln.gl
 import gln.identifiers.GlProgram
@@ -68,5 +69,10 @@ class OpenGLShader(vertexSrc: String, fragmentSrc: String) : Shader {
 
     override fun unbind() {
         gl.useProgram(GlProgram.NULL)
+    }
+
+    override fun uploadUniformMat4(name: String, matrix: Mat4) {
+        val location = gl.getUniformLocation(rendererID, name)
+        gl.uniform(location, matrix)
     }
 }

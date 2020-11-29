@@ -33,15 +33,15 @@ class OpenGLVertexArray : VertexArray {
         }
     }
     override var indexBuffer: IndexBuffer? = null
-    set(value) {
-        if (value == null) {
-            logErrorCore("Null passed as indexBuffer")
-            throw Throwable()
+        set(value) {
+            if (value == null) {
+                logErrorCore("Null passed as indexBuffer")
+                throw Throwable()
+            }
+            gl.bindVertexArray(rendererID)
+            value.bind()
+            field = value
         }
-        gl.bindVertexArray(rendererID)
-        value.bind()
-        field = value
-    }
 
 
     private var rendererID = gl.createVertexArrays()

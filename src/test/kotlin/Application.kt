@@ -102,9 +102,11 @@ class TestApplication : Application() {
                 
                 out vec4 v_Color;
                 
+                uniform mat4 u_ViewProjection;
+                
                 void main() {
                     v_Color = a_Color;
-                    gl_Position = vec4(a_Position, 1.0);
+                    gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
                 }
             """.trimIndent()
 
@@ -127,8 +129,10 @@ class TestApplication : Application() {
                 
                 layout(location = 0) in vec3 a_Position;
                 
+                uniform mat4 u_ViewProjection;
+                
                 void main() {
-                    gl_Position = vec4(a_Position, 1.0);
+                    gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
                 }
             """.trimIndent()
 
@@ -150,12 +154,10 @@ class TestApplication : Application() {
         RendererCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f))
         RendererCommand.clear()
 
-        Renderer.beginScene()
+        Renderer.beginScene(camera)
 
-        blueShader.bind()
-        Renderer.submit(squareVA)
-        shader.bind()
-        Renderer.submit(vertexArray)
+        Renderer.submit(blueShader, squareVA)
+        Renderer.submit(shader, vertexArray)
 
         Renderer.endScene()
     }

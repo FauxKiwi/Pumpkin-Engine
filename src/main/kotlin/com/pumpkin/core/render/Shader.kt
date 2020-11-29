@@ -2,6 +2,7 @@ package com.pumpkin.core.render
 
 import com.pumpkin.core.logErrorCore
 import com.pumpkin.platform.opengl.OpenGLShader
+import glm_.mat4x4.Mat4
 
 interface Shader {
     companion object {
@@ -17,4 +18,6 @@ interface Shader {
     fun bind()
 
     fun unbind()
+
+    fun uploadUniformMat4(name: String, matrix: Mat4)
 }
