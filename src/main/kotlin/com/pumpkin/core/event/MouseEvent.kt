@@ -1,6 +1,7 @@
 package com.pumpkin.core.event
 
-class MouseMoveEvent(val x: Float, val y: Float) : Event() {
+class MouseMoveEvent(val x: Float, val y: Float) : Event {
+    override var handled = false
 
     override fun getEventType(): EventType {
         return EventType.MouseMoved
@@ -19,7 +20,8 @@ class MouseMoveEvent(val x: Float, val y: Float) : Event() {
     }
 }
 
-class MouseScrolledEvent(val xOffset: Float, val yOffset: Float) : Event() {
+class MouseScrolledEvent(val xOffset: Float, val yOffset: Float) : Event {
+    override var handled = false
 
     override fun getEventType(): EventType {
         return EventType.MouseScrolled
@@ -38,9 +40,10 @@ class MouseScrolledEvent(val xOffset: Float, val yOffset: Float) : Event() {
     }
 }
 
-abstract class MouseButtonEvent protected constructor(val button: Int) : Event()
+abstract class MouseButtonEvent protected constructor(val button: Int) : Event
 
 class MouseButtonPressedEvent(button: Int) : MouseButtonEvent(button) {
+    override var handled = false
 
     override fun getEventType(): EventType {
         return EventType.MouseButtonPressed
@@ -60,6 +63,7 @@ class MouseButtonPressedEvent(button: Int) : MouseButtonEvent(button) {
 }
 
 class MouseButtonReleasedEvent(button: Int) : MouseButtonEvent(button) {
+    override var handled = false
 
     override fun getEventType(): EventType {
         return EventType.MouseButtonReleased

@@ -1,6 +1,7 @@
 package com.pumpkin.core.event
 
-class WindowResizeEvent(val width: Int, val height: Int) : Event() {
+class WindowResizeEvent(val width: Int, val height: Int) : Event {
+    override var handled = false
 
     override fun getEventType(): EventType {
         return EventType.WindowResize
@@ -19,7 +20,8 @@ class WindowResizeEvent(val width: Int, val height: Int) : Event() {
     }
 }
 
-class WindowCloseEvent : Event() {
+class WindowCloseEvent : Event {
+    override var handled = false
 
     override fun getEventType(): EventType {
         return EventType.WindowClose

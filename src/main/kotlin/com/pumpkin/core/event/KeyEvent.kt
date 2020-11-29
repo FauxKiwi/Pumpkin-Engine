@@ -1,8 +1,9 @@
 package com.pumpkin.core.event
 
-abstract class KeyEvent protected constructor(val keyCode: Int) : Event()
+abstract class KeyEvent protected constructor(val keyCode: Int) : Event
 
 class KeyPressedEvent(keyCode: Int, val repeatCount: Int) : KeyEvent(keyCode) {
+    override var handled = false
 
     override fun getEventType(): EventType {
         return EventType.KeyPressed
@@ -22,6 +23,7 @@ class KeyPressedEvent(keyCode: Int, val repeatCount: Int) : KeyEvent(keyCode) {
 }
 
 class KeyReleasedEvent(keyCode: Int) : KeyEvent(keyCode) {
+    override var handled = false
 
     override fun getEventType(): EventType {
         return EventType.KeyReleased

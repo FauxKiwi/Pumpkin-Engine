@@ -17,18 +17,16 @@ enum class EventCategory(val id: Int) {
     MouseButton(1 shl 4)
 }
 
-abstract class Event {
-    var handled = false
+interface Event {
+    var handled: Boolean
 
-    abstract fun getEventType(): EventType
+    fun getEventType(): EventType
 
-    abstract fun getName(): String
+    fun getName(): String
 
-    abstract fun getCategoryFlags(): Int
+    fun getCategoryFlags(): Int
 
-    override fun toString(): String {
-        return getName()
-    }
+    override fun toString(): String
 
     fun isInCategory(category: EventCategory): Boolean {
         return (getCategoryFlags() and category.id) > 0
