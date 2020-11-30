@@ -9,7 +9,9 @@ import com.pumpkin.core.layer.LayerStack
 import com.pumpkin.core.render.OrthographicCamera
 import com.pumpkin.core.window.Window
 import com.pumpkin.core.window.WindowProps
+import org.lwjgl.system.MemoryStack
 import uno.glfw.glfw
+import uno.glfw.stak
 
 open class Application {
     companion object {
@@ -84,23 +86,25 @@ open class Application {
 
     internal fun runI() {
         while (running) {
-            val time: Float = glfw.time.toFloat()
-            val timestep: Timestep = time - lastFrameTime
-            lastFrameTime = time
+            stack {
+                val time: Float = glfw.time.toFloat()
+                val timestep: Timestep = time - lastFrameTime
+                lastFrameTime = time
 
-            run()
+                run()
 
-            for (layer in layerStack.layers) {
-                layer.onUpdate(timestep)
+                for (layer in layerStack.layers) {
+                    layer.onUpdate(timestep)
+                }
+
+                imGuiLayer.begin()
+                for (layer in layerStack.layers) {
+                    layer.onImGuiRender()
+                }
+                imGuiLayer.end()
+
+                window.onUpdate()
             }
-
-            imGuiLayer.begin()
-            for (layer in layerStack.layers) {
-                layer.onImGuiRender()
-            }
-            imGuiLayer.end()
-
-            window.onUpdate()
         }
     }
 
@@ -123,3 +127,7 @@ open class Application {
 }
 
 typealias Timestep = Float
+
+inline fun stack(block: (memoryStack: MemoryStack) -> Unit) {
+    MemoryStack.stackPush().apply { use (block) }
+}

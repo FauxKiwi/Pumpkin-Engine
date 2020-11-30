@@ -52,8 +52,11 @@ class LogLayer : Layer() {
 
     override fun onImGuiRender() {
         ImGui.begin("Camera: Transform")
-        ImGui.dragFloat("Position X", cameraPosition::x, 0.01f)
-        ImGui.dragFloat("Position Y", cameraPosition::y, 0.01f)
+        val cpRef = cameraPosition.toFloatArray()
+        ImGui.dragFloat3("Position", cpRef, 0.01f)
+        cameraPosition[0] = cpRef[0]
+        cameraPosition[1] = cpRef[1]
+        cameraPosition[2] = cpRef[2]
         ImGui.dragFloat("Rotation", ::cameraRotation)
         ImGui.end()
     }
@@ -61,7 +64,7 @@ class LogLayer : Layer() {
     override fun onEvent(event: Event) {
         val dispatcher = EventDispatcher(event)
         dispatcher.dispatch<KeyPressedEvent> {
-            if (it.keyCode == PK_KEY_TAB)
+            if (keyCode == PK_KEY_TAB)
                 logDebug("Tab is pressed (event)")
             false
         }

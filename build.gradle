@@ -1,7 +1,7 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.10'
 }
-group = 'me.simon'
+group = 'com.pumpkin'
 version = '1.0-SNAPSHOT'
 
 repositories {
@@ -10,6 +10,13 @@ repositories {
 }
 
 compileKotlin {
+    kotlinOptions.jvmTarget = '11'
+    kotlinOptions {
+        freeCompilerArgs = ["-Xinline-classes"]
+    }
+}
+
+compileTestKotlin {
     kotlinOptions.jvmTarget = '11'
 }
 

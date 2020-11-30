@@ -42,4 +42,4 @@ class EventDispatcher(var event: Event) {
     }
 }
 
-typealias EventFunction<T> = (T) -> Boolean
+typealias EventFunction<T> = T.() -> Boolean
