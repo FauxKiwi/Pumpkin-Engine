@@ -28,13 +28,10 @@ interface Event {
 
     override fun toString(): String
 
-    fun isInCategory(category: EventCategory): Boolean {
-        return (getCategoryFlags() and category.id) > 0
-    }
+    fun isInCategory(category: EventCategory) = (getCategoryFlags() and category.id) > 0
 }
 
 class EventDispatcher(var event: Event) {
-
     inline fun <reified T: Event> dispatch(noinline function: EventFunction<T>) {
         if (event is T) {
             event.handled = function(event as T)

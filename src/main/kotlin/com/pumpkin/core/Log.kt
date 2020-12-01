@@ -3,28 +3,6 @@ package com.pumpkin.core
 private val coreLogger = Logger("Pumpkin")
 private val appLogger = Logger("Application")
 
-internal fun init() {
-    /*val appender = ConsoleAppender()
-    appender.name = "Console"
-    appender.layout = object: Layout() {
-        override fun activateOptions() {
-
-        }
-
-        override fun format(event: LoggingEvent): String {
-            return "${color(event.getLevel())}[${event.getLevel()}] ${event.loggerName}: ${event.message}\n"
-        }
-
-        override fun ignoresThrowable(): Boolean {
-            return false
-        }
-    }
-    appender.setWriter(System.out.bufferedWriter())
-    //Logger.getRootLogger().addAppender(appender)
-    Logger.getLogger("Pumpkin").addAppender(appender)
-    Logger.getLogger("Application").addAppender(appender)*/
-}
-
 private fun color(level: Level): String {
     return when(level) {
         Level.DEBUG -> "\u001B[0;36m"
@@ -53,12 +31,12 @@ internal fun logWarnCore(message: String) {
     coreLogger.warn(message)
 }
 
-internal fun logErrorCore(message: String, t: Throwable? = null) {
-    coreLogger.error(message + "\n" + t?.stackTraceToString())
+internal  fun logErrorCore(message: String, t: Throwable? = null) {
+    coreLogger.error(message + if (t != null) ("\n" + t.stackTraceToString()) else "")
 }
 
 internal fun logFatalCore(message: String, t: Throwable? = null) {
-    coreLogger.fatal(message + "\n" + t?.stackTraceToString())
+    coreLogger.fatal(message + if (t != null) ("\n" + t.stackTraceToString()) else "")
 }
 
 
@@ -79,11 +57,11 @@ fun logWarn(message: String) {
 }
 
 fun logError(message: String, t: Throwable? = null) {
-    appLogger.error(message + "\n" + t?.stackTraceToString())
+    appLogger.error(message + if (t != null) ("\n" + t.stackTraceToString()) else "")
 }
 
 fun logFatal(message: String, t: Throwable? = null) {
-    appLogger.fatal(message + "\n" + t?.stackTraceToString())
+    appLogger.fatal(message + if (t != null) ("\n" + t.stackTraceToString()) else "")
 }
 
 class Logger(private val name: String) {

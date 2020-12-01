@@ -7,16 +7,9 @@ class LayerStack {
     internal val layersReversed = layers.asReversed()
     private var insert = 0
 
-    fun pushLayer(layer: Layer) {
-        layers.add(insert, layer)
-        layer.onAttach()
-        insert++
-    }
+    fun pushLayer(layer: Layer) = layers.add(insert++, layer.apply { onAttach() })
 
-    fun pushOverlay(layer: Layer) {
-        layers.add(layer)
-        layer.onAttach()
-    }
+    fun pushOverlay(layer: Layer) = layers.add(layer.apply { onAttach() })
 
     fun popLayer(layer: Layer) {
         val index = layers.indexOf(layer)
@@ -39,7 +32,5 @@ class LayerStack {
         layer.onDetach()
     }
 
-    internal fun getInsert(): Int {
-        return insert
-    }
+    internal fun getInsert() = insert
 }

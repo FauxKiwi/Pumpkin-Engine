@@ -1,3 +1,4 @@
+@file:JvmName("Input")
 package com.pumpkin.core.input
 
 import com.pumpkin.platform.windows.WindowsInput

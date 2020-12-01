@@ -20,10 +20,10 @@ class ExampleLayer : Layer() {
     private val cameraPosition = Vec3()
     private var cameraRotation = 0f
 
-    private lateinit var shader: Shader
-    private lateinit var vertexArray: VertexArray
-    private lateinit var flatColorShader: Shader
-    private lateinit var squareVA: VertexArray
+    private lateinit var shader: Ref<Shader>
+    private lateinit var vertexArray: Ref<VertexArray>
+    private lateinit var flatColorShader: Ref<Shader>
+    private lateinit var squareVA: Ref<VertexArray>
 
     private val squareColor = Vec4(0.2f, 0.3f, 0.8f, 1.0f)
 
@@ -48,7 +48,7 @@ class ExampleLayer : Layer() {
         val squareIndices = intArrayOf(0, 1, 2, 2, 3, 0)
 
 
-        vertexArray = VertexArray.create()
+        vertexArray = Ref(VertexArray.create())
 
         val vertexBuffer = VertexBuffer.create(vertices)
         val layout = BufferLayout(
@@ -58,13 +58,13 @@ class ExampleLayer : Layer() {
             )
         )
         vertexBuffer.layout = layout
-        vertexArray.vertexBuffers.add(vertexBuffer)
+        vertexArray().vertexBuffers.add(vertexBuffer)
 
         val indexBuffer = IndexBuffer.create(indices)
-        vertexArray.indexBuffer = indexBuffer
+        vertexArray().indexBuffer = indexBuffer
 
 
-        squareVA = VertexArray.create()
+        squareVA = Ref(VertexArray.create())
 
         val squareVB = VertexBuffer.create(squareVertices)
         val squareLayout = BufferLayout(
@@ -73,10 +73,10 @@ class ExampleLayer : Layer() {
             )
         )
         squareVB.layout = squareLayout
-        squareVA.vertexBuffers.add(squareVB)
+        squareVA().vertexBuffers.add(squareVB)
 
         val squareIB = IndexBuffer.create(squareIndices)
-        squareVA.indexBuffer = squareIB
+        squareVA().indexBuffer = squareIB
 
 
         val vertexSrc = """
@@ -108,7 +108,7 @@ class ExampleLayer : Layer() {
                 }
             """.trimIndent()
 
-        shader = Shader.create(vertexSrc, fragmentSrc)
+        shader = Ref(Shader.create(vertexSrc, fragmentSrc))
 
         val flatColorVertexSrc = """
                 #version 330 core
@@ -135,30 +135,34 @@ class ExampleLayer : Layer() {
                 }
             """.trimIndent()
 
-        flatColorShader = Shader.create(flatColorVertexSrc, flatColorFragmentSrc)
+        flatColorShader = Ref(Shader.create(flatColorVertexSrc, flatColorFragmentSrc))
     }
 
     override fun onDetach() {
         logDebug("Layer detached")
+        shader.release()
+        vertexArray.release()
+        flatColorShader.release()
+        squareVA.release()
     }
 
     override fun onUpdate(ts: Timestep) {
-        if (isKeyPressed(PK_KEY_A))
+        if (isKeyPressed(PE_KEY_A))
             cameraPosition -= Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
 
-        if (isKeyPressed(PK_KEY_D))
+        if (isKeyPressed(PE_KEY_D))
             cameraPosition += Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
 
-        if (isKeyPressed(PK_KEY_S))
+        if (isKeyPressed(PE_KEY_S))
             cameraPosition -= Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
 
-        if (isKeyPressed(PK_KEY_W))
+        if (isKeyPressed(PE_KEY_W))
             cameraPosition += Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
 
-        if (isKeyPressed(PK_KEY_Q))
+        if (isKeyPressed(PE_KEY_Q))
             cameraRotation -= cameraRotationSpeed * ts
 
-        if (isKeyPressed(PK_KEY_E))
+        if (isKeyPressed(PE_KEY_E))
             cameraRotation += cameraRotationSpeed * ts
 
         Application.get().camera.position = cameraPosition
@@ -167,13 +171,13 @@ class ExampleLayer : Layer() {
         Renderer.beginScene(Application.get().camera)
 
         //Renderer.submit(blueShader, squareVA)
-        flatColorShader.bind()
-        (flatColorShader as OpenGLShader).uploadUniform("u_Color", squareColor)
+        flatColorShader().bind()
+        (flatColorShader() as OpenGLShader).uploadUniform("u_Color", squareColor)
         for (y in 0..20) {
             for (x in 0..20) {
                 val pos = Vec3(x * 0.11f, y * 0.11f, 0f)
                 val transform: Mat4 = glm.translate(Mat4.identity, pos) * scale
-                Renderer.submit(flatColorShader, squareVA, transform)
+                Renderer.submit(flatColorShader(), squareVA(), transform)
             }
         }
         //Renderer.submit(shader, vertexArray)
@@ -194,7 +198,7 @@ class ExampleLayer : Layer() {
     override fun onEvent(event: Event) {
         val dispatcher = EventDispatcher(event)
         dispatcher.dispatch<KeyPressedEvent> {
-            if (keyCode == PK_KEY_TAB)
+            if (keyCode == PE_KEY_TAB)
                 logDebug("Tab is pressed (event)")
             false
         }

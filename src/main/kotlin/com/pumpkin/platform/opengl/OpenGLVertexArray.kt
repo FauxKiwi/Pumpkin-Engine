@@ -1,6 +1,7 @@
 package com.pumpkin.platform.opengl
 
 import com.pumpkin.core.logErrorCore
+import com.pumpkin.core.logFatal
 import com.pumpkin.core.render.BufferLayout
 import com.pumpkin.core.render.IndexBuffer
 import com.pumpkin.core.render.VertexArray
@@ -46,15 +47,11 @@ class OpenGLVertexArray : VertexArray {
 
     private var rendererID = gl.createVertexArrays()
 
-    protected fun finalize() {
+    override fun close() {
         gl.deleteVertexArrays(rendererID)
     }
 
-    override fun bind() {
-        gl.bindVertexArray(rendererID)
-    }
+    override fun bind() = gl.bindVertexArray(rendererID)
 
-    override fun unbind() {
-        gl.bindVertexArray(GlVertexArray())
-    }
+    override fun unbind() = gl.bindVertexArray(GlVertexArray())
 }

@@ -25,19 +25,11 @@ class KeyPressedEvent(keyCode: Int, val repeatCount: Int) : KeyEvent(keyCode) {
 class KeyReleasedEvent(keyCode: Int) : KeyEvent(keyCode) {
     override var handled = false
 
-    override fun getEventType(): EventType {
-        return EventType.KeyReleased
-    }
+    override fun getEventType() = EventType.KeyReleased
 
-    override fun getName(): String {
-        return "KeyReleased"
-    }
+    override fun getName() = "KeyReleased"
 
-    override fun getCategoryFlags(): Int {
-        return EventCategory.Input.id or EventCategory.Keyboard.id
-    }
+    override fun getCategoryFlags() = EventCategory.Input.id or EventCategory.Keyboard.id
 
-    override fun toString(): String {
-        return "KeyReleasedEvent: $keyCode"
-    }
+    override fun toString() = "KeyReleasedEvent: $keyCode"
 }

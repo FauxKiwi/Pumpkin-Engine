@@ -20,9 +20,7 @@ class OpenGLContext(private val windowHandle: GlfwWindow) : GraphicsContext {
         logInfoCore("  Version: ${getVersion()}")
     }
 
-    override fun swapBuffers() {
-        windowHandle.swapBuffers()
-    }
+    override fun swapBuffers() = windowHandle.swapBuffers()
 
     private fun getVendor() = GL11C.glGetString(GL11C.GL_VENDOR)
 

@@ -64,12 +64,10 @@ class BufferLayout(private val elements: MutableList<BufferElement>) : Iterable<
 
     fun getStride() = stride
 
-    override fun iterator(): Iterator<BufferElement> {
-        return elements.iterator()
-    }
+    override fun iterator(): Iterator<BufferElement> = elements.iterator()
 }
 
-interface VertexBuffer {
+interface VertexBuffer : AutoCloseable {
     var layout: BufferLayout?
 
     companion object {
@@ -87,7 +85,7 @@ interface VertexBuffer {
     fun unbind()
 }
 
-interface IndexBuffer {
+interface IndexBuffer : AutoCloseable{
     val count: Int
 
     companion object {

@@ -60,12 +60,7 @@ class WindowsWindow : Window {
         DEBUG = false
     }
 
-    override fun run() {
-        //window.loop(application!!::isRunning, application!!::runI)
-        Application.get().runI()
-
-        Application.get().shutdownI()
-    }
+    override fun run() = Application.get().runI().also { Application.get().shutdownI() }
 
     override fun onUpdate() {
         glfw.pollEvents()
@@ -73,33 +68,23 @@ class WindowsWindow : Window {
         glViewport(window.framebufferSize)
     }
 
-    override fun shutdown() {
-        glfw.terminate()
-    }
+    override fun shutdown() = glfw.terminate()
 
     override fun setEventCallback(callback: EventCallbackFunction) {
         data.eventCallback = callback
     }
 
-    override fun getHeight(): Int {
-        return window.size[0]
-    }
+    override fun getHeight() = window.size[0]
 
-    override fun getWidth(): Int {
-        return window.size[1]
-    }
+    override fun getWidth() = window.size[1]
 
-    override fun isVSync(): Boolean {
-        return glfw.swapInterval == VSync.ON
-    }
+    override fun isVSync() = glfw.swapInterval == VSync.ON
 
     override fun setVSync(vSync: Boolean) {
         glfw.swapInterval = if (vSync) VSync.ON else VSync.OFF
     }
 
-    private fun errorCallback(error: glfw.Error, message: String) {
-        logErrorCore("GLFW error (${error.name}): $message")
-    }
+    private fun errorCallback(error: glfw.Error, message: String) = logErrorCore("GLFW error (${error.name}): $message")
 
     private fun windowSizeCallback(size: Vec2i) {
         data.width = size[0]

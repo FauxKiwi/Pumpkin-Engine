@@ -3,7 +3,7 @@ package com.pumpkin.core.render
 import com.pumpkin.core.logErrorCore
 import com.pumpkin.platform.opengl.OpenGLVertexArray
 
-interface VertexArray {
+interface VertexArray : AutoCloseable {
     val vertexBuffers: MutableList<VertexBuffer>
     var indexBuffer: IndexBuffer?
 

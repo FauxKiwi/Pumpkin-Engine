@@ -4,7 +4,7 @@ import com.pumpkin.core.logErrorCore
 import com.pumpkin.platform.opengl.OpenGLShader
 import glm_.mat4x4.Mat4
 
-interface Shader {
+interface Shader : AutoCloseable {
     companion object {
         fun create(vertexSrc: String, fragmentSrc: String): Shader = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {

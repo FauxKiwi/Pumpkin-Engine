@@ -22,8 +22,7 @@ class OpenGLShader(vertexSrc: String, fragmentSrc: String) : Shader {
         gl.compileShader(vertexShader)
 
 
-        if (!vertexShader.compileStatus)
-        {
+        if (!vertexShader.compileStatus) {
             logErrorCore("Vertex shader compile error: ${gl.getShaderInfoLog(vertexShader)}")
 
             gl.deleteShader(vertexShader)
@@ -35,8 +34,7 @@ class OpenGLShader(vertexSrc: String, fragmentSrc: String) : Shader {
 
         gl.compileShader(fragmentShader)
 
-        if (!fragmentShader.compileStatus)
-        {
+        if (!fragmentShader.compileStatus) {
             logErrorCore("Fragment shader compile error: ${gl.getShaderInfoLog(fragmentShader)}")
 
             gl.deleteShader(fragmentShader)
@@ -50,8 +48,7 @@ class OpenGLShader(vertexSrc: String, fragmentSrc: String) : Shader {
 
         gl.linkProgram(rendererID)
 
-        if (!rendererID.linkStatus)
-        {
+        if (!rendererID.linkStatus) {
             logErrorCore("Shader link error ${gl.getProgramInfoLog(rendererID)}")
 
             gl.deleteProgram(rendererID)
@@ -63,50 +60,25 @@ class OpenGLShader(vertexSrc: String, fragmentSrc: String) : Shader {
         gl.detachShader(rendererID, fragmentShader)
     }
 
-    protected fun finalize() {
+    override fun close() {
         gl.deleteProgram(rendererID)
     }
 
-    override fun bind() {
-        gl.useProgram(rendererID)
-    }
+    override fun bind() = gl.useProgram(rendererID)
 
-    override fun unbind() {
-        gl.useProgram(GlProgram.NULL)
-    }
+    override fun unbind() = gl.useProgram(GlProgram.NULL)
 
-    fun uploadUniform(name: String, value: Float) {
-        val location = gl.getUniformLocation(rendererID, name)
-        gl.uniform(location, value)
-    }
+    fun uploadUniform(name: String, value: Float) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
 
-    fun uploadUniform(name: String, value: Vec2) {
-        val location = gl.getUniformLocation(rendererID, name)
-        gl.uniform(location, value)
-    }
+    fun uploadUniform(name: String, value: Vec2) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
 
-    fun uploadUniform(name: String, value: Vec3) {
-        val location = gl.getUniformLocation(rendererID, name)
-        gl.uniform(location, value)
-    }
+    fun uploadUniform(name: String, value: Vec3) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
 
-    fun uploadUniform(name: String, value: Vec4) {
-        val location = gl.getUniformLocation(rendererID, name)
-        gl.uniform(location, value)
-    }
+    fun uploadUniform(name: String, value: Vec4) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
 
-    fun uploadUniform(name: String, matrix: Mat3) {
-        val location = gl.getUniformLocation(rendererID, name)
-        gl.uniform(location, matrix)
-    }
+    fun uploadUniform(name: String, value: Mat3) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
 
-    fun uploadUniform(name: String, matrix: Mat4) {
-        val location = gl.getUniformLocation(rendererID, name)
-        gl.uniform(location, matrix)
-    }
+    fun uploadUniform(name: String, value: Mat4) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
 
-    fun uploadUniform(name: String, value: Int) {
-        val location = gl.getUniformLocation(rendererID, name)
-        gl.uniform(location, value)
-    }
+    fun uploadUniform(name: String, value: Int) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
 }
