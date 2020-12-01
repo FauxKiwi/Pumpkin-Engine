@@ -20,6 +20,7 @@ open class Application {
         fun set(application: Application) {
             this.application = application
             main()
+            //System.runFinalization()
         }
 
         fun get(): Application = application
@@ -124,10 +125,4 @@ open class Application {
     }
 
     open fun shutdown() = Unit
-}
-
-typealias Timestep = Float
-
-inline fun stack(block: (memoryStack: MemoryStack) -> Unit) {
-    MemoryStack.stackPush().apply { use (block) }
 }

@@ -1,6 +1,8 @@
 package com.pumpkin.platform.opengl
 
+import com.pumpkin.core.logDebugCore
 import com.pumpkin.core.logErrorCore
+import com.pumpkin.core.logFatal
 import com.pumpkin.core.render.Shader
 import glm_.mat3x3.Mat3
 import glm_.mat4x4.Mat4
@@ -60,9 +62,7 @@ class OpenGLShader(vertexSrc: String, fragmentSrc: String) : Shader {
         gl.detachShader(rendererID, fragmentShader)
     }
 
-    override fun close() {
-        gl.deleteProgram(rendererID)
-    }
+    override fun close() = gl.deleteProgram(rendererID).also { logDebugCore("~Shader") }
 
     override fun bind() = gl.useProgram(rendererID)
 

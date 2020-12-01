@@ -1,12 +1,13 @@
 package com.pumpkin.core
 
-typealias Scope<T> = () -> T
+import org.lwjgl.system.MemoryStack
 
-class Ref<T: AutoCloseable>(private val value: T) : AutoCloseable {
-    @Volatile private var refCount = 0
+class Ref<out T : AutoCloseable>(private val value: T) : AutoCloseable {
+    @Volatile
+    private var refCount = 0
 
     init {
-        take(this)
+        refCount++
     }
 
     override fun close() {
@@ -17,13 +18,25 @@ class Ref<T: AutoCloseable>(private val value: T) : AutoCloseable {
 
     operator fun not() = refCount <= 0
 
-    fun Any.take(ref: Ref<T>) {
-        ref.refCount++
-    }
+    fun take(): T = value.also { refCount++ }
 
     fun release() {
         if (--refCount <= 0) {
             value.close()
+        }
+    }
+}
+
+typealias Timestep = Float
+
+inline fun stack(block: (memoryStack: MemoryStack) -> Unit) {
+    MemoryStack.stackPush().apply { use (block) }
+}
+
+fun lifetimeScope(vararg scoped: AutoCloseable, block: () -> Unit) = stack {
+    block().also {
+        scoped.forEach {
+            it.close()
         }
     }
 }

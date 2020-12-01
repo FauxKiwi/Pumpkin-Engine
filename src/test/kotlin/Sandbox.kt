@@ -50,33 +50,33 @@ class ExampleLayer : Layer() {
 
         vertexArray = Ref(VertexArray.create())
 
-        val vertexBuffer = VertexBuffer.create(vertices)
+        val vertexBuffer = Ref(VertexBuffer.create(vertices))
         val layout = BufferLayout(
             mutableListOf(
                 BufferElement(ShaderDataType.Float3, "a_Position"),
                 BufferElement(ShaderDataType.Float4, "a_Color")
             )
         )
-        vertexBuffer.layout = layout
-        vertexArray().vertexBuffers.add(vertexBuffer)
+        vertexBuffer().layout = layout
+        vertexArray().vertexBuffers.add(vertexBuffer.take())
 
-        val indexBuffer = IndexBuffer.create(indices)
-        vertexArray().indexBuffer = indexBuffer
+        val indexBuffer = Ref(IndexBuffer.create(indices))
+        vertexArray().indexBuffer = indexBuffer.take()
 
 
         squareVA = Ref(VertexArray.create())
 
-        val squareVB = VertexBuffer.create(squareVertices)
+        val squareVB = Ref(VertexBuffer.create(squareVertices))
         val squareLayout = BufferLayout(
             mutableListOf(
                 BufferElement(ShaderDataType.Float3, "a_Position")
             )
         )
-        squareVB.layout = squareLayout
-        squareVA().vertexBuffers.add(squareVB)
+        squareVB().layout = squareLayout
+        squareVA().vertexBuffers.add(squareVB.take())
 
-        val squareIB = IndexBuffer.create(squareIndices)
-        squareVA().indexBuffer = squareIB
+        val squareIB = Ref(IndexBuffer.create(squareIndices))
+        squareVA().indexBuffer = squareIB.take()
 
 
         val vertexSrc = """
@@ -136,10 +136,14 @@ class ExampleLayer : Layer() {
             """.trimIndent()
 
         flatColorShader = Ref(Shader.create(flatColorVertexSrc, flatColorFragmentSrc))
+
+        vertexBuffer.release()
+        indexBuffer.release()
+        squareVB.release()
+        squareIB.release()
     }
 
     override fun onDetach() {
-        logDebug("Layer detached")
         shader.release()
         vertexArray.release()
         flatColorShader.release()

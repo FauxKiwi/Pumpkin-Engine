@@ -47,9 +47,7 @@ class OpenGLVertexArray : VertexArray {
 
     private var rendererID = gl.createVertexArrays()
 
-    override fun close() {
-        gl.deleteVertexArrays(rendererID)
-    }
+    override fun close() = gl.deleteVertexArrays(rendererID)
 
     override fun bind() = gl.bindVertexArray(rendererID)
 
