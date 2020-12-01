@@ -15,6 +15,6 @@ class OpenGLRendererAPI : RendererAPI {
 
     override fun clear() = gl.clear(ClearBufferMask.COLOR_BUFFER_BIT or ClearBufferMask.DEPTH_BUFFER_BIT)
 
-    override fun drawIndexed(vertexArray: VertexArray) = vertexArray.indexBuffer?.let { gl.drawElements(DrawMode.TRIANGLES, it.count) } ?:
+    override fun drawIndexed(vertexArray: VertexArray) = vertexArray.indexBuffer?.let { gl.drawElements(DrawMode.TRIANGLES, it().count) } ?:
         throw Throwable().also { logErrorCore("No index buffer!") }
 }

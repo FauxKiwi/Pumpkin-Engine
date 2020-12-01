@@ -5,8 +5,8 @@ import com.pumpkin.core.event.KeyPressedEvent
 import com.pumpkin.core.input.*
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.render.*
+import com.pumpkin.core.window.Window
 import com.pumpkin.platform.opengl.OpenGLShader
-import gli_.vec4Data
 import glm_.glm
 import glm_.mat4x4.Mat4
 import glm_.vec3.Vec3
@@ -24,33 +24,37 @@ class ExampleLayer : Layer() {
     private lateinit var vertexArray: Ref<VertexArray>
     private lateinit var flatColorShader: Ref<Shader>
     private lateinit var squareVA: Ref<VertexArray>
+    private lateinit var textureShader: Ref<Shader>
+
+    private lateinit var texture: Ref<Texture2D>
 
     private val squareColor = Vec4(0.2f, 0.3f, 0.8f, 1.0f)
 
     private val scale: Mat4 = glm.scale(Mat4.identity, Vec3(0.1f))
 
+    @ExperimentalUnsignedTypes
     override fun onAttach() {
         val vertices = floatArrayOf(
             -0.5f, -0.5f, 0f, 1f, 0f, 1f, 1f,
-            0.5f, -0.5f, 0f, 0f, 1f, 1f, 1f,
-            0.0f, 0.5f, 0f, 1f, 1f, 0f, 1f,
+             0.5f, -0.5f, 0f, 0f, 1f, 1f, 1f,
+             0.0f,  0.5f, 0f, 1f, 1f, 0f, 1f,
         )
 
-        val indices = intArrayOf(0, 1, 2)
+        val indices = uintArrayOf(0u, 1u, 2u)
 
         val squareVertices = floatArrayOf(
-            -0.5f, -0.5f, 0f,
-            0.5f, -0.5f, 0f,
-            0.5f, 0.5f, 0f,
-            -0.5f, 0.5f, 0f,
+            -0.5f, -0.5f, 0f, 0f, 0f, 0f, 0f,
+             0.5f, -0.5f, 0f, 1f, 0f, 0f, 0f,
+             0.5f,  0.5f, 0f, 1f, 1f, 0f, 0f,
+            -0.5f,  0.5f, 0f, 0f, 1f, 0f, 0f,
         )
 
-        val squareIndices = intArrayOf(0, 1, 2, 2, 3, 0)
+        val squareIndices = uintArrayOf(0u, 1u, 2u, 2u, 3u, 0u)
 
 
-        vertexArray = Ref(VertexArray.create())
+        vertexArray = VertexArray.create()
 
-        val vertexBuffer = Ref(VertexBuffer.create(vertices))
+        val vertexBuffer = VertexBuffer.create(vertices)
         val layout = BufferLayout(
             mutableListOf(
                 BufferElement(ShaderDataType.Float3, "a_Position"),
@@ -60,22 +64,23 @@ class ExampleLayer : Layer() {
         vertexBuffer().layout = layout
         vertexArray().vertexBuffers.add(vertexBuffer.take())
 
-        val indexBuffer = Ref(IndexBuffer.create(indices))
+        val indexBuffer = IndexBuffer.create(indices)
         vertexArray().indexBuffer = indexBuffer.take()
 
 
-        squareVA = Ref(VertexArray.create())
+        squareVA = VertexArray.create()
 
-        val squareVB = Ref(VertexBuffer.create(squareVertices))
+        val squareVB = VertexBuffer.create(squareVertices)
         val squareLayout = BufferLayout(
             mutableListOf(
-                BufferElement(ShaderDataType.Float3, "a_Position")
+                BufferElement(ShaderDataType.Float3, "a_Position"),
+                BufferElement(ShaderDataType.Float4, "a_TexCoord")
             )
         )
         squareVB().layout = squareLayout
         squareVA().vertexBuffers.add(squareVB.take())
 
-        val squareIB = Ref(IndexBuffer.create(squareIndices))
+        val squareIB = IndexBuffer.create(squareIndices)
         squareVA().indexBuffer = squareIB.take()
 
 
@@ -108,7 +113,8 @@ class ExampleLayer : Layer() {
                 }
             """.trimIndent()
 
-        shader = Ref(Shader.create(vertexSrc, fragmentSrc))
+        shader = Shader.create(vertexSrc, fragmentSrc)
+
 
         val flatColorVertexSrc = """
                 #version 330 core
@@ -135,7 +141,45 @@ class ExampleLayer : Layer() {
                 }
             """.trimIndent()
 
-        flatColorShader = Ref(Shader.create(flatColorVertexSrc, flatColorFragmentSrc))
+        flatColorShader = Shader.create(flatColorVertexSrc, flatColorFragmentSrc)
+
+
+        val textureVertexSrc = """
+                #version 330 core
+                
+                layout(location = 0) in vec3 a_Position;
+                layout(location = 1) in vec4 a_TexCoord;
+                
+                out vec2 v_TexCoord;
+                
+                uniform mat4 u_ViewProjection;
+                uniform mat4 u_Transform;
+                
+                void main() {
+                    v_TexCoord = a_TexCoord.xy;
+                    gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
+                }
+            """.trimIndent()
+
+        val textureFragmentSrc = """
+                #version 330 core
+                
+                in vec2 v_TexCoord;
+                
+                out vec4 color;
+                
+                uniform sampler2D u_Texture;
+                
+                void main() {
+                    color = texture(u_Texture, v_TexCoord);
+                }
+            """.trimIndent()
+
+        textureShader = Shader.create(textureVertexSrc, textureFragmentSrc)
+
+        texture = Texture2D.create("D:/IdeaProjects/PumpkinEngineJVM/src/test/resources/textures/Checkerboard.png")
+        texture().bind()
+        (textureShader() as OpenGLShader).uploadUniform("u_Texture", 0)
 
         vertexBuffer.release()
         indexBuffer.release()
@@ -148,6 +192,7 @@ class ExampleLayer : Layer() {
         vertexArray.release()
         flatColorShader.release()
         squareVA.release()
+        textureShader.release()
     }
 
     override fun onUpdate(ts: Timestep) {
@@ -175,7 +220,7 @@ class ExampleLayer : Layer() {
         Renderer.beginScene(Application.get().camera)
 
         //Renderer.submit(blueShader, squareVA)
-        flatColorShader().bind()
+        /*flatColorShader().bind()
         (flatColorShader() as OpenGLShader).uploadUniform("u_Color", squareColor)
         for (y in 0..20) {
             for (x in 0..20) {
@@ -183,7 +228,11 @@ class ExampleLayer : Layer() {
                 val transform: Mat4 = glm.translate(Mat4.identity, pos) * scale
                 Renderer.submit(flatColorShader(), squareVA(), transform)
             }
-        }
+        }*/
+
+        texture().bind()
+        Renderer.submit(textureShader(), squareVA(), glm.scale(Mat4.identity, Vec3(1.5f)))
+
         //Renderer.submit(shader, vertexArray)
 
         Renderer.endScene()
@@ -192,7 +241,7 @@ class ExampleLayer : Layer() {
     override fun onImGuiRender() {
         ImGui.begin("Camera: Transform")
         ImGui.dragFloat3("Position", cameraPosition, 0.01f)
-        ImGui.dragFloat("Rotation", ::cameraRotation)
+        ImGui.dragFloat("Rotation", ::cameraRotation, vMin = 0f, vMax = 360f)
         ImGui.end()
         ImGui.begin("Squares: Color")
         ImGui.colorEdit3("Color", squareColor)
@@ -213,7 +262,6 @@ class TestApplication : Application() {
 
     override fun init() {
         //Window.getWindow().setVSync(false)
-
         pushLayer(ExampleLayer())
     }
 

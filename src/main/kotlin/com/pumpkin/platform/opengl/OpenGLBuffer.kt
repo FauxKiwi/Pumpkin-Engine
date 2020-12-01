@@ -1,7 +1,6 @@
 package com.pumpkin.platform.opengl
 
 import com.pumpkin.core.logErrorCore
-import com.pumpkin.core.logFatal
 import com.pumpkin.core.render.BufferLayout
 import com.pumpkin.core.render.IndexBuffer
 import com.pumpkin.core.render.VertexBuffer
@@ -27,13 +26,14 @@ class OpenGLVertexBuffer(vertices: FloatArray) : VertexBuffer {
     override fun unbind() = gl.bindBuffer(BufferTarget.ARRAY, GlBuffer())
 }
 
-class OpenGLIndexBuffer(indices: IntArray/*UIntArray*/) : IndexBuffer {
+@ExperimentalUnsignedTypes
+class OpenGLIndexBuffer @ExperimentalUnsignedTypes constructor(indices: UIntArray) : IndexBuffer {
     override val count: Int = indices.size
     private val rendererID = gl.createBuffers()
 
     init {
         gl.bindBuffer(BufferTarget.ELEMENT_ARRAY, rendererID)
-        GL15C.glBufferData(GL15C.GL_ELEMENT_ARRAY_BUFFER, indices, GL15C.GL_STATIC_DRAW)
+        GL15C.glBufferData(GL15C.GL_ELEMENT_ARRAY_BUFFER, indices.toIntArray(), GL15C.GL_STATIC_DRAW)
     }
 
     override fun close() = gl.deleteBuffers(rendererID)

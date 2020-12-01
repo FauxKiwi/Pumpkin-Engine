@@ -62,7 +62,7 @@ class OpenGLShader(vertexSrc: String, fragmentSrc: String) : Shader {
         gl.detachShader(rendererID, fragmentShader)
     }
 
-    override fun close() = gl.deleteProgram(rendererID).also { logDebugCore("~Shader") }
+    override fun close() = gl.deleteProgram(rendererID)
 
     override fun bind() = gl.useProgram(rendererID)
 

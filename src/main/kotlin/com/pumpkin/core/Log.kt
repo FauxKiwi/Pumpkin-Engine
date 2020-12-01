@@ -14,6 +14,7 @@ private fun color(level: Level): String {
     }
 }
 
+private val resetColor = "\u001B[0m"
 
 internal fun logTraceCore(message: String) {
     coreLogger.trace(message)
@@ -67,7 +68,7 @@ fun logFatal(message: String, t: Throwable? = null) {
 class Logger(private val name: String) {
 
     fun log(level: Level, message: String) {
-        println("${color(level)}[${level.name}] $name: $message")
+        println("${color(level)}[${level.name}] $name: $message$resetColor")
     }
 
     fun trace(message: String) {

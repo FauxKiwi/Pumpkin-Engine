@@ -1,11 +1,10 @@
 package com.pumpkin.core.render
 
+import com.pumpkin.core.Ref
 import com.pumpkin.core.logErrorCore
 import com.pumpkin.platform.opengl.OpenGLIndexBuffer
 import com.pumpkin.platform.opengl.OpenGLVertexBuffer
-import gln.VertexAttrSize
 import gln.VertexAttrType
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL20
 
 enum class ShaderDataType {
@@ -71,12 +70,12 @@ interface VertexBuffer : AutoCloseable {
     var layout: BufferLayout?
 
     companion object {
-        fun create(vertices: FloatArray): VertexBuffer = when (Renderer.getAPI()) {
+        fun create(vertices: FloatArray): Ref<VertexBuffer> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
                 logErrorCore("Having no render API is currently not supported")
                 throw Throwable()
             }
-            RendererAPI.API.OpenGL -> OpenGLVertexBuffer(vertices)
+            RendererAPI.API.OpenGL -> Ref(OpenGLVertexBuffer(vertices))
         }
     }
 
@@ -89,12 +88,13 @@ interface IndexBuffer : AutoCloseable{
     val count: Int
 
     companion object {
-        fun create(indices: IntArray /*UIntArray*/): IndexBuffer = when (Renderer.getAPI()) {
+        @ExperimentalUnsignedTypes
+        fun create(indices: UIntArray): Ref<IndexBuffer> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
                 logErrorCore("Having no render API is currently not supported")
                 throw Throwable()
             }
-            RendererAPI.API.OpenGL -> OpenGLIndexBuffer(indices)
+            RendererAPI.API.OpenGL -> Ref(OpenGLIndexBuffer(indices))
         }
     }
 

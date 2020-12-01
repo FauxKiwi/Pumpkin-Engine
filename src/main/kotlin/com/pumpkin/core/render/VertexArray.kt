@@ -1,19 +1,20 @@
 package com.pumpkin.core.render
 
+import com.pumpkin.core.Ref
 import com.pumpkin.core.logErrorCore
 import com.pumpkin.platform.opengl.OpenGLVertexArray
 
 interface VertexArray : AutoCloseable {
-    val vertexBuffers: MutableList<VertexBuffer>
-    var indexBuffer: IndexBuffer?
+    val vertexBuffers: MutableList<Ref<VertexBuffer>>
+    var indexBuffer: Ref<IndexBuffer>?
 
     companion object {
-        fun create(): VertexArray = when (Renderer.getAPI()) {
+        fun create(): Ref<VertexArray> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
                 logErrorCore("Having no render API is currently not supported")
                 throw Throwable()
             }
-            RendererAPI.API.OpenGL -> OpenGLVertexArray()
+            RendererAPI.API.OpenGL -> Ref(OpenGLVertexArray())
         }
     }
 

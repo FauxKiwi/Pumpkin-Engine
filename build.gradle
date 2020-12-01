@@ -29,7 +29,8 @@ dependencies {
         implementation "com.github.kotlin-graphics.imgui:$it:1.79"
     }
 
-    implementation "com.github.kotlin-graphics:gln:0.5.2"
+    compileOnly "com.github.kotlin-graphics:gln:0.5.2"
+    compileOnly "com.github.kotlin-graphics:gli:0.8.3.0-build-15"
 
     ["", "-jemalloc", "-glfw", "-opengl", "-remotery", "-stb", "-openal", "-opengles", "-jawt", "-vulkan"].each {
         implementation "org.lwjgl:lwjgl$it:3.2.3"

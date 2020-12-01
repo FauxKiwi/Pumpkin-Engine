@@ -18,12 +18,13 @@ class Ref<out T : AutoCloseable>(private val value: T) : AutoCloseable {
 
     operator fun not() = refCount <= 0
 
-    fun take(): T = value.also { refCount++ }
+    fun take() = this.also { refCount++ }
 
     fun release() {
         if (--refCount <= 0) {
             value.close()
         }
+        logTraceCore("Released $value")
     }
 }
 
