@@ -1,6 +1,9 @@
 # Pumpkin-Engine
 The new JVM only implementation
 ***
+## A small glimpse of the engine at the moment
+![View of the engine][view2]
+***
 ## Get it!
 ### Gradle (Groovy DSL)
 
@@ -30,9 +33,8 @@ to start the game.
 - run(): Called every frame
 - onEvent(event: Event): Called with every event that happens
 ***
-## A small glimpse of the engine at the moment
-![View of the engine][view]
+Remember this work is licensed under Apache 2.0
 
 [view]: https://cdn.discordapp.com/attachments/581185346465824770/781936000196149258/unknown.png
-***
-Remember this work is licensed under Apache 2.0
+
+[view2]: https://cdn.discordapp.com/attachments/581185346465824770/783257581169672202/unknown.png
