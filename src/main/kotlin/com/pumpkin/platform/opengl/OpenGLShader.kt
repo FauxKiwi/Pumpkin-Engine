@@ -2,7 +2,11 @@ package com.pumpkin.platform.opengl
 
 import com.pumpkin.core.logErrorCore
 import com.pumpkin.core.render.Shader
+import glm_.mat3x3.Mat3
 import glm_.mat4x4.Mat4
+import glm_.vec2.Vec2
+import glm_.vec3.Vec3
+import glm_.vec4.Vec4
 import gln.ShaderType
 import gln.gl
 import gln.identifiers.GlProgram
@@ -71,8 +75,38 @@ class OpenGLShader(vertexSrc: String, fragmentSrc: String) : Shader {
         gl.useProgram(GlProgram.NULL)
     }
 
-    override fun uploadUniform(name: String, matrix: Mat4) {
+    fun uploadUniform(name: String, value: Float) {
+        val location = gl.getUniformLocation(rendererID, name)
+        gl.uniform(location, value)
+    }
+
+    fun uploadUniform(name: String, value: Vec2) {
+        val location = gl.getUniformLocation(rendererID, name)
+        gl.uniform(location, value)
+    }
+
+    fun uploadUniform(name: String, value: Vec3) {
+        val location = gl.getUniformLocation(rendererID, name)
+        gl.uniform(location, value)
+    }
+
+    fun uploadUniform(name: String, value: Vec4) {
+        val location = gl.getUniformLocation(rendererID, name)
+        gl.uniform(location, value)
+    }
+
+    fun uploadUniform(name: String, matrix: Mat3) {
         val location = gl.getUniformLocation(rendererID, name)
         gl.uniform(location, matrix)
+    }
+
+    fun uploadUniform(name: String, matrix: Mat4) {
+        val location = gl.getUniformLocation(rendererID, name)
+        gl.uniform(location, matrix)
+    }
+
+    fun uploadUniform(name: String, value: Int) {
+        val location = gl.getUniformLocation(rendererID, name)
+        gl.uniform(location, value)
     }
 }

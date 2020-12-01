@@ -5,85 +5,31 @@ import com.pumpkin.core.event.KeyPressedEvent
 import com.pumpkin.core.input.*
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.render.*
-import com.pumpkin.core.window.Window
+import com.pumpkin.platform.opengl.OpenGLShader
+import gli_.vec4Data
 import glm_.glm
 import glm_.mat4x4.Mat4
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
 import imgui.ImGui
 
-class LogLayer : Layer() {
+class ExampleLayer : Layer() {
     private var cameraMoveSpeed = 30f
     private var cameraRotationSpeed = 180f
 
     private val cameraPosition = Vec3()
     private var cameraRotation = 0f
 
-    override fun onAttach() {
-        logDebug("Layer attached")
-    }
-
-    override fun onDetach() {
-        logDebug("Layer detached")
-    }
-
-    override fun onUpdate(ts: Timestep) {
-        if (isKeyPressed(PK_KEY_A))
-            cameraPosition -= Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
-
-        if (isKeyPressed(PK_KEY_D))
-            cameraPosition += Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
-
-        if (isKeyPressed(PK_KEY_S))
-            cameraPosition -= Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
-
-        if (isKeyPressed(PK_KEY_W))
-            cameraPosition += Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
-
-        if (isKeyPressed(PK_KEY_Q))
-            cameraRotation -= cameraRotationSpeed * ts
-
-        if (isKeyPressed(PK_KEY_E))
-            cameraRotation += cameraRotationSpeed * ts
-
-        Application.get().camera.position = cameraPosition
-        Application.get().camera.rotation = cameraRotation
-    }
-
-    override fun onImGuiRender() {
-        ImGui.begin("Camera: Transform")
-        val cpRef = cameraPosition.toFloatArray()
-        ImGui.dragFloat3("Position", cpRef, 0.01f)
-        cameraPosition[0] = cpRef[0]
-        cameraPosition[1] = cpRef[1]
-        cameraPosition[2] = cpRef[2]
-        ImGui.dragFloat("Rotation", ::cameraRotation)
-        ImGui.end()
-    }
-
-    override fun onEvent(event: Event) {
-        val dispatcher = EventDispatcher(event)
-        dispatcher.dispatch<KeyPressedEvent> {
-            if (keyCode == PK_KEY_TAB)
-                logDebug("Tab is pressed (event)")
-            false
-        }
-    }
-}
-
-class TestApplication : Application() {
     private lateinit var shader: Shader
     private lateinit var vertexArray: VertexArray
-    private lateinit var blueShader: Shader
+    private lateinit var flatColorShader: Shader
     private lateinit var squareVA: VertexArray
+
+    private val squareColor = Vec4(0.2f, 0.3f, 0.8f, 1.0f)
 
     private val scale: Mat4 = glm.scale(Mat4.identity, Vec3(0.1f))
 
-    override fun init() {
-        //Window.getWindow().setVSync(false)
-
-        pushLayer(LogLayer())
-
+    override fun onAttach() {
         val vertices = floatArrayOf(
             -0.5f, -0.5f, 0f, 1f, 0f, 1f, 1f,
             0.5f, -0.5f, 0f, 0f, 1f, 1f, 1f,
@@ -164,7 +110,7 @@ class TestApplication : Application() {
 
         shader = Shader.create(vertexSrc, fragmentSrc)
 
-        val b_vertexSrc = """
+        val flatColorVertexSrc = """
                 #version 330 core
                 
                 layout(location = 0) in vec3 a_Position;
@@ -177,40 +123,106 @@ class TestApplication : Application() {
                 }
             """.trimIndent()
 
-        val b_fragmentSrc = """
+        val flatColorFragmentSrc = """
                 #version 330 core
                 
                 out vec4 color;
                 
+                uniform vec4 u_Color;
+                
                 void main() {
-                    color = vec4(0.2, 0.3, 0.8, 1.0);
+                    color = u_Color;
                 }
             """.trimIndent()
 
-        blueShader = Shader.create(b_vertexSrc, b_fragmentSrc)
+        flatColorShader = Shader.create(flatColorVertexSrc, flatColorFragmentSrc)
+    }
 
+    override fun onDetach() {
+        logDebug("Layer detached")
+    }
+
+    override fun onUpdate(ts: Timestep) {
+        if (isKeyPressed(PK_KEY_A))
+            cameraPosition -= Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
+
+        if (isKeyPressed(PK_KEY_D))
+            cameraPosition += Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
+
+        if (isKeyPressed(PK_KEY_S))
+            cameraPosition -= Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
+
+        if (isKeyPressed(PK_KEY_W))
+            cameraPosition += Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
+
+        if (isKeyPressed(PK_KEY_Q))
+            cameraRotation -= cameraRotationSpeed * ts
+
+        if (isKeyPressed(PK_KEY_E))
+            cameraRotation += cameraRotationSpeed * ts
+
+        Application.get().camera.position = cameraPosition
+        Application.get().camera.rotation = cameraRotation
+
+        Renderer.beginScene(Application.get().camera)
+
+        //Renderer.submit(blueShader, squareVA)
+        flatColorShader.bind()
+        (flatColorShader as OpenGLShader).uploadUniform("u_Color", squareColor)
+        for (y in 0..20) {
+            for (x in 0..20) {
+                val pos = Vec3(x * 0.11f, y * 0.11f, 0f)
+                val transform: Mat4 = glm.translate(Mat4.identity, pos) * scale
+                Renderer.submit(flatColorShader, squareVA, transform)
+            }
+        }
+        //Renderer.submit(shader, vertexArray)
+
+        Renderer.endScene()
+    }
+
+    override fun onImGuiRender() {
+        ImGui.begin("Camera: Transform")
+        ImGui.dragFloat3("Position", cameraPosition, 0.01f)
+        ImGui.dragFloat("Rotation", ::cameraRotation)
+        ImGui.end()
+        ImGui.begin("Squares: Color")
+        ImGui.colorEdit3("Color", squareColor)
+        ImGui.end()
+    }
+
+    override fun onEvent(event: Event) {
+        val dispatcher = EventDispatcher(event)
+        dispatcher.dispatch<KeyPressedEvent> {
+            if (keyCode == PK_KEY_TAB)
+                logDebug("Tab is pressed (event)")
+            false
+        }
+    }
+}
+
+class TestApplication : Application() {
+
+    override fun init() {
+        //Window.getWindow().setVSync(false)
+
+        pushLayer(ExampleLayer())
     }
 
     override fun run() {
         RendererCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f))
         RendererCommand.clear()
-
-        Renderer.beginScene(camera)
-
-        //Renderer.submit(blueShader, squareVA)
-        for (y in 0..20) {
-            for (x in 0..20) {
-                val pos = Vec3(x * 0.11f, y * 0.11f, 0f)
-                val transform: Mat4 = glm.translate(Mat4.identity, pos) * scale
-                Renderer.submit(blueShader, squareVA, transform)
-            }
-        }
-        Renderer.submit(shader, vertexArray)
-
-        Renderer.endScene()
     }
 }
 
 fun main() {
     Application.set(TestApplication())
+}
+
+fun ImGui.dragFloat3(label: String, vec: Vec3, speed: Float = 1f, min: Float = 0f, max: Float = 0f) {
+    val vecRef = vec.toFloatArray()
+    ImGui.dragFloat3(label, vecRef, speed, min, max)
+    vec[0] = vecRef[0]
+    vec[1] = vecRef[1]
+    vec[2] = vecRef[2]
 }

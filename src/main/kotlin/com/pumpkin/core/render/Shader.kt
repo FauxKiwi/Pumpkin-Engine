@@ -18,6 +18,4 @@ interface Shader {
     fun bind()
 
     fun unbind()
-
-    fun uploadUniform(name: String, matrix: Mat4)
 }

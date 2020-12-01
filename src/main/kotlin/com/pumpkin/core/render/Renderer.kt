@@ -1,5 +1,6 @@
 package com.pumpkin.core.render
 
+import com.pumpkin.platform.opengl.OpenGLShader
 import glm_.mat4x4.Mat4
 
 object Renderer {
@@ -12,8 +13,10 @@ object Renderer {
 
     fun submit(shader: Shader, vertexArray: VertexArray, transform: Mat4 = Mat4.identity) {
         shader.bind()
-        shader.uploadUniform("u_ViewProjection", sceneData.viewProjectionMatrix)
-        shader.uploadUniform("u_Transform", transform)
+        if (shader is OpenGLShader) {
+            shader.uploadUniform("u_ViewProjection", sceneData.viewProjectionMatrix)
+            shader.uploadUniform("u_Transform", transform)
+        }
 
         vertexArray.bind()
         RendererCommand.drawIndexed(vertexArray)
