@@ -177,7 +177,7 @@ class ExampleLayer : Layer() {
 
         textureShader = Shader.create(textureVertexSrc, textureFragmentSrc)
 
-        texture = Texture2D.create("D:/IdeaProjects/PumpkinEngineJVM/src/test/resources/textures/Checkerboard.png")
+        texture = Texture2D.create(/*D:/IdeaProjects/PumpkinEngineJVM*/"./src/test/resources/textures/Checkerboard.png")
         texture().bind()
         (textureShader() as OpenGLShader).uploadUniform("u_Texture", 0)
 
@@ -220,7 +220,7 @@ class ExampleLayer : Layer() {
         Renderer.beginScene(Application.get().camera)
 
         //Renderer.submit(blueShader, squareVA)
-        /*flatColorShader().bind()
+        flatColorShader().bind()
         (flatColorShader() as OpenGLShader).uploadUniform("u_Color", squareColor)
         for (y in 0..20) {
             for (x in 0..20) {
@@ -228,7 +228,7 @@ class ExampleLayer : Layer() {
                 val transform: Mat4 = glm.translate(Mat4.identity, pos) * scale
                 Renderer.submit(flatColorShader(), squareVA(), transform)
             }
-        }*/
+        }
 
         texture().bind()
         Renderer.submit(textureShader(), squareVA(), glm.scale(Mat4.identity, Vec3(1.5f)))
@@ -261,7 +261,7 @@ class ExampleLayer : Layer() {
 class TestApplication : Application() {
 
     override fun init() {
-        //Window.getWindow().setVSync(false)
+        Window.getWindow().setVSync(false)
         pushLayer(ExampleLayer())
     }
 
