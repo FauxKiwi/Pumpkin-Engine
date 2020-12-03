@@ -4,7 +4,6 @@ import com.pumpkin.core.event.Event
 import com.pumpkin.platform.windows.WindowsWindow
 
 interface Window {
-
     companion object {
         private lateinit var window: WindowsWindow
 
@@ -16,18 +15,16 @@ interface Window {
         fun getWindow() = window
     }
 
+    val width: Int
+    val height: Int
+    var vSync: Boolean
+
     fun init(windowProps: WindowProps)
     fun run()
     fun onUpdate()
     fun shutdown()
 
-    fun getWidth(): Int
-    fun getHeight(): Int
-
     fun setEventCallback(callback: EventCallbackFunction)
-
-    fun setVSync(vSync: Boolean)
-    fun isVSync(): Boolean
 }
 
 typealias EventCallbackFunction = (Event) -> Unit

@@ -27,6 +27,18 @@ class WindowsWindow : Window {
     lateinit var window: GlfwWindow
     private lateinit var context: GraphicsContext
 
+    override val width: Int
+        get() = window.size[0]
+
+    override val height: Int
+        get() = window.size[1]
+
+    override var vSync: Boolean
+        get() = glfw.swapInterval == VSync.ON
+        set(value) {
+            glfw.swapInterval = if (value) VSync.ON else VSync.OFF
+        }
+
     override fun init(windowProps: WindowProps) {
         data = WindowData(windowProps.title, windowProps.width, windowProps.height, true, null)
 
@@ -38,7 +50,7 @@ class WindowsWindow : Window {
         context.init()
         logInfoCore("Created Window \"${data.title}\" (${data.width} x ${data.height})")
 
-        setVSync(data.vSync)
+        vSync = data.vSync
 
         GL.createCapabilities()
 
@@ -72,16 +84,6 @@ class WindowsWindow : Window {
 
     override fun setEventCallback(callback: EventCallbackFunction) {
         data.eventCallback = callback
-    }
-
-    override fun getHeight() = window.size[0]
-
-    override fun getWidth() = window.size[1]
-
-    override fun isVSync() = glfw.swapInterval == VSync.ON
-
-    override fun setVSync(vSync: Boolean) {
-        glfw.swapInterval = if (vSync) VSync.ON else VSync.OFF
     }
 
     private fun errorCallback(error: glfw.Error, message: String) = logErrorCore("GLFW error (${error.name}): $message")
