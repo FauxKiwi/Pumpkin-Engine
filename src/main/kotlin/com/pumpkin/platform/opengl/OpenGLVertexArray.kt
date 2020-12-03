@@ -10,8 +10,7 @@ import gln.gl
 import gln.identifiers.GlVertexArray
 
 class OpenGLVertexArray : VertexArray {
-    override val vertexBuffers: MutableList<Ref<VertexBuffer>> by lazy {
-        object : ArrayList<Ref<VertexBuffer>>() {
+    override val vertexBuffers: MutableList<Ref<VertexBuffer>> = object : ArrayList<Ref<VertexBuffer>>() {
             override fun add(element: Ref<VertexBuffer>): Boolean {
                 if (element().layout == null) {
                     logErrorCore("Vertex buffer has no layout")
@@ -20,21 +19,21 @@ class OpenGLVertexArray : VertexArray {
                 gl.bindVertexArray(rendererID)
                 element().bind()
                 val layout: BufferLayout = element().layout!!
-                for ((index, bufferElement) in layout.withIndex()) {
-                    gl.enableVertexAttribArray(index)
+                for (bufferElement in layout) {
+                    gl.enableVertexAttribArray(vertexBufferIndex)
                     gl.vertexAttribPointer(
-                        index,
+                        vertexBufferIndex,
                         bufferElement.dataType.componentCount(),
                         bufferElement.dataType.toVertexAttrType(),
                         bufferElement.normalized,
                         layout.getStride(),
                         bufferElement.offset
                     )
+                    vertexBufferIndex++
                 }
                 return super.add(element)
             }
         }
-    }
     override var indexBuffer: Ref<IndexBuffer>? = null
         set(value) {
             if (value == null) {
@@ -48,6 +47,7 @@ class OpenGLVertexArray : VertexArray {
 
 
     private var rendererID = gl.createVertexArrays()
+    private var vertexBufferIndex = 0
 
     override fun close() {
         vertexBuffers.forEach(Ref<VertexBuffer>::release)
