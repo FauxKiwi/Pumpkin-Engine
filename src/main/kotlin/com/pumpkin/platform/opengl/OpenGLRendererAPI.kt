@@ -4,12 +4,15 @@ import com.pumpkin.core.logErrorCore
 import com.pumpkin.core.render.RendererAPI
 import com.pumpkin.core.render.VertexArray
 import glm_.vec4.Vec4
-import gln.ClearBufferMask
-import gln.DrawMode
-import gln.gl
+import gln.*
 
 class OpenGLRendererAPI : RendererAPI {
     override val api = RendererAPI.API.OpenGL
+
+    override fun init() {
+        gl.enable(State.BLEND)
+        gl.blendFunc(BlendFactor.SRC_ALPHA, BlendFactor.ONE_MINUS_SRC_ALPHA)
+    }
 
     override fun setClearColor(color: Vec4) = gl.clearColor(color.r, color.g, color.b, color.a)
 

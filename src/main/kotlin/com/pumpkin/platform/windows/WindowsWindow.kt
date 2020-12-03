@@ -10,12 +10,14 @@ import com.pumpkin.platform.opengl.OpenGLContext
 import com.pumpkin.core.window.EventCallbackFunction
 import com.pumpkin.core.window.Window
 import com.pumpkin.core.window.WindowProps
+import gli_.gli
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2d
 import glm_.vec2.Vec2i
 import gln.glViewport
 import imgui.DEBUG
 import org.lwjgl.glfw.GLFW
+import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL
 import uno.glfw.GlfwWindow
 import uno.glfw.VSync
@@ -48,6 +50,13 @@ class WindowsWindow : Window {
         window = GlfwWindow(data.width, data.height, data.title)
         context = OpenGLContext(window)
         context.init()
+
+        val icon = gli.load("./src/test/resources/textures/PumpkinLogo.png")
+        val iconImage = GLFWImage.malloc(); val iconImageBuffer = GLFWImage.malloc(1)
+        iconImage.set(icon.extent()[0], icon.extent()[1], icon.data())
+        iconImageBuffer.put(0, iconImage)
+        window.setIcon(iconImageBuffer)
+
         logInfoCore("Created Window \"${data.title}\" (${data.width} x ${data.height})")
 
         vSync = data.vSync

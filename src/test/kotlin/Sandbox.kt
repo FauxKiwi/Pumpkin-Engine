@@ -27,6 +27,7 @@ class ExampleLayer : Layer() {
     private lateinit var textureShader: Ref<Shader>
 
     private lateinit var texture: Ref<Texture2D>
+    private lateinit var logoTexture: Ref<Texture2D>
 
     private val squareColor = Vec4(0.2f, 0.3f, 0.8f, 1.0f)
 
@@ -177,9 +178,12 @@ class ExampleLayer : Layer() {
 
         textureShader = Shader.create(textureVertexSrc, textureFragmentSrc)
 
-        texture = Texture2D.create(/*D:/IdeaProjects/PumpkinEngineJVM*/"./src/test/resources/textures/Checkerboard.png")
-        texture().bind()
+        texture = Texture2D.create("./src/test/resources/textures/Checkerboard.png")
+        logoTexture = Texture2D.create("./src/test/resources/textures/PumpkinLogo.png")
+
+        textureShader().bind()
         (textureShader() as OpenGLShader).uploadUniform("u_Texture", 0)
+
 
         vertexBuffer.release()
         indexBuffer.release()
@@ -193,6 +197,8 @@ class ExampleLayer : Layer() {
         flatColorShader.release()
         squareVA.release()
         textureShader.release()
+        texture.release()
+        logoTexture.release()
     }
 
     override fun onUpdate(ts: Timestep) {
@@ -232,6 +238,8 @@ class ExampleLayer : Layer() {
 
         texture().bind()
         Renderer.submit(textureShader(), squareVA(), glm.scale(Mat4.identity, Vec3(1.5f)))
+        logoTexture().bind()
+        Renderer.submit(textureShader(), squareVA(), glm.scale(Mat4.identity, Vec3(1.5f)))
 
         //Renderer.submit(shader, vertexArray)
 
@@ -261,7 +269,7 @@ class ExampleLayer : Layer() {
 class TestApplication : Application() {
 
     override fun init() {
-        Window.getWindow().setVSync(false)
+        Window.getWindow().vSync = false
         pushLayer(ExampleLayer())
     }
 

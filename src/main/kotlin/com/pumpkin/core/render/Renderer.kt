@@ -5,6 +5,8 @@ import glm_.mat4x4.Mat4
 
 object Renderer {
 
+    inline fun init() = RendererCommand.init()
+
     fun beginScene(camera: OrthographicCamera) {
         sceneData.viewProjectionMatrix = camera.viewProjectionMatrix
     }

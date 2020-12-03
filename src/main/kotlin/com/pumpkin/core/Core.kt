@@ -23,8 +23,8 @@ class Ref<out T : AutoCloseable>(private val value: T) : AutoCloseable {
     fun release() {
         if (--refCount <= 0) {
             value.close()
+            logTraceCore("Released $value")
         }
-        logTraceCore("Released $value")
     }
 }
 

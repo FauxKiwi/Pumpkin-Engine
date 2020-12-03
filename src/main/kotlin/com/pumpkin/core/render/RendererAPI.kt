@@ -9,6 +9,8 @@ interface RendererAPI {
 
     val api: API
 
+    fun init()
+
     fun setClearColor(color: Vec4)
 
     fun clear()

@@ -7,6 +7,7 @@ import com.pumpkin.core.imgui.ImGuiLayer
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.layer.LayerStack
 import com.pumpkin.core.render.OrthographicCamera
+import com.pumpkin.core.render.Renderer
 import com.pumpkin.core.window.Window
 import com.pumpkin.core.window.WindowProps
 import org.lwjgl.system.MemoryStack
@@ -20,7 +21,6 @@ open class Application {
         fun set(application: Application) {
             this.application = application
             main()
-            //System.runFinalization()
         }
 
         fun get(): Application = application
@@ -50,6 +50,8 @@ open class Application {
         window.setEventCallback(::onEvent)
 
         logInfoCore("Initialized Program")
+
+        Renderer.init()
 
         pushOverlay(imGuiLayer)
 
