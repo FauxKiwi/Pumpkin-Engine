@@ -1,8 +1,6 @@
 package com.pumpkin.platform.opengl
 
-import com.pumpkin.core.logDebugCore
 import com.pumpkin.core.logErrorCore
-import com.pumpkin.core.logFatal
 import com.pumpkin.core.render.Shader
 import glm_.mat3x3.Mat3
 import glm_.mat4x4.Mat4
@@ -12,73 +10,101 @@ import glm_.vec4.Vec4
 import gln.ShaderType
 import gln.gl
 import gln.identifiers.GlProgram
+import gln.identifiers.GlShader
+import java.io.FileReader
 
-class OpenGLShader(vertexSrc: String, fragmentSrc: String) : Shader {
-    private val rendererID: GlProgram
+class OpenGLShader : Shader {
+    private var rendererID: GlProgram? = null
 
-    init {
-        val vertexShader = gl.createShader(ShaderType.VERTEX_SHADER)
-
-        gl.shaderSource(vertexShader, vertexSrc)
-
-        gl.compileShader(vertexShader)
-
-
-        if (!vertexShader.compileStatus) {
-            logErrorCore("Vertex shader compile error: ${gl.getShaderInfoLog(vertexShader)}")
-
-            gl.deleteShader(vertexShader)
-        }
-
-        val fragmentShader = gl.createShader(ShaderType.FRAGMENT_SHADER)
-
-        gl.shaderSource(fragmentShader, fragmentSrc)
-
-        gl.compileShader(fragmentShader)
-
-        if (!fragmentShader.compileStatus) {
-            logErrorCore("Fragment shader compile error: ${gl.getShaderInfoLog(fragmentShader)}")
-
-            gl.deleteShader(fragmentShader)
-            gl.deleteShader(vertexShader)
-        }
-
-        rendererID = gl.createProgram()
-
-        gl.attachShader(rendererID, vertexShader)
-        gl.attachShader(rendererID, fragmentShader)
-
-        gl.linkProgram(rendererID)
-
-        if (!rendererID.linkStatus) {
-            logErrorCore("Shader link error ${gl.getProgramInfoLog(rendererID)}")
-
-            gl.deleteProgram(rendererID)
-            gl.deleteShader(vertexShader)
-            gl.deleteShader(fragmentShader)
-        }
-
-        gl.detachShader(rendererID, vertexShader)
-        gl.detachShader(rendererID, fragmentShader)
+    constructor(filepath: String) {
+        val source = FileReader(filepath).readText()
+        val shaderSources = preProcess(source)
+        compile(shaderSources)
     }
 
-    override fun close() = gl.deleteProgram(rendererID)
+    constructor(vertexSrc: String, fragmentSrc: String) {
+        compile(hashMapOf(Pair(ShaderType.VERTEX_SHADER, vertexSrc), Pair(ShaderType.FRAGMENT_SHADER, fragmentSrc)))
+    }
 
-    override fun bind() = gl.useProgram(rendererID)
+    private fun preProcess(source: String): HashMap<ShaderType, String> {
+        val shaderSources = HashMap<ShaderType, String>()
+        val typeToken = "#type"
+        val typeTokenLength = typeToken.length
+        var pos = source.indexOf(typeToken)
+        while (pos != -1) {
+            val eol = source.indexOf('\r', pos)
+            if (eol == -1) throw Throwable().also { logErrorCore("Syntax error") }
+            val begin = pos + typeTokenLength + 1
+            val type = source.substring(begin, eol)
+            if (shaderTypeFromString(type) == null) throw Throwable().also { logErrorCore("No valid shader type specified") }
+            var nextLinePos = eol+2
+            while (source[nextLinePos+1] == '\n') nextLinePos+=2
+            pos = source.indexOf(typeToken, nextLinePos)
+            shaderSources[shaderTypeFromString(type)!!] = source.substring(nextLinePos, if (pos == -1) source.length - 1 else pos - 1).trim()
+        }
+        return shaderSources
+    }
+
+    private fun shaderTypeFromString(string: String): ShaderType? = when (string) {
+        "vertex" -> ShaderType.VERTEX_SHADER
+        "fragment", "pixel" -> ShaderType.FRAGMENT_SHADER
+        else -> null
+    }
+
+    private fun ShaderType.name() = when (this.i) {
+        ShaderType.VERTEX_SHADER.i -> "Vertex"
+        ShaderType.FRAGMENT_SHADER.i -> "Fragment"
+        else -> "Unknown"
+    }
+
+    private fun compile(sources: HashMap<ShaderType, String>) {
+        val program = gl.createProgram()
+        val shaderIDs = mutableListOf<GlShader>()
+        for ((shaderType, shaderSource) in sources) {
+            val shader = gl.createShader(shaderType)
+
+            gl.shaderSource(shader, shaderSource)
+            gl.compileShader(shader)
+
+            if (!shader.compileStatus) {
+                logErrorCore("Shader (${shaderType.name()}) compile error: ${gl.getShaderInfoLog(shader)}")
+                gl.deleteShader(shader)
+            }
+
+            gl.attachShader(program, shader)
+            shaderIDs.add(shader)
+        }
+
+        rendererID = program
+        gl.linkProgram(rendererID!!)
+
+        if (!rendererID!!.linkStatus) {
+            logErrorCore("Shader link error ${gl.getProgramInfoLog(rendererID!!)}")
+
+            gl.deleteProgram(rendererID!!)
+            for (shader in shaderIDs) gl.deleteShader(shader)
+        }
+
+        for (shader in shaderIDs) gl.detachShader(rendererID!!, shader)
+    }
+
+    override fun close() = gl.deleteProgram(rendererID!!)
+
+    override fun bind() = gl.useProgram(rendererID!!)
 
     override fun unbind() = gl.useProgram(GlProgram.NULL)
 
-    fun uploadUniform(name: String, value: Float) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
+    fun uploadUniform(name: String, value: Float) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
 
-    fun uploadUniform(name: String, value: Vec2) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
+    fun uploadUniform(name: String, value: Vec2) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
 
-    fun uploadUniform(name: String, value: Vec3) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
+    fun uploadUniform(name: String, value: Vec3) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
 
-    fun uploadUniform(name: String, value: Vec4) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
+    fun uploadUniform(name: String, value: Vec4) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
 
-    fun uploadUniform(name: String, value: Mat3) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
+    fun uploadUniform(name: String, value: Mat3) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
 
-    fun uploadUniform(name: String, value: Mat4) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
+    fun uploadUniform(name: String, value: Mat4) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
 
-    fun uploadUniform(name: String, value: Int) = gl.uniform(gl.getUniformLocation(rendererID, name), value)
+    fun uploadUniform(name: String, value: Int) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
 }

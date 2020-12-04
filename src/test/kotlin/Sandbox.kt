@@ -144,39 +144,7 @@ class ExampleLayer : Layer() {
 
         flatColorShader = Shader.create(flatColorVertexSrc, flatColorFragmentSrc)
 
-
-        val textureVertexSrc = """
-                #version 330 core
-                
-                layout(location = 0) in vec3 a_Position;
-                layout(location = 1) in vec4 a_TexCoord;
-                
-                out vec2 v_TexCoord;
-                
-                uniform mat4 u_ViewProjection;
-                uniform mat4 u_Transform;
-                
-                void main() {
-                    v_TexCoord = a_TexCoord.xy;
-                    gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-                }
-            """.trimIndent()
-
-        val textureFragmentSrc = """
-                #version 330 core
-                
-                in vec2 v_TexCoord;
-                
-                out vec4 color;
-                
-                uniform sampler2D u_Texture;
-                
-                void main() {
-                    color = texture(u_Texture, v_TexCoord);
-                }
-            """.trimIndent()
-
-        textureShader = Shader.create(textureVertexSrc, textureFragmentSrc)
+        textureShader = Shader.create("./src/test/resources/shaders/TextureShader.glsl")
 
         texture = Texture2D.create("./src/test/resources/textures/Checkerboard.png")
         logoTexture = Texture2D.create("./src/test/resources/textures/PumpkinLogo.png")
