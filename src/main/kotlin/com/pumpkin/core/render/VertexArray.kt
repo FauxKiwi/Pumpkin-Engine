@@ -5,7 +5,6 @@ import com.pumpkin.core.logErrorCore
 import com.pumpkin.platform.opengl.OpenGLVertexArray
 
 interface VertexArray : AutoCloseable {
-    val vertexBuffers: MutableList<Ref<VertexBuffer>>
     var indexBuffer: Ref<IndexBuffer>?
 
     companion object {
@@ -21,4 +20,8 @@ interface VertexArray : AutoCloseable {
     fun bind()
 
     fun unbind()
+
+    fun getVertexBuffers(): MutableList<Ref<VertexBuffer>>
+
+    fun addVertexBuffer(vertexBuffer: Ref<VertexBuffer>): Boolean
 }

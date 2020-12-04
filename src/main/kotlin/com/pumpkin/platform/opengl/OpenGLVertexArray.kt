@@ -6,42 +6,23 @@ import com.pumpkin.core.render.BufferLayout
 import com.pumpkin.core.render.IndexBuffer
 import com.pumpkin.core.render.VertexArray
 import com.pumpkin.core.render.VertexBuffer
+import com.pumpkin.core.stack
 import gln.gl
 import gln.identifiers.GlVertexArray
 
 class OpenGLVertexArray : VertexArray {
-    override val vertexBuffers: MutableList<Ref<VertexBuffer>> = object : ArrayList<Ref<VertexBuffer>>() {
-            override fun add(element: Ref<VertexBuffer>): Boolean {
-                if (element().layout == null) {
-                    logErrorCore("Vertex buffer has no layout")
-                    throw Throwable()
-                }
-                gl.bindVertexArray(rendererID)
-                element().bind()
-                val layout: BufferLayout = element().layout!!
-                for (bufferElement in layout) {
-                    gl.enableVertexAttribArray(vertexBufferIndex)
-                    gl.vertexAttribPointer(
-                        vertexBufferIndex,
-                        bufferElement.dataType.componentCount(),
-                        bufferElement.dataType.toVertexAttrType(),
-                        bufferElement.normalized,
-                        layout.getStride(),
-                        bufferElement.offset
-                    )
-                    vertexBufferIndex++
-                }
-                return super.add(element)
-            }
-        }
+    private val vertexBuffers: MutableList<Ref<VertexBuffer>> = mutableListOf()
+
     override var indexBuffer: Ref<IndexBuffer>? = null
         set(value) {
             if (value == null) {
                 logErrorCore("Null passed as indexBuffer")
                 throw Throwable()
             }
-            gl.bindVertexArray(rendererID)
-            value().bind()
+            stack {
+                gl.bindVertexArray(rendererID)
+                value().bind()
+            }
             field = value
         }
 
@@ -58,4 +39,33 @@ class OpenGLVertexArray : VertexArray {
     override fun bind() = gl.bindVertexArray(rendererID)
 
     override fun unbind() = gl.bindVertexArray(GlVertexArray())
+
+    override fun getVertexBuffers(): MutableList<Ref<VertexBuffer>> {
+        return vertexBuffers
+    }
+
+    override fun addVertexBuffer(vertexBuffer: Ref<VertexBuffer>): Boolean {
+        if (vertexBuffer().layout == null) {
+            logErrorCore("Vertex buffer has no layout")
+            throw Throwable()
+        }
+        stack {
+            gl.bindVertexArray(rendererID)
+            vertexBuffer().bind()
+            val layout: BufferLayout = vertexBuffer().layout!!
+            for (bufferElement in layout) {
+                gl.enableVertexAttribArray(vertexBufferIndex)
+                gl.vertexAttribPointer(
+                    vertexBufferIndex,
+                    bufferElement.dataType.componentCount(),
+                    bufferElement.dataType.toVertexAttrType(),
+                    bufferElement.normalized,
+                    layout.getStride(),
+                    bufferElement.offset
+                )
+                vertexBufferIndex++
+            }
+        }
+        return vertexBuffers.add(vertexBuffer)
+    }
 }

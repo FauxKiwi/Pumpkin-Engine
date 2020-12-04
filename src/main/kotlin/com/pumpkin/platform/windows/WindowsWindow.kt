@@ -1,9 +1,8 @@
 package com.pumpkin.platform.windows
 
-import com.pumpkin.core.Application
+import com.pumpkin.core.*
 import com.pumpkin.core.event.*
 import com.pumpkin.core.logErrorCore
-import com.pumpkin.core.logInfo
 import com.pumpkin.core.logInfoCore
 import com.pumpkin.core.render.GraphicsContext
 import com.pumpkin.platform.opengl.OpenGLContext
@@ -42,43 +41,46 @@ class WindowsWindow : Window {
         }
 
     override fun init(windowProps: WindowProps) {
-        data = WindowData(windowProps.title, windowProps.width, windowProps.height, true, null)
+        stack {
+            data = WindowData(windowProps.title, windowProps.width, windowProps.height, true, null)
 
-        glfw.init()
-        glfw.errorCallback = this::errorCallback
+            glfw.init()
+            glfw.errorCallback = this::errorCallback
 
-        window = GlfwWindow(data.width, data.height, data.title)
-        context = OpenGLContext(window)
-        context.init()
+            window = GlfwWindow(data.width, data.height, data.title)
+            context = OpenGLContext(window)
+            context.init()
 
-        val icon = gli.load("./src/test/resources/textures/PumpkinLogo.png")
-        val iconImage = GLFWImage.malloc(); val iconImageBuffer = GLFWImage.malloc(1)
-        iconImage.set(icon.extent()[0], icon.extent()[1], icon.data())
-        iconImageBuffer.put(0, iconImage)
-        window.setIcon(iconImageBuffer)
+            val icon = gli.load("./src/test/resources/textures/PumpkinLogo.png")
+            val iconImage = GLFWImage.malloc();
+            val iconImageBuffer = GLFWImage.malloc(1)
+            iconImage.set(icon.extent()[0], icon.extent()[1], icon.data())
+            iconImageBuffer.put(0, iconImage)
+            window.setIcon(iconImageBuffer)
 
-        logInfoCore("Created Window \"${data.title}\" (${data.width} x ${data.height})")
+            logInfoCore("Created Window \"${data.title}\" (${data.width} x ${data.height})")
 
-        vSync = data.vSync
+            vSync = data.vSync
 
-        GL.createCapabilities()
+            GL.createCapabilities()
 
-        window.windowSizeCB = this::windowSizeCallback
-        window.windowCloseCB = this::windowCloseCallback
+            window.windowSizeCB = this::windowSizeCallback
+            window.windowCloseCB = this::windowCloseCallback
 
-        window.keyCB = { key, _, action, _ ->
-            keyCallback(key, action)
+            window.keyCB = { key, _, action, _ ->
+                keyCallback(key, action)
+            }
+
+            window.mouseButtonCB = { button, action, _ ->
+                mouseButtonCallback(button, action)
+            }
+            window.scrollCB = this::scrollCallback
+            window.cursorPosCB = this::cursorPosCallback
+
+            logInfoCore("Installed Callbacks for Window \"${data.title}\"")
+
+            DEBUG = false
         }
-
-        window.mouseButtonCB = { button, action, _ ->
-            mouseButtonCallback(button, action)
-        }
-        window.scrollCB = this::scrollCallback
-        window.cursorPosCB = this::cursorPosCallback
-
-        logInfoCore("Installed Callbacks for Window \"${data.title}\"")
-
-        DEBUG = false
     }
 
     override fun run() = Application.get().runI().also { Application.get().shutdownI() }

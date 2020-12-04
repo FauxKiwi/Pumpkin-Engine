@@ -24,7 +24,8 @@ class ExampleLayer : Layer() {
     private lateinit var vertexArray: Ref<VertexArray>
     private lateinit var flatColorShader: Ref<Shader>
     private lateinit var squareVA: Ref<VertexArray>
-    private lateinit var textureShader: Ref<Shader>
+    //private lateinit var textureShader: Ref<Shader>
+    private lateinit var shaderLibrary: Ref<ShaderLibrary>
 
     private lateinit var texture: Ref<Texture2D>
     private lateinit var logoTexture: Ref<Texture2D>
@@ -63,7 +64,7 @@ class ExampleLayer : Layer() {
             )
         )
         vertexBuffer().layout = layout
-        vertexArray().vertexBuffers.add(vertexBuffer.take())
+        vertexArray().addVertexBuffer(vertexBuffer.take())
 
         val indexBuffer = IndexBuffer.create(indices)
         vertexArray().indexBuffer = indexBuffer.take()
@@ -79,7 +80,7 @@ class ExampleLayer : Layer() {
             )
         )
         squareVB().layout = squareLayout
-        squareVA().vertexBuffers.add(squareVB.take())
+        squareVA().addVertexBuffer(squareVB.take())
 
         val squareIB = IndexBuffer.create(squareIndices)
         squareVA().indexBuffer = squareIB.take()
@@ -114,7 +115,7 @@ class ExampleLayer : Layer() {
                 }
             """.trimIndent()
 
-        shader = Shader.create(vertexSrc, fragmentSrc)
+        shader = Shader.create("Triangle", vertexSrc, fragmentSrc)
 
 
         val flatColorVertexSrc = """
@@ -142,16 +143,17 @@ class ExampleLayer : Layer() {
                 }
             """.trimIndent()
 
-        flatColorShader = Shader.create(flatColorVertexSrc, flatColorFragmentSrc)
+        flatColorShader = Shader.create("FlatColor", flatColorVertexSrc, flatColorFragmentSrc)
 
-        textureShader = Shader.create("./src/test/resources/shaders/TextureShader.glsl")
+        shaderLibrary = Ref(ShaderLibrary())
+
+        val textureShader = shaderLibrary().load("./src/test/resources/shaders/Texture.glsl")
 
         texture = Texture2D.create("./src/test/resources/textures/Checkerboard.png")
         logoTexture = Texture2D.create("./src/test/resources/textures/PumpkinLogo.png")
 
         textureShader().bind()
         (textureShader() as OpenGLShader).uploadUniform("u_Texture", 0)
-
 
         vertexBuffer.release()
         indexBuffer.release()
@@ -164,9 +166,9 @@ class ExampleLayer : Layer() {
         vertexArray.release()
         flatColorShader.release()
         squareVA.release()
-        textureShader.release()
         texture.release()
         logoTexture.release()
+        shaderLibrary.release()
     }
 
     override fun onUpdate(ts: Timestep) {
@@ -204,10 +206,11 @@ class ExampleLayer : Layer() {
             }
         }
 
+        val textureShader = shaderLibrary()["Texture"]
         texture().bind()
-        Renderer.submit(textureShader(), squareVA(), glm.scale(Mat4.identity, Vec3(1.5f)))
+        Renderer.submit(textureShader, squareVA(), glm.scale(Mat4.identity, Vec3(1.5f)))
         logoTexture().bind()
-        Renderer.submit(textureShader(), squareVA(), glm.scale(Mat4.identity, Vec3(1.5f)))
+        Renderer.submit(textureShader, squareVA(), glm.scale(Mat4.identity, Vec3(1.5f)))
 
         //Renderer.submit(shader, vertexArray)
 
@@ -216,7 +219,7 @@ class ExampleLayer : Layer() {
 
     override fun onImGuiRender() {
         ImGui.begin("Camera: Transform")
-        ImGui.dragFloat3("Position", cameraPosition, 0.01f)
+        dragFloat3("Position", cameraPosition, 0.01f)
         ImGui.dragFloat("Rotation", ::cameraRotation, vMin = 0f, vMax = 360f)
         ImGui.end()
         ImGui.begin("Squares: Color")
@@ -251,7 +254,7 @@ fun main() {
     Application.set(TestApplication())
 }
 
-fun ImGui.dragFloat3(label: String, vec: Vec3, speed: Float = 1f, min: Float = 0f, max: Float = 0f) {
+fun dragFloat3(label: String, vec: Vec3, speed: Float = 1f, min: Float = 0f, max: Float = 0f) {
     val vecRef = vec.toFloatArray()
     ImGui.dragFloat3(label, vecRef, speed, min, max)
     vec[0] = vecRef[0]

@@ -3,6 +3,7 @@ package com.pumpkin.core.imgui
 import com.pumpkin.core.Timestep
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.logDebug
+import com.pumpkin.core.stack
 import com.pumpkin.core.window.Window
 import glm_.vec2.Vec2
 import imgui.*
@@ -12,11 +13,15 @@ import imgui.demo.ShowDemoWindowWidgets
 import imgui.font.Font
 import imgui.impl.gl.ImplGL3
 import imgui.impl.glfw.ImplGlfw
+import org.lwjgl.glfw.GLFW
+import uno.glfw.glfw
 import kotlin.math.cos
 import kotlin.math.sin
 
 class ImGuiLayer : Layer("ImGui") {
     private var showDemoWindow = false
+    private var lightMode = false
+    //set(value) {if (value) ImGui.styleColorsLight(style) else ImGui.styleColorsDark(style); field = value}
 
     private lateinit var context: Context
     private lateinit var implGlfw: ImplGlfw
@@ -32,17 +37,19 @@ class ImGuiLayer : Layer("ImGui") {
     override fun onAttach() {
         context = Context()
 
-        ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableKeyboard     // Enable Keyboard Controls
-        ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableGamepad    // Enable Gamepad Controls
-        //ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.DockingEnable         // Enable Docking
-        //ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.ViewportsEnable
+        stack {
+            ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableKeyboard     // Enable Keyboard Controls
+            ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableGamepad    // Enable Gamepad Controls
+            //ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.DockingEnable         // Enable Docking
+            //ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.ViewportsEnable
 
-        ImGui.styleColorsDark()
+            ImGui.styleColorsDark()
 
-        style = context.style
-        style.windowRounding = 0f
-        style.colors[Col.WindowBg].w = 1f
-        style.frameRounding = 3.33f
+            style = context.style
+            style.windowRounding = 0f
+            style.colors[Col.WindowBg].w = 1f
+            style.frameRounding = 3.33f
+        }
 
         implGlfw = ImplGlfw.initForOpenGL(Window.getWindow().window, true)/*(Window.getWindow().window)*/
         implGL3 = ImplGL3()
@@ -67,6 +74,7 @@ class ImGuiLayer : Layer("ImGui") {
             val overlay = "avg ${String.format("%.3f", values0.average())}"
             plotLines("Frametime", values0, valuesOffset, overlay, 0f, 60f, Vec2(0f, 80f))
             checkbox("Demo", ::showDemoWindow)
+            checkbox("Light Mode", ::lightMode)
             end()
         }
     }
