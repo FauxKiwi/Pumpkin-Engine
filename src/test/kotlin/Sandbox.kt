@@ -31,6 +31,9 @@ class ExampleLayer : Layer() {
 
     private val scale: Mat4 = glm.scale(Mat4.identity, Vec3(0.1f))
 
+
+    private var sqrt = 20
+
     @ExperimentalUnsignedTypes
     override fun onAttach() {
         val vertices = floatArrayOf(
@@ -178,8 +181,8 @@ class ExampleLayer : Layer() {
         //Renderer.submit(blueShader, squareVA)
         flatColorShader().bind()
         (flatColorShader() as OpenGLShader).uploadUniform("u_Color", squareColor)
-        for (y in 0..20) {
-            for (x in 0..20) {
+        for (y in 0..sqrt) {
+            for (x in 0..sqrt) {
                 val pos = Vec3(x * 0.11f, y * 0.11f, 0f)
                 val transform: Mat4 = glm.translate(Mat4.identity, pos) * scale
                 Renderer.submit(flatColorShader(), squareVA(), transform)
@@ -203,7 +206,8 @@ class ExampleLayer : Layer() {
         ImGui.dragFloat("Rotation", cameraController::cameraRotation, vMin = 0f, vMax = 360f)
         ImGui.dragFloat("Zoom", cameraController::zoomLevel, vMin = 0.25f, vMax = 100f, vSpeed = 0.05f, format = "%.2f")
         ImGui.end()
-        ImGui.begin("Squares: Color")
+        ImGui.begin("Squares")
+        ImGui.dragInt("Number", ::sqrt, vMin = 1, vMax = 1000)
         ImGui.colorEdit3("Color", squareColor)
         ImGui.end()
     }
