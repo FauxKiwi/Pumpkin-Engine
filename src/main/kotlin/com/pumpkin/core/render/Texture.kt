@@ -1,7 +1,7 @@
 package com.pumpkin.core.render
 
+import com.pumpkin.core.PumpkinError
 import com.pumpkin.core.Ref
-import com.pumpkin.core.logErrorCore
 import com.pumpkin.platform.opengl.OpenGLTexture2D
 
 interface Texture : AutoCloseable {
@@ -15,8 +15,7 @@ interface Texture2D : Texture {
     companion object {
         fun create(path: String): Ref<Texture2D> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
-                logErrorCore("Having no render API is currently not supported")
-                throw Throwable()
+                throw PumpkinError("Having no render API is currently not supported")
             }
             RendererAPI.API.OpenGL -> Ref(OpenGLTexture2D(path))
         }

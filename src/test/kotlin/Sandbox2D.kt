@@ -1,7 +1,4 @@
-import com.pumpkin.core.Application
-import com.pumpkin.core.OrthographicCameraController
-import com.pumpkin.core.Ref
-import com.pumpkin.core.Timestep
+import com.pumpkin.core.*
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.render.*
@@ -11,6 +8,7 @@ import glm_.mat4x4.Mat4
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
 import imgui.ImGui
+import imgui.stb.te.delete
 
 class Sandbox2DLayer : Layer("Sandbox2D") {
     private val cameraController = OrthographicCameraController(16f / 9f, false)

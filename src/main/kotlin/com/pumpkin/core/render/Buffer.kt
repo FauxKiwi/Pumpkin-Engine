@@ -1,7 +1,7 @@
 package com.pumpkin.core.render
 
+import com.pumpkin.core.PumpkinError
 import com.pumpkin.core.Ref
-import com.pumpkin.core.logErrorCore
 import com.pumpkin.platform.opengl.OpenGLIndexBuffer
 import com.pumpkin.platform.opengl.OpenGLVertexBuffer
 import gln.VertexAttrType
@@ -72,8 +72,7 @@ interface VertexBuffer : AutoCloseable {
     companion object {
         fun create(vertices: FloatArray): Ref<VertexBuffer> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
-                logErrorCore("Having no render API is currently not supported")
-                throw Throwable()
+                throw PumpkinError("Having no render API is currently not supported")
             }
             RendererAPI.API.OpenGL -> Ref(OpenGLVertexBuffer(vertices))
         }
@@ -91,8 +90,7 @@ interface IndexBuffer : AutoCloseable{
         @ExperimentalUnsignedTypes
         fun create(indices: UIntArray): Ref<IndexBuffer> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
-                logErrorCore("Having no render API is currently not supported")
-                throw Throwable()
+                throw PumpkinError("Having no render API is currently not supported")
             }
             RendererAPI.API.OpenGL -> Ref(OpenGLIndexBuffer(indices))
         }

@@ -1,24 +1,21 @@
 package com.pumpkin.core.render
 
+import com.pumpkin.core.PumpkinError
 import com.pumpkin.core.Ref
-import com.pumpkin.core.logErrorCore
 import com.pumpkin.platform.opengl.OpenGLShader
-import glm_.mat4x4.Mat4
 
 interface Shader : AutoCloseable {
     companion object {
         fun create(name: String, vertexSrc: String, fragmentSrc: String): Ref<Shader> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
-                logErrorCore("Having no render API is currently not supported")
-                throw Throwable()
+                throw PumpkinError("Having no render API is currently not supported")
             }
             RendererAPI.API.OpenGL -> Ref(OpenGLShader(name, vertexSrc, fragmentSrc))
         }
 
         fun create(filepath: String): Ref<Shader> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
-                logErrorCore("Having no render API is currently not supported")
-                throw Throwable()
+                throw PumpkinError("Having no render API is currently not supported")
             }
             RendererAPI.API.OpenGL -> Ref(OpenGLShader(filepath))
         }
@@ -41,12 +38,12 @@ class ShaderLibrary : AutoCloseable {
     }
 
     fun add(name: String, shader: Ref<Shader>) {
-        if(exists(name)) throw Throwable().also { logErrorCore("Shader already exists") }
+        if(exists(name)) throw PumpkinError("Shader already exists")
         else shaders[name] = shader
     }
 
     fun add(shader: Ref<Shader>) {
-        if(exists(shader().name)) throw Throwable().also { logErrorCore("Shader already exists") }
+        if(exists(shader().name)) throw PumpkinError("Shader already exists")
         else shaders[shader().name] = shader
     }
 
@@ -58,7 +55,7 @@ class ShaderLibrary : AutoCloseable {
 
     inline operator fun plusAssign(shader: Ref<Shader>) = add(shader)
 
-    operator fun get(name: String): Shader = if(!exists(name)) throw Throwable().also { logErrorCore("Shader does not exist") } else shaders[name]!!()
+    operator fun get(name: String): Shader = if(!exists(name)) throw PumpkinError("Shader does not exist") else shaders[name]!!()
 
     fun exists(name: String) = shaders.containsKey(name)
 }

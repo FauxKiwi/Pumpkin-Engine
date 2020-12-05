@@ -1,6 +1,6 @@
 package com.pumpkin.platform.opengl
 
-import com.pumpkin.core.logErrorCore
+import com.pumpkin.core.PumpkinError
 import com.pumpkin.core.render.RendererAPI
 import com.pumpkin.core.render.VertexArray
 import com.pumpkin.core.stack
@@ -22,7 +22,7 @@ class OpenGLRendererAPI : RendererAPI {
     override fun clear() = gl.clear(ClearBufferMask.COLOR_BUFFER_BIT or ClearBufferMask.DEPTH_BUFFER_BIT)
 
     override fun drawIndexed(vertexArray: VertexArray) = vertexArray.indexBuffer?.let { gl.drawElements(DrawMode.TRIANGLES, it().count) } ?:
-        throw Throwable().also { logErrorCore("No index buffer!") }
+        throw PumpkinError("No index buffer!")
 
     override fun setViewport(x: Int, y: Int, width: Int, height: Int) {
         gl.viewport(x, y, width, height)

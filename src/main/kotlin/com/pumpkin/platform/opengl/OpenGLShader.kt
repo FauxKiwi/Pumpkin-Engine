@@ -1,5 +1,6 @@
 package com.pumpkin.platform.opengl
 
+import com.pumpkin.core.PumpkinError
 import com.pumpkin.core.logErrorCore
 import com.pumpkin.core.render.Shader
 import com.pumpkin.core.stack
@@ -46,10 +47,10 @@ class OpenGLShader : Shader {
             var pos = source.indexOf(typeToken)
             while (pos != -1) {
                 val eol = source.indexOf('\r', pos)
-                if (eol == -1) throw Throwable().also { logErrorCore("Syntax error") }
+                if (eol == -1) throw PumpkinError().also { logErrorCore("Syntax error") }
                 val begin = pos + typeTokenLength + 1
                 val type = source.substring(begin, eol)
-                if (shaderTypeFromString(type) == null) throw Throwable().also { logErrorCore("No valid shader type specified") }
+                if (shaderTypeFromString(type) == null) throw PumpkinError().also { logErrorCore("No valid shader type specified") }
                 var nextLinePos = eol + 2
                 while (source[nextLinePos + 1] == '\n') nextLinePos += 2
                 pos = source.indexOf(typeToken, nextLinePos)
@@ -101,7 +102,7 @@ class OpenGLShader : Shader {
                 for (shader in shaderIDs) gl.deleteShader(shader)
             }
 
-            for (shader in shaderIDs) gl.detachShader(rendererID!!, shader)
+            for (shader in shaderIDs) gl.detachShader(rendererID!!, shader).also { gl.deleteShader(shader) }
         }
     }
 

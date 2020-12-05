@@ -20,6 +20,7 @@ Current version: 1.0
 - Start working on the level editor
 ***
 ## Get it!
+You can use a dependency management system although at the moment it's safer to clone the project.
 ### Gradle (Groovy DSL)
 
     repositories {
@@ -35,7 +36,7 @@ For other dependency management systems, please refer to the wiki.
 ***
 ## Use it!
 Before you start writing your first game, take a look at the Sandbox.kt test. <br>
-Since this is in Kotlin, you can also use Java.
+Since this is currently only using Kotlin JVM, you can also use Java.
 ### Creating an application and main() function
 To create an application, create a class that extends {com.pumpkin.core.Application}. <br>
 In your main() function, simply call
