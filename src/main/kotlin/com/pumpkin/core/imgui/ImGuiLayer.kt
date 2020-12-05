@@ -30,7 +30,7 @@ class ImGuiLayer : Layer("ImGui") {
     private var font: Font? = null
     private lateinit var style: Style
 
-    private var values0 = FloatArray(200) {0f}
+    private var values0 = FloatArray(100) {0f}
     private var refreshTime = 0.0
     private var valuesOffset = 0
 
@@ -71,8 +71,8 @@ class ImGuiLayer : Layer("ImGui") {
             begin("Framerate")
             text("Your Framerate is: ${ImGui.io.framerate}")
             text("Update time: ${1000 / ImGui.io.framerate}")
-            val overlay = "avg ${String.format("%.3f", values0.average())}"
-            plotLines("Frametime", values0, valuesOffset, overlay, 0f, 60f, Vec2(0f, 80f))
+            val overlay = "min ${String.format("%.3f", values0.min())}   max ${String.format("%.3f", values0.max())}"
+            plotLines("Frametime", values0, valuesOffset/*, scaleMin = 0f, scaleMax = 60f*/, overlayText = overlay, graphSize = Vec2(0f, 80f))
             checkbox("Demo", ::showDemoWindow)
             checkbox("Light Mode", ::lightMode)
             end()
@@ -99,12 +99,15 @@ class ImGuiLayer : Layer("ImGui") {
     }
 
     override fun onUpdate(ts: Timestep) {
-        if (refreshTime == 0.0) refreshTime =
+        /*if (refreshTime == 0.0) refreshTime =
             ImGui.time
         while (refreshTime < ImGui.time) {
             values0[valuesOffset] = 1000 / ImGui.io.framerate
             valuesOffset = (valuesOffset + 1) % values0.size
             refreshTime += 1f / 60f
-        }
+        }*/
+        values0[valuesOffset] = 1000 / ImGui.io.framerate
+        valuesOffset++
+        if (valuesOffset >= 100) valuesOffset = 0
     }
 }

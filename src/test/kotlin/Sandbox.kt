@@ -12,13 +12,10 @@ import glm_.mat4x4.Mat4
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
 import imgui.ImGui
+import imgui.SliderFlag
 
 class ExampleLayer : Layer() {
-    private var cameraMoveSpeed = 30f
-    private var cameraRotationSpeed = 180f
-
-    private val cameraPosition = Vec3()
-    private var cameraRotation = 0f
+    private val cameraController = OrthographicCameraController(16f / 9f, true)
 
     private lateinit var shader: Ref<Shader>
     private lateinit var vertexArray: Ref<VertexArray>
@@ -172,28 +169,11 @@ class ExampleLayer : Layer() {
     }
 
     override fun onUpdate(ts: Timestep) {
-        if (isKeyPressed(PE_KEY_A))
-            cameraPosition -= Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
+        ////// Update //////
+        cameraController.onUpdate(ts)
 
-        if (isKeyPressed(PE_KEY_D))
-            cameraPosition += Vec3(0.05f, 0f, 0f) * cameraMoveSpeed * ts
-
-        if (isKeyPressed(PE_KEY_S))
-            cameraPosition -= Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
-
-        if (isKeyPressed(PE_KEY_W))
-            cameraPosition += Vec3(0f, 0.05f, 0f) * cameraMoveSpeed * ts
-
-        if (isKeyPressed(PE_KEY_Q))
-            cameraRotation -= cameraRotationSpeed * ts
-
-        if (isKeyPressed(PE_KEY_E))
-            cameraRotation += cameraRotationSpeed * ts
-
-        Application.get().camera.position = cameraPosition
-        Application.get().camera.rotation = cameraRotation
-
-        Renderer.beginScene(Application.get().camera)
+        ////// Render //////
+        Renderer.beginScene(cameraController.camera)
 
         //Renderer.submit(blueShader, squareVA)
         flatColorShader().bind()
@@ -219,8 +199,9 @@ class ExampleLayer : Layer() {
 
     override fun onImGuiRender() {
         ImGui.begin("Camera: Transform")
-        dragFloat3("Position", cameraPosition, 0.01f)
-        ImGui.dragFloat("Rotation", ::cameraRotation, vMin = 0f, vMax = 360f)
+        dragFloat3("Position", cameraController.cameraPosition, 0.01f)
+        ImGui.dragFloat("Rotation", cameraController::cameraRotation, vMin = 0f, vMax = 360f)
+        ImGui.dragFloat("Zoom", cameraController::zoomLevel, vMin = 0.25f, vMax = 100f, vSpeed = 0.05f, format = "%.2f")
         ImGui.end()
         ImGui.begin("Squares: Color")
         ImGui.colorEdit3("Color", squareColor)
@@ -228,12 +209,7 @@ class ExampleLayer : Layer() {
     }
 
     override fun onEvent(event: Event) {
-        val dispatcher = EventDispatcher(event)
-        dispatcher.dispatch<KeyPressedEvent> {
-            if (keyCode == PE_KEY_TAB)
-                logDebug("Tab is pressed (event)")
-            false
-        }
+        cameraController.onEvent(event)
     }
 }
 

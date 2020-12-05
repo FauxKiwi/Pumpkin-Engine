@@ -37,8 +37,6 @@ open class Application {
     private lateinit var layerStack: LayerStack
     private lateinit var imGuiLayer: ImGuiLayer
 
-    val camera = OrthographicCamera(-1.6f, 1.6f, -0.9f, 0.9f)
-
     internal fun initI() {
         running = true
         layerStack = LayerStack()

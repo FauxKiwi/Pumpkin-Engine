@@ -6,10 +6,9 @@ import glm_.mat4x4.Mat4
 import glm_.vec3.Vec3
 
 class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
-    private val projectionMatrix: Mat4 = glm.ortho(left, right, bottom, top, -1f, 1f)
+    private var projectionMatrix: Mat4 = glm.ortho(left, right, bottom, top, -1f, 1f)
     private var viewMatrix: Mat4 = Mat4.identity
     var viewProjectionMatrix: Mat4 = projectionMatrix * viewMatrix
-
     var position: Vec3 = Vec3()
         set(value) {
             field = value
@@ -20,6 +19,10 @@ class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
             field = value
             recalculateViewMatrix()
         }
+
+    fun setProjection(left: Float, right: Float, bottom: Float, top: Float) {
+        projectionMatrix = glm.ortho(left, right, bottom, top, -1f, 1f)
+    }
 
     private fun recalculateViewMatrix() {
         stack {
