@@ -1,0 +1,73 @@
+<!--
+##### NOTE #####
+This project is not managed with maven!
+This file is just for github.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <groupId>com.pumpkin</groupId>
+    <artifactId>pumpkin-engine</artifactId>
+    <modelVersion>1.0</modelVersion>
+    <version>1.0</version>
+
+    <repositories>
+        <repository>
+            <id>Jitpack</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.kotlin-graphics.imgui</groupId>
+            <artifactId>gl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.kotlin-graphics.imgui</groupId>
+            <artifactId>glfw</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.kotlin-graphics.imgui</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-jemalloc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-glfw</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-opengl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-remotery</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-stb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-openal</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-opengles</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-jawt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-vulkan</artifactId>
+        </dependency>
+    </dependencies>
+</project>
