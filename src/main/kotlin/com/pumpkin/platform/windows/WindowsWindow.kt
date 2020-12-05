@@ -102,7 +102,6 @@ class WindowsWindow : Window {
     private fun windowSizeCallback(size: Vec2i) {
         data.width = size[0]
         data.height = size[1]
-        glViewport(size)
 
         val event = WindowResizeEvent(data.width, data.height)
         data.eventCallback?.let { it(event) }

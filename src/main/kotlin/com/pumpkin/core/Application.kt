@@ -3,6 +3,7 @@ package com.pumpkin.core
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.EventDispatcher
 import com.pumpkin.core.event.WindowCloseEvent
+import com.pumpkin.core.event.WindowResizeEvent
 import com.pumpkin.core.imgui.ImGuiLayer
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.layer.LayerStack
@@ -34,6 +35,7 @@ open class Application {
     private var lastFrameTime = 0f
 
     private lateinit var window: Window
+    private var minimized = false
     private lateinit var layerStack: LayerStack
     private lateinit var imGuiLayer: ImGuiLayer
 
@@ -77,6 +79,7 @@ open class Application {
         if (event.handled) {
             return
         }
+        dispatcher.dispatch(::onWindowResize)
         for (layer in layerStack.layersReversed) {
             layer.onEvent(event)
             if (event.handled) {
@@ -94,9 +97,10 @@ open class Application {
 
                 run()
 
-                for (layer in layerStack.layers) {
-                    layer.onUpdate(timestep)
-                }
+                if (!minimized)
+                    for (layer in layerStack.layers) {
+                        layer.onUpdate(timestep)
+                    }
 
                 imGuiLayer.begin()
                 for (layer in layerStack.layers) {
@@ -125,4 +129,14 @@ open class Application {
     }
 
     open fun shutdown() = Unit
+
+    private fun onWindowResize(event: WindowResizeEvent): Boolean {
+        if (event.width == 0 || event.height == 0) {
+            minimized = true
+            return false
+        }
+        minimized = false
+        Renderer.onWindowResize(event.width, event.height)
+        return false
+    }
 }

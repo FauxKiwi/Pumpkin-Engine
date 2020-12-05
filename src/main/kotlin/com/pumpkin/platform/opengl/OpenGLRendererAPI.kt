@@ -23,4 +23,8 @@ class OpenGLRendererAPI : RendererAPI {
 
     override fun drawIndexed(vertexArray: VertexArray) = vertexArray.indexBuffer?.let { gl.drawElements(DrawMode.TRIANGLES, it().count) } ?:
         throw Throwable().also { logErrorCore("No index buffer!") }
+
+    override fun setViewport(x: Int, y: Int, width: Int, height: Int) {
+        gl.viewport(x, y, width, height)
+    }
 }

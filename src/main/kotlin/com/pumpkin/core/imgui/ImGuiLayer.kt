@@ -106,7 +106,7 @@ class ImGuiLayer : Layer("ImGui") {
             valuesOffset = (valuesOffset + 1) % values0.size
             refreshTime += 1f / 60f
         }*/
-        values0[valuesOffset] = 1000 / ImGui.io.framerate
+        values0[valuesOffset] = if (ImGui.io.framerate == 0f) values0[max(valuesOffset-1, 0)] else 1000 / ImGui.io.framerate
         valuesOffset++
         if (valuesOffset >= 100) valuesOffset = 0
     }

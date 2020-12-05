@@ -29,6 +29,10 @@ object Renderer {
 
     inline fun getAPI() = RendererCommand.rendererAPI.api
 
+    fun onWindowResize(width: Int, height: Int) {
+        RendererCommand.setViewport(0, 0, width, height)
+    }
+
     data class SceneData(var viewProjectionMatrix: Mat4)
 
     val sceneData = SceneData(Mat4(0))
