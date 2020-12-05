@@ -1,5 +1,5 @@
-# Pumpkin-Engine
-A powerful and capable Kotlin 2D game engine <br>
+# Pumpkin Engine
+This is the Pumpkin Game Engine. A powerful and capable Kotlin 2D game engine using LWJGL and therefore your GPU. If you like the project, please consider to give it a star and support it. Also, your help with contributing is always welcome.<br>
 Current version: 1.0
 ***
 ## A small glimpse of the engine at the moment
