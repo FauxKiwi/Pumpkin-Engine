@@ -1,8 +1,8 @@
-import com.pumpkin.core.*
+import com.pumpkin.core.Application
+import com.pumpkin.core.OrthographicCameraController
+import com.pumpkin.core.Ref
+import com.pumpkin.core.Timestep
 import com.pumpkin.core.event.Event
-import com.pumpkin.core.event.EventDispatcher
-import com.pumpkin.core.event.KeyPressedEvent
-import com.pumpkin.core.input.*
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.render.*
 import com.pumpkin.core.window.Window
@@ -12,7 +12,6 @@ import glm_.mat4x4.Mat4
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
 import imgui.ImGui
-import imgui.SliderFlag
 
 class ExampleLayer : Layer() {
     private val cameraController = OrthographicCameraController(16f / 9f, true)

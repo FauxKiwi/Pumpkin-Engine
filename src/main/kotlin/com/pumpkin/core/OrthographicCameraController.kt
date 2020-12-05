@@ -56,7 +56,7 @@ class OrthographicCameraController(aspectRatio: Float, var rotate: Boolean) {
     }
 
     private fun onMouseScrolled(event: MouseScrolledEvent): Boolean {
-        val zoomLevel = this.zoomLevel + event.yOffset * 0.25f
+        val zoomLevel = this.zoomLevel - event.yOffset * 0.25f
         this.zoomLevel = max(zoomLevel, 0.25f)
         return false
     }
