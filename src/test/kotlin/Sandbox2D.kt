@@ -2,54 +2,16 @@ import com.pumpkin.core.*
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.render.*
-import com.pumpkin.platform.opengl.OpenGLShader
-import glm_.glm
-import glm_.mat4x4.Mat4
-import glm_.vec3.Vec3
+import glm_.vec2.Vec2
 import glm_.vec4.Vec4
 import imgui.ImGui
-import imgui.stb.te.delete
 
 class Sandbox2DLayer : Layer("Sandbox2D") {
     private val cameraController = OrthographicCameraController(16f / 9f, false)
-    private lateinit var squareVA: Ref<VertexArray>
-    private lateinit var flatColorShader: Ref<Shader>
-    private val color = Vec4()
-
-    @ExperimentalUnsignedTypes
-    override fun onAttach() {
-        val squareVertices = floatArrayOf(
-            -0.5f, -0.5f, 0f,
-            0.5f, -0.5f, 0f,
-            0.5f, 0.5f, 0f,
-            -0.5f, 0.5f, 0f,
-        )
-
-        val squareIndices = uintArrayOf(0u, 1u, 2u, 2u, 3u, 0u)
-
-        squareVA = VertexArray.create()
-
-        val squareVB = VertexBuffer.create(squareVertices)
-        val squareLayout = BufferLayout(
-            mutableListOf(
-                BufferElement(ShaderDataType.Float3, "a_Position"),
-            )
-        )
-        squareVB().layout = squareLayout
-        squareVA().addVertexBuffer(squareVB.take())
-
-        val squareIB = IndexBuffer.create(squareIndices)
-        squareVA().indexBuffer = squareIB.take()
-
-        flatColorShader = Shader.create("./src/test/resources/shaders/FlatColor.glsl")
-
-        squareVB.release()
-        squareIB.release()
-    }
+    private val color = Vec4(0.8f, 0.2f, 0.3f, 1f)
 
     override fun onDetach() {
-        squareVA.release()
-        flatColorShader.release()
+        Renderer2D.shutdown() // temporary
     }
 
     override fun onUpdate(ts: Timestep) {
@@ -57,13 +19,11 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
         cameraController.onUpdate(ts)
 
         ////// Render //////
-        Renderer.beginScene(cameraController.camera)
+        Renderer2D.beginScene(cameraController.camera)
 
-        flatColorShader().bind()
-        (flatColorShader() as OpenGLShader).uploadUniform("u_Color", color)
-        Renderer.submit(flatColorShader(), squareVA(), glm.scale(Mat4.identity, Vec3(1.5f)))
+        Renderer2D.drawQuad(Vec2(0f), Vec2(1f), color)
 
-        Renderer.endScene()
+        Renderer2D.endScene()
     }
 
     override fun onImGuiRender() {
