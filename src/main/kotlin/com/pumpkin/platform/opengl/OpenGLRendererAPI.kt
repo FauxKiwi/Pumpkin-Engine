@@ -6,6 +6,7 @@ import com.pumpkin.core.render.VertexArray
 import com.pumpkin.core.stack
 import glm_.vec4.Vec4
 import gln.*
+import gln.identifiers.GlTexture
 
 class OpenGLRendererAPI : RendererAPI {
     override val api = RendererAPI.API.OpenGL
@@ -23,8 +24,11 @@ class OpenGLRendererAPI : RendererAPI {
 
     override fun clear() = gl.clear(ClearBufferMask.COLOR_BUFFER_BIT or ClearBufferMask.DEPTH_BUFFER_BIT)
 
-    override fun drawIndexed(vertexArray: VertexArray) = vertexArray.indexBuffer?.let { gl.drawElements(DrawMode.TRIANGLES, it().count) } ?:
-        throw PumpkinError("No index buffer!")
+    override fun drawIndexed(vertexArray: VertexArray) {
+        vertexArray.indexBuffer?.let { gl.drawElements(DrawMode.TRIANGLES, it().count) }
+            ?: throw PumpkinError("No index buffer!")
+        gl.bindTexture(TextureTarget._2D, GlTexture())
+    }
 
     override fun setViewport(x: Int, y: Int, width: Int, height: Int) {
         gl.viewport(x, y, width, height)

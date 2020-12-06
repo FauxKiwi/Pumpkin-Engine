@@ -9,6 +9,8 @@ import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
+import org.lwjgl.BufferUtils
+import java.nio.ByteBuffer
 
 object Renderer2D {
     lateinit var data: Scope<Renderer2DStorage>
@@ -19,10 +21,17 @@ object Renderer2D {
             Scope(
                 Renderer2DStorage(
                     VertexArray.create(),
-                    Shader.create("./src/main/resources/shaders/FlatColor.glsl"),
-                    Shader.create("./src/main/resources/shaders/Texture.glsl")
+                    Shader.create("./src/main/resources/shaders/Texture.glsl"),
+                    Texture2D.create(1, 1)
                 )
             )
+        val whiteTextureData = ByteBuffer.allocateDirect(4).apply {
+            put(0, 0xff.toByte())
+            put(1, 0xff.toByte())
+            put(2, 0xff.toByte())
+            put(3, 0xff.toByte())
+        }
+        data().whiteTexture().setData(whiteTextureData, whiteTextureData.capacity())
 
         val squareVertices = floatArrayOf(
             -0.5f, -0.5f, 0f, 0f, 0f,
@@ -55,11 +64,6 @@ object Renderer2D {
     fun shutdown() = data.close()
 
     fun beginScene(camera: OrthographicCamera) {
-        data().flatColorShader().run {
-            bind()
-            setMat4("u_ViewProjection", camera.viewProjectionMatrix)
-            setMat4("u_Transform", Mat4.identity)
-        }
         data().textureShader().run {
             bind()
             setMat4("u_ViewProjection", camera.viewProjectionMatrix)
@@ -73,12 +77,12 @@ object Renderer2D {
         drawQuad(Vec3(position, 0), size, color)
 
     fun drawQuad(position: Vec3 = Vec3(0f), size: Vec2 = Vec2(1f), color: Vec4) = stack {
-        data().flatColorShader().run {
-            bind()
+        data().textureShader().run {
             setMat4(
                 "u_Transform",
                 glm.translate(Mat4.identity, position) * glm.scale(Mat4.identity, Vec3(size, 1f))
             )
+            data().whiteTexture().bind()
             setFloat4("u_Color", color)
         }
         data().quadVertexArray().bind()
@@ -90,7 +94,6 @@ object Renderer2D {
 
     fun drawQuad(position: Vec3 = Vec3(0f), size: Vec2 = Vec2(1f), texture: Texture2D, color: Vec4 = Vec4(1f)) = stack {
         data().textureShader().run {
-            bind()
             setMat4(
                 "u_Transform",
                 glm.translate(Mat4.identity, position) * glm.scale(Mat4.identity, Vec3(size, 1f))
@@ -106,13 +109,13 @@ object Renderer2D {
 
 data class Renderer2DStorage(
     var quadVertexArray: Ref<VertexArray>,
-    var flatColorShader: Ref<Shader>,
-    var textureShader: Ref<Shader>
+    var textureShader: Ref<Shader>,
+    var whiteTexture: Ref<Texture2D>,
 ) : AutoCloseable {
 
     override fun close() {
         quadVertexArray.release()
-        flatColorShader.release()
         textureShader.release()
+        whiteTexture.release()
     }
 }
