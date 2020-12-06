@@ -19,6 +19,7 @@ Current version: 1.0
 - Builds and serialization
 ### Short term goals
 - Getting the 2D renderer optimized and ready
+- Batch rendering
 - Start working on the level editor
 ***
 ## Get it!
