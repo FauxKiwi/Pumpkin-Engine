@@ -15,6 +15,7 @@ Current version: 1.0
 - Scripting in various languages
 - Recorded and skeletal animation
 - Multiplatform support
+- Vulkan support
 ### Short term goals
 - Getting the 2D renderer optimized and ready
 - Start working on the level editor
