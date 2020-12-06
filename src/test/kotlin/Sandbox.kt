@@ -152,7 +152,7 @@ class ExampleLayer : Layer() {
         logoTexture = Texture2D.create("./src/test/resources/textures/PumpkinLogo.png")
 
         textureShader().bind()
-        (textureShader() as OpenGLShader).uploadUniform("u_Texture", 0)
+        textureShader().setInt("u_Texture", 0)
 
         vertexBuffer.release()
         indexBuffer.release()
@@ -179,7 +179,7 @@ class ExampleLayer : Layer() {
 
         //Renderer.submit(blueShader, squareVA)
         flatColorShader().bind()
-        (flatColorShader() as OpenGLShader).uploadUniform("u_Color", squareColor)
+        flatColorShader().setFloat4("u_Color", squareColor)
         for (y in 0..sqrt) {
             for (x in 0..sqrt) {
                 val pos = Vec3(x * 0.11f, y * 0.11f, 0f)

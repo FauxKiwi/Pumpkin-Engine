@@ -10,10 +10,6 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
     private val cameraController = OrthographicCameraController(16f / 9f, false)
     private val color = Vec4(0.8f, 0.2f, 0.3f, 1f)
 
-    override fun onDetach() {
-        Renderer2D.shutdown() // temporary
-    }
-
     override fun onUpdate(ts: Timestep) {
         ////// Update //////
         cameraController.onUpdate(ts)
@@ -21,7 +17,8 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
         ////// Render //////
         Renderer2D.beginScene(cameraController.camera)
 
-        Renderer2D.drawQuad(Vec2(0f), Vec2(1f), color)
+        Renderer2D.drawQuad(Vec2(0.25f), Vec2(1.25f, 0.75f), color)
+        Renderer2D.drawQuad(Vec2(-1f, 0f), Vec2(0.8f), Vec4(0.8f, 0.7f, 0.2f, 1f))
 
         Renderer2D.endScene()
     }
@@ -49,6 +46,4 @@ class Sandbox2DApp : Application() {
     }
 }
 
-fun main() {
-    Application.set(Sandbox2DApp())
-}
+fun main() = Application.set(Sandbox2DApp())

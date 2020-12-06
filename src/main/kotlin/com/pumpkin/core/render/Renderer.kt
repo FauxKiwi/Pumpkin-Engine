@@ -18,10 +18,8 @@ object Renderer {
     fun submit(shader: Shader, vertexArray: VertexArray, transform: Mat4 = Mat4.identity) {
         stack {
             shader.bind()
-            if (shader is OpenGLShader) {
-                shader.uploadUniform("u_ViewProjection", sceneData.viewProjectionMatrix)
-                shader.uploadUniform("u_Transform", transform)
-            }
+            shader.setMat4("u_ViewProjection", sceneData.viewProjectionMatrix)
+            shader.setMat4("u_Transform", transform)
 
             vertexArray.bind()
             RendererCommand.drawIndexed(vertexArray)

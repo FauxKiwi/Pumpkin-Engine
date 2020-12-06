@@ -112,17 +112,45 @@ class OpenGLShader : Shader {
 
     override fun unbind() = gl.useProgram(GlProgram.NULL)
 
-    fun uploadUniform(name: String, value: Float) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
+    override fun setFloat(name: String, value: Float) {
+        uploadUniformF(name, value)
+    }
 
-    fun uploadUniform(name: String, value: Vec2) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
+    override fun setFloat2(name: String, value: Vec2) {
+        uploadUniformF2(name, value)
+    }
 
-    fun uploadUniform(name: String, value: Vec3) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
+    override fun setFloat3(name: String, value: Vec3) {
+        uploadUniformF3(name, value)
+    }
 
-    fun uploadUniform(name: String, value: Vec4) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
+    override fun setFloat4(name: String, value: Vec4) {
+        uploadUniformF4(name, value)
+    }
 
-    fun uploadUniform(name: String, value: Mat3) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
+    override fun setMat3(name: String, value: Mat3) {
+        uploadUniformM3(name, value)
+    }
 
-    fun uploadUniform(name: String, value: Mat4) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
+    override fun setMat4(name: String, value: Mat4) {
+        uploadUniformM4(name, value)
+    }
 
-    fun uploadUniform(name: String, value: Int) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
+    override fun setInt(name: String, value: Int) {
+        uploadUniformI(name, value)
+    }
+
+    fun uploadUniformF(name: String, value: Float) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
+
+    fun uploadUniformF2(name: String, value: Vec2) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
+
+    fun uploadUniformF3(name: String, value: Vec3) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
+
+    fun uploadUniformF4(name: String, value: Vec4) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
+
+    fun uploadUniformM3(name: String, value: Mat3) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
+
+    fun uploadUniformM4(name: String, value: Mat4) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
+
+    fun uploadUniformI(name: String, value: Int) = gl.uniform(gl.getUniformLocation(rendererID!!, name), value)
 }
