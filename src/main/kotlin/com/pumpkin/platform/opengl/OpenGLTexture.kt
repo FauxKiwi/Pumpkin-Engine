@@ -14,6 +14,7 @@ class OpenGLTexture2D(private val path: String) : Texture2D {
     override var height = 0
 
     private val rendererID: GlTexture = gl.createTextures(TextureTarget._2D)
+    private var slot = 0
 
     init {
         stack {
@@ -28,17 +29,32 @@ class OpenGLTexture2D(private val path: String) : Texture2D {
             }
 
             GL45C.glTextureStorage2D(rendererID.name, 1, format.first, width, height)
-            GL45C.glTextureParameteri(rendererID.name, GL45C.GL_TEXTURE_MIN_FILTER, GL45C.GL_LINEAR)
-            GL45C.glTextureParameteri(rendererID.name, GL45C.GL_TEXTURE_MAG_FILTER, GL45C.GL_NEAREST)
+
+            setFilter(Texture2D.Filter.Nearest)
+            setWrap(Texture2D.WrapMode.Repeat)
+
             GL45C.glTextureSubImage2D(rendererID.name, 0, 0, 0, width, height, format.second, GL45C.GL_UNSIGNED_BYTE, data.data())
         }
     }
 
-    override fun close() {
-        gl.deleteTexture(rendererID)
+    override fun close() =  gl.deleteTexture(rendererID)
+
+    override fun bind(slot: Int) = gl.bindTextureUnit(slot, rendererID)
+
+    override fun setFilter(filter: Texture2D.Filter) {
+        GL45C.glTextureParameteri(rendererID.name, GL45C.GL_TEXTURE_MIN_FILTER, GL45C.GL_LINEAR)
+        GL45C.glTextureParameteri(rendererID.name, GL45C.GL_TEXTURE_MAG_FILTER, when (filter) {
+            Texture2D.Filter.Linear -> GL45C.GL_LINEAR
+            Texture2D.Filter.Nearest -> GL45C.GL_NEAREST
+        })
     }
 
-    override fun bind(slot: Int) {
-        gl.bindTextureUnit(slot, rendererID)
+    override fun setWrap(wrapMode: Texture2D.WrapMode) {
+        val glWrapMode = when (wrapMode) {
+            Texture2D.WrapMode.Repeat -> GL45C.GL_REPEAT
+            Texture2D.WrapMode.Clamp -> GL45C.GL_CLAMP_TO_EDGE
+        }
+        GL45C.glTextureParameteri(rendererID.name, GL45C.GL_TEXTURE_WRAP_S, glWrapMode)
+        GL45C.glTextureParameteri(rendererID.name, GL45C.GL_TEXTURE_WRAP_T, glWrapMode)
     }
 }

@@ -14,6 +14,8 @@ class OpenGLRendererAPI : RendererAPI {
         stack {
             gl.enable(State.BLEND)
             gl.blendFunc(BlendFactor.SRC_ALPHA, BlendFactor.ONE_MINUS_SRC_ALPHA)
+
+            gl.enable(State.DEPTH_TEST)
         }
     }
 

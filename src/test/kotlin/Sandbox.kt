@@ -44,10 +44,10 @@ class ExampleLayer : Layer() {
         val indices = uintArrayOf(0u, 1u, 2u)
 
         val squareVertices = floatArrayOf(
-            -0.5f, -0.5f, 0f, 0f, 0f, 0f, 0f,
-             0.5f, -0.5f, 0f, 1f, 0f, 0f, 0f,
-             0.5f,  0.5f, 0f, 1f, 1f, 0f, 0f,
-            -0.5f,  0.5f, 0f, 0f, 1f, 0f, 0f,
+            -0.5f, -0.5f, 0f, 0f, 0f,
+             0.5f, -0.5f, 0f, 1f, 0f,
+             0.5f,  0.5f, 0f, 1f, 1f,
+            -0.5f,  0.5f, 0f, 0f, 1f,
         )
 
         val squareIndices = uintArrayOf(0u, 1u, 2u, 2u, 3u, 0u)
@@ -75,7 +75,7 @@ class ExampleLayer : Layer() {
         val squareLayout = BufferLayout(
             mutableListOf(
                 BufferElement(ShaderDataType.Float3, "a_Position"),
-                BufferElement(ShaderDataType.Float4, "a_TexCoord")
+                BufferElement(ShaderDataType.Float2, "a_TexCoord")
             )
         )
         squareVB().layout = squareLayout
@@ -146,10 +146,10 @@ class ExampleLayer : Layer() {
 
         shaderLibrary = Ref(ShaderLibrary())
 
-        val textureShader = shaderLibrary().load("./src/test/resources/shaders/Texture.glsl")
+        val textureShader = shaderLibrary().load("./src/main/resources/shaders/Texture.glsl")
 
-        texture = Texture2D.create("./src/test/resources/textures/Checkerboard.png")
-        logoTexture = Texture2D.create("./src/test/resources/textures/PumpkinLogo.png")
+        texture = Texture2D.create("./src/main/resources/textures/Checkerboard.png")
+        logoTexture = Texture2D.create("./src/main/resources/textures/PumpkinLogo.png")
 
         textureShader().bind()
         textureShader().setInt("u_Texture", 0)

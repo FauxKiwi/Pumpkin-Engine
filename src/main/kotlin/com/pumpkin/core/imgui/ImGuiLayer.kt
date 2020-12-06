@@ -74,7 +74,7 @@ class ImGuiLayer : Layer("ImGui") {
             val overlay = "min ${String.format("%.3f", values0.min())}   max ${String.format("%.3f", values0.max())}"
             plotLines("Frametime", values0, valuesOffset/*, scaleMin = 0f, scaleMax = 60f*/, overlayText = overlay, graphSize = Vec2(0f, 80f))
             checkbox("Demo", ::showDemoWindow)
-            checkbox("Light Mode", ::lightMode)
+            checkbox("VSync", Window.getWindow()::vSync)
             end()
         }
     }

@@ -20,4 +20,12 @@ interface Texture2D : Texture {
             RendererAPI.API.OpenGL -> Ref(OpenGLTexture2D(path))
         }
     }
+
+    fun setFilter(filter: Filter)
+
+    fun setWrap(wrapMode: WrapMode)
+
+    enum class Filter { Linear, Nearest }
+
+    enum class WrapMode { Repeat, Clamp }
 }

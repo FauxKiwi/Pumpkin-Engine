@@ -16,6 +16,7 @@ Current version: 1.0
 - Recorded and skeletal animation
 - Multiplatform support
 - Vulkan support
+- Builds and serialization
 ### Short term goals
 - Getting the 2D renderer optimized and ready
 - Start working on the level editor
@@ -39,10 +40,10 @@ For other dependency management systems, please refer to the wiki.
 Before you start writing your first game, take a look at the Sandbox.kt test. <br>
 Since this is currently only using Kotlin JVM, you can also use Java.
 ### Creating an application and main() function
-To create an application, create a class that extends {com.pumpkin.core.Application}. <br>
+To create an application, create a class that extends `com.pumpkin.core.Application`. <br>
 In your main() function, simply call
 
-    /*com.pumpkin.core.*/Application.set(/*Your class name*/())
+    Application.set(/*Your class name*/())
 to start the game.
 ### Methods of Application
 - init(): Called once on initialization
@@ -51,7 +52,7 @@ to start the game.
 - onEvent(event: Event): Called with every event that happens
 ### Layers
 This engine is using layers that are stacked on top of each other. <br>
-For your game, create a layer by extending {com.pumpkin.core.layer.Layer}. <br>
+For your game, create a layer by extending `com.pumpkin.core.layer.Layer`. <br>
 A layer contains five event functions:
 - onAttach(): Called when the layer is attached
 - onDetach(): Called when the layer is detached
@@ -59,13 +60,13 @@ A layer contains five event functions:
 - onImGuiRender(): Called in the ImGui thread. Use it to display ImGui UIs
 - onEvent(event: Event): Called on every event
 
-To attach a layer, simply call {pushLayer(layer: Layer)} in your application.
+To attach a layer, simply call `pushLayer(layer: Layer)` in your application.
 ### Events
 Events are one of the core functions of this engine.
 You can dispatch events in the onEvent functions of Application and layer. <br>
 To dispatch the events, call
 
-    val dispatcher = /*com.pumpkin.core.event.*/EventDispatcher(event)
+    val dispatcher = EventDispatcher(event)
     dispatcher.dispatch</*Event type you want to dispatch*/> {
       //Do something
     }
@@ -73,6 +74,8 @@ Of course, you can also use method references for this.
 ### Full documentation
 Please refer to the wiki for a full documentation of all features this engine has to offer
 ***
+Credits: kotlin-graphics for ImGui; TheCherno for inspiration
+
 Remember this work is licensed under Apache 2.0
 
 [view]: https://cdn.discordapp.com/attachments/581185346465824770/781936000196149258/unknown.png

@@ -3,12 +3,20 @@ import com.pumpkin.core.event.Event
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.render.*
 import glm_.vec2.Vec2
+import glm_.vec3.Vec3
 import glm_.vec4.Vec4
+import glm_.vec4.swizzle.zyxw
 import imgui.ImGui
 
 class Sandbox2DLayer : Layer("Sandbox2D") {
     private val cameraController = OrthographicCameraController(16f / 9f, false)
     private val color = Vec4(0.8f, 0.2f, 0.3f, 1f)
+
+    private val checkerboardTexture = Texture2D.create("./src/test/resources/textures/Checkerboard.png")
+
+    override fun onDetach() {
+        checkerboardTexture.release()
+    }
 
     override fun onUpdate(ts: Timestep) {
         ////// Update //////
@@ -19,6 +27,7 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
 
         Renderer2D.drawQuad(Vec2(0.25f), Vec2(1.25f, 0.75f), color)
         Renderer2D.drawQuad(Vec2(-1f, 0f), Vec2(0.8f), Vec4(0.8f, 0.7f, 0.2f, 1f))
+        Renderer2D.drawQuad(Vec3(0f, 0f, -0.1f), Vec2(10f), checkerboardTexture(), color.zyxw)
 
         Renderer2D.endScene()
     }
