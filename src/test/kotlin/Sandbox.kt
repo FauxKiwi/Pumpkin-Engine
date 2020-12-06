@@ -9,6 +9,7 @@ import com.pumpkin.core.window.Window
 import com.pumpkin.platform.opengl.OpenGLShader
 import glm_.glm
 import glm_.mat4x4.Mat4
+import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
 import imgui.ImGui
@@ -233,10 +234,17 @@ fun main() {
     Application.set(TestApplication())
 }
 
-fun dragFloat3(label: String, vec: Vec3, speed: Float = 1f, min: Float = 0f, max: Float = 0f) {
+fun dragFloat3(label: String, vec: Vec3, speed: Float = 1f, min: Float = 0f, max: Float = 0f, format: String = "%.3f") {
     val vecRef = vec.toFloatArray()
-    ImGui.dragFloat3(label, vecRef, speed, min, max)
+    ImGui.dragFloat3(label, vecRef, speed, min, max, format)
     vec[0] = vecRef[0]
     vec[1] = vecRef[1]
     vec[2] = vecRef[2]
+}
+
+fun dragFloat2(label: String, vec: Vec2, speed: Float = 1f, min: Float = 0f, max: Float = 0f, format: String = "%.3f") {
+    val vecRef = vec.toFloatArray()
+    ImGui.dragFloat2(label, vecRef, speed, min, max, format)
+    vec[0] = vecRef[0]
+    vec[1] = vecRef[1]
 }

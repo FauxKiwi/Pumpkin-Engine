@@ -73,15 +73,15 @@ object Renderer2D {
 
     fun endScene() = Unit
 
-    fun drawQuad(position: Vec2 = Vec2(0f), size: Vec2 = Vec2(1f), color: Vec4) =
-        drawQuad(Vec3(position, 0), size, color)
+    fun drawQuad(position: Vec2 = Vec2(0f), size: Vec2 = Vec2(1f), rotation: Float = 0f, color: Vec4) =
+        drawQuad(Vec3(position, 0), size, rotation, color)
 
-    fun drawQuad(position: Vec3 = Vec3(0f), size: Vec2 = Vec2(1f), color: Vec4) = stack {
+    fun drawQuad(position: Vec3 = Vec3(0f), size: Vec2 = Vec2(1f), rotation: Float = 0f, color: Vec4) = stack {
         data().textureShader().run {
-            setMat4(
-                "u_Transform",
-                glm.translate(Mat4.identity, position) * glm.scale(Mat4.identity, Vec3(size, 1f))
-            )
+            if (rotation == 0f)
+                setMat4("u_Transform", glm.translate(Mat4.identity, position) * glm.scale(Mat4.identity, Vec3(size, 1f)))
+            else
+                setMat4("u_Transform", glm.translate(Mat4.identity, position) * glm.scale(Mat4.identity, Vec3(size, 1f)) * glm.rotate(Mat4.identity, rotation, Vec3(0f, 0f, 1f)))
             data().whiteTexture().bind()
             setFloat4("u_Color", color)
         }
@@ -89,15 +89,15 @@ object Renderer2D {
         RendererCommand.drawIndexed(data().quadVertexArray())
     }
 
-    fun drawQuad(position: Vec2 = Vec2(0f), size: Vec2 = Vec2(1f), texture: Texture2D, color: Vec4 = Vec4(1f)) =
-        drawQuad(Vec3(position, 0), size, texture, color)
+    fun drawQuad(position: Vec2 = Vec2(0f), size: Vec2 = Vec2(1f), rotation: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f)) =
+        drawQuad(Vec3(position, 0), size, rotation, texture, color)
 
-    fun drawQuad(position: Vec3 = Vec3(0f), size: Vec2 = Vec2(1f), texture: Texture2D, color: Vec4 = Vec4(1f)) = stack {
+    fun drawQuad(position: Vec3 = Vec3(0f), size: Vec2 = Vec2(1f), rotation: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f)) = stack {
         data().textureShader().run {
-            setMat4(
-                "u_Transform",
-                glm.translate(Mat4.identity, position) * glm.scale(Mat4.identity, Vec3(size, 1f))
-            )
+            if (rotation == 0f)
+                setMat4("u_Transform", glm.translate(Mat4.identity, position) * glm.scale(Mat4.identity, Vec3(size, 1f)))
+            else
+                setMat4("u_Transform", glm.translate(Mat4.identity, position) * glm.scale(Mat4.identity, Vec3(size, 1f)) * glm.rotate(Mat4.identity, rotation, Vec3(0f, 0f, 1f)))
             texture.bind()
             setFloat4("u_Color", color)
         }
