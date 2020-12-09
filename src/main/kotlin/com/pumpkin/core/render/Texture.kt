@@ -10,6 +10,8 @@ interface Texture : AutoCloseable {
     val height: Int
 
     fun bind(slot: Int = 0)
+
+    override fun equals(other: Any?): Boolean
 }
 
 interface Texture2D : Texture {
@@ -31,11 +33,11 @@ interface Texture2D : Texture {
 
     fun setData(data: ByteBuffer, size: Int)
 
-    fun setFilter(filter: Filter)
+    fun setFilter(minFilter: Filter, magFilter: Filter)
 
     fun setWrap(wrapMode: WrapMode)
 
     enum class Filter { Linear, Nearest }
 
-    enum class WrapMode { Repeat, Clamp }
+    enum class WrapMode { Repeat, Mirror, ClampEdge, ClampBorder }
 }

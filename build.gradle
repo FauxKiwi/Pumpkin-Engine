@@ -12,7 +12,7 @@ repositories {
 compileKotlin {
     kotlinOptions.jvmTarget = '11'
     kotlinOptions {
-        freeCompilerArgs = ["-Xinline-classes"]
+        freeCompilerArgs = ["-Xinline-classes", "-Xopt-in=kotlin.ExperimentalUnsignedTypes"]
     }
 }
 

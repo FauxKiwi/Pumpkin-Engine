@@ -41,6 +41,7 @@ interface Shader : AutoCloseable {
     fun setMat4(name: String, value: Mat4)
 
     fun setInt(name: String, value: Int)
+    fun setIntArray(name: String, value: IntArray)
 }
 
 class ShaderLibrary : AutoCloseable {
