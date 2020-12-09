@@ -49,8 +49,8 @@ class MainLayer : Layer("Game of life") {
         Renderer2D.beginScene(camera)
         for (x in -displaySize[0]/2 until displaySize[0]/2) for (y in -displaySize[1]/2 until displaySize[1]/2) {
             Renderer2D.drawQuad(
-                Vec3(x * (2f / displaySize[0].toFloat()) + (1f / displaySize[0].toFloat()),
-                    -y * (2f / displaySize[1].toFloat()) - (1f / displaySize[1].toFloat()), -0.1f),
+                Vec3(x * (2f / displaySize[0].toFloat()),
+                    -y * (2f / displaySize[1].toFloat()) - (2f / displaySize[1].toFloat()), -0.1f),
                 Vec2(1.8f / displaySize[0].toFloat(), 1.8f / displaySize[1].toFloat()),
                 color = if (playground[(x + displaySize[0]/2 + arraySize[0]/2) +
                             ((y + displaySize[1]/2 + arraySize[1]/2) * arraySize[0])])
@@ -94,37 +94,12 @@ class MainLayer : Layer("Game of life") {
 
     override fun onEvent(event: Event) {
         val dispatcher = EventDispatcher(event)
-        dispatcher.dispatch(::onMouseClicked)
-        dispatcher.dispatch<MouseButtonReleasedEvent> {
-            if (button == 0 && !simulation) {
-                dragging = false
-            }
-            false
-        }
-        dispatcher.dispatch<KeyPressedEvent> {
-            when (keyCode) {
-                PE_KEY_SPACE -> {
-                    simulation = !simulation
-                    timePassed = 0f
-                }
-                PE_KEY_RIGHT -> {
-                    speed += 0.1f
-                    speed = min(50f, speed)
-                }
-                PE_KEY_LEFT -> {
-                    speed -= 0.1f
-                    speed = max(0.1f, speed)
-                }
-                PE_KEY_R -> {
-                    playground.fill(false)
-                    simulation = false
-                }
-            }
-            false
-        }
+        dispatcher.dispatch(::onMouseButtonPressed)
+        dispatcher.dispatch(::onMouseButtonReleased)
+        dispatcher.dispatch(::onKeyPressed)
     }
 
-    private fun onMouseClicked(event: MouseButtonPressedEvent): Boolean {
+    private fun onMouseButtonPressed(event: MouseButtonPressedEvent): Boolean {
         if (event.button != 0) return false
         if (!simulation) {
             dragging = true
@@ -135,5 +110,34 @@ class MainLayer : Layer("Game of life") {
         val index = (x + arraySize[0]/2 + (y + arraySize[1]/2) * arraySize[0])
         playground[index] = !playground[index]
         return false
+    }
+
+    private fun onMouseButtonReleased(event: MouseButtonReleasedEvent): Boolean {
+        if (event.button == 0 && !simulation) {
+            dragging = false
+        }
+        return false
+    }
+
+    private fun onKeyPressed(event: KeyPressedEvent): Boolean {
+        when (event.keyCode) {
+            PE_KEY_SPACE -> {
+                simulation = !simulation
+                timePassed = 0f
+            }
+            PE_KEY_RIGHT -> {
+                speed += 0.1f
+                speed = min(50f, speed)
+            }
+            PE_KEY_LEFT -> {
+                speed -= 0.1f
+                speed = max(0.1f, speed)
+            }
+            PE_KEY_R -> {
+                playground.fill(false)
+                simulation = false
+            }
+        }
+       return false
     }
 }

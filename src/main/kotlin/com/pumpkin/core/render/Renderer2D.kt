@@ -12,6 +12,7 @@ import java.nio.ByteBuffer
 import java.nio.FloatBuffer
 
 object Renderer2D {
+    lateinit var camera: OrthographicCamera
     lateinit var data: Scope<Renderer2DData>
 
     @ExperimentalUnsignedTypes
@@ -60,6 +61,7 @@ object Renderer2D {
     fun shutdown() = data.close()
 
     fun beginScene(camera: OrthographicCamera) {
+        this.camera = camera
         data().textureShader().run {
             bind()
             setMat4("u_ViewProjection", camera.viewProjectionMatrix)
@@ -84,12 +86,28 @@ object Renderer2D {
         drawQuad(Vec3(position, 0), size, rotation, color)
 
     fun drawQuad(position: Vec3 = Vec3(0f), size: Vec2 = Vec2(1f), rotation: Float = 0f, color: Vec4) = stack {
-        data().quadIndexCount += 4
+        if (data().quadVertexBufferData.position() >= 100) {
+            endScene()
+            beginScene(camera)
+        }
 
-        data().quadVertexBufferData.put(QuadVertex(position, color, Vec2(0f, 0f)))
-        data().quadVertexBufferData.put(QuadVertex(position + Vec3(size.x, 0f, 0f), color, Vec2(1f, 0f)))
-        data().quadVertexBufferData.put(QuadVertex(position + Vec3(size, 0f), color, Vec2(1f, 1f)))
-        data().quadVertexBufferData.put(QuadVertex(position + Vec3(0f, size.y, 0f), color, Vec2(0f, 1f)))
+        data().quadVertexBufferData.put(position.x); data().quadVertexBufferData.put(position.y); data().quadVertexBufferData.put(position.z)
+        data().quadVertexBufferData.put(color.x); data().quadVertexBufferData.put(color.y); data().quadVertexBufferData.put(color.z); data().quadVertexBufferData.put(color.w)
+        data().quadVertexBufferData.put(0f); data().quadVertexBufferData.put(0f)
+
+        data().quadVertexBufferData.put(position.x + size.x); data().quadVertexBufferData.put(position.y); data().quadVertexBufferData.put(position.z)
+        data().quadVertexBufferData.put(color.x); data().quadVertexBufferData.put(color.y); data().quadVertexBufferData.put(color.z); data().quadVertexBufferData.put(color.w)
+        data().quadVertexBufferData.put(1f); data().quadVertexBufferData.put(0f)
+
+        data().quadVertexBufferData.put(position.x + size.x); data().quadVertexBufferData.put(position.y + size.y); data().quadVertexBufferData.put(position.z)
+        data().quadVertexBufferData.put(color.x); data().quadVertexBufferData.put(color.y); data().quadVertexBufferData.put(color.z); data().quadVertexBufferData.put(color.w)
+        data().quadVertexBufferData.put(1f); data().quadVertexBufferData.put(1f)
+
+        data().quadVertexBufferData.put(position.x); data().quadVertexBufferData.put(position.y + size.y); data().quadVertexBufferData.put(position.z)
+        data().quadVertexBufferData.put(color.x); data().quadVertexBufferData.put(color.y); data().quadVertexBufferData.put(color.z); data().quadVertexBufferData.put(color.w)
+        data().quadVertexBufferData.put(0f); data().quadVertexBufferData.put(1f)
+
+        data().quadIndexCount += 4
     }
 
     fun drawQuad(position: Vec2 = Vec2(0f), size: Vec2 = Vec2(1f), rotation: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f)) =
@@ -108,18 +126,6 @@ object Renderer2D {
         RendererCommand.drawIndexed(data().quadVertexArray())
     }
 
-}
-
-data class QuadVertex(
-    val position: Vec3,
-    val color: Vec4,
-    val texCoord: Vec2,
-)
-
-fun FloatBuffer.put(quadVertex: QuadVertex) {
-    put(quadVertex.position.x); put(quadVertex.position.y); put(quadVertex.position.z);
-    put(quadVertex.color.x); put(quadVertex.color.y); put(quadVertex.color.z); put(quadVertex.color.w);
-    put(quadVertex.texCoord.x); put(quadVertex.texCoord.y);
 }
 
 data class Renderer2DData(

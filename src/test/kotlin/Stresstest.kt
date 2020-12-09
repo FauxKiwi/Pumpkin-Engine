@@ -29,6 +29,7 @@ class StresstestLayer : Layer("Stresstest") {
     override fun onImGuiRender() {
         ImGui.begin("Stresstest")
         ImGui.dragInt("Number", ::sqrt, 1f, 0, 1000)
+        ImGui.text("Drawing ${sqrt * sqrt} vertices")
         ImGui.end()
     }
 
