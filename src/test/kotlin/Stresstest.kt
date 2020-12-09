@@ -30,8 +30,8 @@ class StresstestLayer : Layer("Stresstest") {
     override fun onImGuiRender() {
         ImGui.begin("Stresstest")
         ImGui.dragInt("Number", ::sqrt, 1f, 1, 1000)
-        ImGui.dragInt("Capacity", Renderer2D::maxQuads, 1f, 1, 1000000)
-        ImGui.text("Drawing ${sqrt * sqrt} vertices in ${sqrt * sqrt / Renderer2D.maxQuads + 1} draw calls")
+        ImGui.inputInt("Capacity", Renderer2D::maxQuads)
+        ImGui.text("Drawing ${sqrt * sqrt} quads in ${(sqrt * sqrt - 1) / Renderer2D.maxQuads + 1} draw calls")
         ImGui.end()
     }
 
