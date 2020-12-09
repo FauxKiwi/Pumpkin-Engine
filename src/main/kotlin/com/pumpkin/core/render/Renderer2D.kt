@@ -15,6 +15,17 @@ object Renderer2D {
     lateinit var camera: OrthographicCamera
     lateinit var data: Scope<Renderer2DData>
 
+    var maxQuads = 100000
+        set(value) {
+            field = value
+            maxVertices = maxQuads * 4
+            maxIndices = maxQuads * 4
+            data().quadVertexBufferData = FloatBuffer.allocate(maxVertices * sizeOfQuadVertex)
+        }
+    var maxVertices = maxQuads * 4
+    var maxIndices = maxQuads * 4
+    const val sizeOfQuadVertex = 9
+
     @ExperimentalUnsignedTypes
     fun init() {
         data =
@@ -143,8 +154,3 @@ data class Renderer2DData(
         whiteTexture.release()
     }
 }
-
-val maxQuads = 10000
-val maxVertices = maxQuads * 4
-val maxIndices = maxQuads * 4
-val sizeOfQuadVertex = 9
