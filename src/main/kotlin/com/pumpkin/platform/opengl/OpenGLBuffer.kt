@@ -8,6 +8,7 @@ import gln.BufferTarget
 import gln.gl
 import gln.identifiers.GlBuffer
 import org.lwjgl.opengl.GL15C
+import java.nio.FloatBuffer
 
 class OpenGLVertexBuffer : VertexBuffer {
     private val rendererID = gl.createBuffers()

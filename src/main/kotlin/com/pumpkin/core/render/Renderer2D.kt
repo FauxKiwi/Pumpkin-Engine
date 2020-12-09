@@ -86,7 +86,7 @@ object Renderer2D {
         drawQuad(Vec3(position, 0), size, rotation, color)
 
     fun drawQuad(position: Vec3 = Vec3(0f), size: Vec2 = Vec2(1f), rotation: Float = 0f, color: Vec4) = stack {
-        if (data().quadVertexBufferData.position() >= 100) {
+        if (data().quadVertexBufferData.position() >= maxQuads) {
             endScene()
             beginScene(camera)
         }
