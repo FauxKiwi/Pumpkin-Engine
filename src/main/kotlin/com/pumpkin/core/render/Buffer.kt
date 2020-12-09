@@ -6,6 +6,7 @@ import com.pumpkin.platform.opengl.OpenGLIndexBuffer
 import com.pumpkin.platform.opengl.OpenGLVertexBuffer
 import gln.VertexAttrType
 import org.lwjgl.opengl.GL20
+import java.nio.FloatBuffer
 
 enum class ShaderDataType {
     Float, Float2, Float3, Float4,
@@ -70,13 +71,18 @@ interface VertexBuffer : AutoCloseable {
     var layout: BufferLayout?
 
     companion object {
-        fun create(vertices: FloatArray): Ref<VertexBuffer> = when (Renderer.getAPI()) {
-            RendererAPI.API.None -> {
-                throw PumpkinError("Having no render API is currently not supported")
-            }
+        fun create(size: Int) = when (Renderer.getAPI()) {
+            RendererAPI.API.None -> throw PumpkinError("Having no render API is currently not supported")
+            RendererAPI.API.OpenGL -> Ref(OpenGLVertexBuffer(size))
+        }
+
+        fun create(vertices: FloatArray) = when (Renderer.getAPI()) {
+            RendererAPI.API.None -> throw PumpkinError("Having no render API is currently not supported")
             RendererAPI.API.OpenGL -> Ref(OpenGLVertexBuffer(vertices))
         }
     }
+
+    fun setData(data: FloatArray)
 
     fun bind()
 

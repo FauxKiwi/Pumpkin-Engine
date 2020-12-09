@@ -25,10 +25,8 @@ class OpenGLRendererAPI : RendererAPI {
 
     override fun clear() = gl.clear(ClearBufferMask.COLOR_BUFFER_BIT or ClearBufferMask.DEPTH_BUFFER_BIT)
 
-    override fun drawIndexed(vertexArray: VertexArray) {
-        vertexArray.indexBuffer?.let {
-            GL11C.glDrawElements(GL11C.GL_QUADS, it().count, GL11C.GL_UNSIGNED_INT, 0)
-        } ?: throw PumpkinError("No index buffer!")
+    override fun drawIndexed(vertexArray: VertexArray, count: Int) {
+        GL11C.glDrawElements(GL11C.GL_QUADS, if(count == 0) vertexArray.indexBuffer!!.invoke().count else count, GL11C.GL_UNSIGNED_INT, 0)
         gl.bindTexture(TextureTarget._2D, GlTexture())
     }
 

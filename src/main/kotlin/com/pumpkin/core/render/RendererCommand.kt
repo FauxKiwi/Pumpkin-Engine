@@ -12,7 +12,7 @@ object RendererCommand {
 
     inline fun clear() = rendererAPI.clear()
 
-    inline fun drawIndexed(vertexArray: VertexArray) = rendererAPI.drawIndexed(vertexArray)
+    inline fun drawIndexed(vertexArray: VertexArray, count: Int = 0) = rendererAPI.drawIndexed(vertexArray, count)
 
     inline fun setViewport(x: Int, y: Int, width: Int, height: Int) {
         rendererAPI.setViewport(x, y, width, height)

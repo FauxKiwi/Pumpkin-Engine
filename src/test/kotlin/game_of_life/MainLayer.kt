@@ -109,7 +109,7 @@ class MainLayer : Layer("Game of life") {
                 }
                 PE_KEY_RIGHT -> {
                     speed += 0.1f
-                    speed = min(10f, speed)
+                    speed = min(50f, speed)
                 }
                 PE_KEY_LEFT -> {
                     speed -= 0.1f
