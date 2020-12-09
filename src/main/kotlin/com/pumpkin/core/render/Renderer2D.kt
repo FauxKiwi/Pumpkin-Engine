@@ -103,19 +103,19 @@ object Renderer2D {
         }
 
         data().quadVertexBufferData.put(position.x); data().quadVertexBufferData.put(position.y); data().quadVertexBufferData.put(position.z)
-        data().quadVertexBufferData.put(color.x); data().quadVertexBufferData.put(color.y); data().quadVertexBufferData.put(color.z); data().quadVertexBufferData.put(color.w)
+        data().quadVertexBufferData.put(color)
         data().quadVertexBufferData.put(0f); data().quadVertexBufferData.put(0f)
 
         data().quadVertexBufferData.put(position.x + size.x); data().quadVertexBufferData.put(position.y); data().quadVertexBufferData.put(position.z)
-        data().quadVertexBufferData.put(color.x); data().quadVertexBufferData.put(color.y); data().quadVertexBufferData.put(color.z); data().quadVertexBufferData.put(color.w)
+        data().quadVertexBufferData.put(color)
         data().quadVertexBufferData.put(1f); data().quadVertexBufferData.put(0f)
 
         data().quadVertexBufferData.put(position.x + size.x); data().quadVertexBufferData.put(position.y + size.y); data().quadVertexBufferData.put(position.z)
-        data().quadVertexBufferData.put(color.x); data().quadVertexBufferData.put(color.y); data().quadVertexBufferData.put(color.z); data().quadVertexBufferData.put(color.w)
+        data().quadVertexBufferData.put(color)
         data().quadVertexBufferData.put(1f); data().quadVertexBufferData.put(1f)
 
         data().quadVertexBufferData.put(position.x); data().quadVertexBufferData.put(position.y + size.y); data().quadVertexBufferData.put(position.z)
-        data().quadVertexBufferData.put(color.x); data().quadVertexBufferData.put(color.y); data().quadVertexBufferData.put(color.z); data().quadVertexBufferData.put(color.w)
+        data().quadVertexBufferData.put(color)
         data().quadVertexBufferData.put(0f); data().quadVertexBufferData.put(1f)
 
         data().quadIndexCount += 4
@@ -136,7 +136,10 @@ object Renderer2D {
         data().quadVertexArray().bind()
         RendererCommand.drawIndexed(data().quadVertexArray())
     }
+}
 
+inline fun FloatBuffer.put(color: Vec4) {
+    put(color.x); put(color.y); put(color.z); put(color.w)
 }
 
 data class Renderer2DData(

@@ -31,7 +31,7 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
         Renderer2D.beginScene(cameraController.camera)
 
         Renderer2D.drawQuad(Vec2(0.25f), Vec2(1.25f, 0.75f), color = color)
-        //Renderer2D.drawQuad(Vec2(-1f, 0f), Vec2(0.8f), color = Vec4(0.8f, 0.2f, 0.3f, 1f))
+        Renderer2D.drawQuad(Vec2(-1f, 0f), Vec2(0.8f), color = Vec4(0.8f, 0.2f, 0.3f, 1f))
         //Renderer2D.drawQuad(checkerboardPosition, checkerboardScale, glm.radians(checkerboardRotation.toFloat()), texture = checkerboardTexture(), color = checkerboardColor)
 
         Renderer2D.endScene()
