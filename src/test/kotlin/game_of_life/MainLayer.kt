@@ -49,9 +49,9 @@ class MainLayer : Layer("Game of life") {
         Renderer2D.beginScene(camera)
         for (x in -displaySize[0]/2 until displaySize[0]/2) for (y in -displaySize[1]/2 until displaySize[1]/2) {
             Renderer2D.drawQuad(
-                Vec3(x * (2f / displaySize[0].toFloat()),
-                    -y * (2f / displaySize[1].toFloat()) - (2f / displaySize[1].toFloat()), -0.1f),
-                Vec2(1.8f / displaySize[0].toFloat(), 1.8f / displaySize[1].toFloat()),
+                Vec3(x * (2f / displaySize[0].toFloat()) + (0.5f / displaySize[1].toFloat()),
+                    -y * (2f / displaySize[1].toFloat()) - (1f / displaySize[1].toFloat()), -0.1f),
+                Vec2(1.75f / displaySize[0].toFloat(), 1.75f / displaySize[1].toFloat()),
                 color = if (playground[(x + displaySize[0]/2 + arraySize[0]/2) +
                             ((y + displaySize[1]/2 + arraySize[1]/2) * arraySize[0])])
                     Vec4(0.8f, 0.8f, 0.8f, 1f)

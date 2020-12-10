@@ -4,7 +4,7 @@ import com.pumpkin.core.render.RendererCommand
 import glm_.vec4.Vec4
 import com.pumpkin.core.Application as PEApp
 
-class Application : PEApp() {
+class GameOfLife : PEApp() {
 
     override fun init() {
         pushLayer(MainLayer())
@@ -17,5 +17,5 @@ class Application : PEApp() {
 }
 
 fun main() {
-    PEApp.set(Application())
+    PEApp.set(GameOfLife())
 }

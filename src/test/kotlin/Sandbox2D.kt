@@ -12,7 +12,7 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
     private val cameraController = OrthographicCameraController(16f / 9f, false)
     private val color = Vec4(0.3f, 0.2f, 0.8f, 1f)
 
-    private val checkerboardPosition = Vec3(-5f, -5f, -0.1f)
+    private val checkerboardPosition = Vec3(0f, 0f, -0.1f)
     private val checkerboardScale = Vec2(10f)
     private var checkerboardRotation = 0
     private val checkerboardTexture = Texture2D.create("./src/test/resources/textures/Checkerboard.png")
@@ -43,6 +43,7 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
         Renderer2D.drawQuad(Vec2(0.25f), Vec2(1.25f, 0.75f), color = color)
         Renderer2D.drawQuad(Vec2(-1f, 0f), Vec2(0.8f), color = Vec4(0.8f, 0.2f, 0.3f, 1f))
         Renderer2D.drawQuad(checkerboardPosition, checkerboardScale, glm.radians(checkerboardRotation.toFloat()), texture = checkerboardTexture(), color = checkerboardColor, tilingFactor = checkerboardTiling)
+        Renderer2D.drawQuad(Vec2(0), size = Vec2(2f, 2f), radians = glm.radians(45f), texture = checkerboardTexture(), tilingFactor = 50f)
 
         Renderer2D.endScene()
     }
