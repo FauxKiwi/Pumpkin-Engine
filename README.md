@@ -21,12 +21,14 @@ Current version: 1.0
 - Scripting in various languages
 - Recorded and skeletal animation
 - Multiplatform support
+- Multiplayer and networking
 - Vulkan support
 - Builds and serialization
 ### Short term goals
 - Getting the 2D renderer optimized and ready
 - Batch rendering
 - Start working on the level editor
+- Library
 ***
 ## Get it!
 You can use a dependency management system although at the moment it's safer to clone the project.
