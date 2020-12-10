@@ -2,14 +2,20 @@
 This is the Pumpkin Game Engine. A powerful and capable Kotlin 2D game engine using LWJGL and therefore your GPU. If you like the project, please consider to give it a star and support it. Also, your help with contributing is always welcome.<br>
 Current version: 1.0
 ***
-## A small glimpse of the engine at the moment
-![View of the engine][view3]
+## Screenshots
+### A demo of texture rendering
+![Texture Rendering][textures]
+### Conways Game Of Life implementation
+![Game of Life][game_of_life]
+### Renderer stress test: 400,000 quads at stable 60 FPS (vSync on)
+![Stress test][stresstest]
 ***
 ## Roadmap
 ### Long term goals
 - Fully featured 2D and 3D game engine
 - Blazing fast 2D renderer
 - Beautiful 3D renderer with PBR
+- Audio engine
 - Level editor
 - Entity component system
 - Scripting in various languages
@@ -47,21 +53,20 @@ In your main() function, simply call
     Application.set(/*Your class name*/())
 to start the game.
 ### Methods of Application
-- init(): Called once on initialization
-- shutdown(): Called once on finalisation
-- run(): Called every frame
-- onEvent(event: Event): Called with every event that happens
+- `init()`: Called once on initialization
+- `shutdown()`: Called once on finalisation
+- `run()`: Called every frame. Currently, you have to clear the screen in here
 ### Layers
 This engine is using layers that are stacked on top of each other. <br>
 For your game, create a layer by extending `com.pumpkin.core.layer.Layer`. <br>
 A layer contains five event functions:
-- onAttach(): Called when the layer is attached
-- onDetach(): Called when the layer is detached
-- onUpdate(ts: Timestep): Called every frame. ts is the time since the last frame
-- onImGuiRender(): Called in the ImGui thread. Use it to display ImGui UIs
-- onEvent(event: Event): Called on every event
+- `onAttach()`: Called when the layer is attached
+- `onDetach()`: Called when the layer is detached
+- `onUpdate(ts: Timestep)`: Called every frame. ts is the time since the last frame
+- `onImGuiRender()`: Called in the ImGui thread. Use it to display ImGui UIs
+- `onEvent(event: Event)`: Called on every event
 
-To attach a layer, simply call `pushLayer(layer: Layer)` in your application.
+To attach a layer, simply call `Application#pushLayer` in your application.
 ### Events
 Events are one of the core functions of this engine.
 You can dispatch events in the onEvent functions of Application and layer. <br>
@@ -72,8 +77,27 @@ To dispatch the events, call
       //Do something
     }
 Of course, you can also use method references for this.
+### Rendering
+Rendering is probably the most important thing in a game engine. So here is how it works: <br>
+Currently you have to clear the screen manually. Do this in `Application#run`:
+
+    RendererCommand.setClearColor(/*Clear color*/) // Technically, you only have to do this once
+    RendererCommand.clear()
+To render something on your screen, do the following in `Layer#onUpdate`:
+
+    Renderer2D.beginScene(/*Camera*/)
+    // Render code
+    Renderer2D.endScene()
+For a camera, you can simply create a camera in your Application using an `OrthographicCamera`, or you can use the `OrthographicCameraController` class.
+To actually render something now, call in your render code:
+
+    Renderer2D.drawQuad(/*...*/)
+With this method, you can draw quads with a given position, scale and optionally a rotation (radians). You can use textures or colors or a tinted texture.
 ### Full documentation
 Please refer to the wiki for a full documentation of all features this engine has to offer
+***
+## Contributing
+Of course, you're welcome to contribute to the engine.
 ***
 Credits: kotlin-graphics for ImGui; TheCherno for inspiration
 
@@ -84,3 +108,9 @@ Remember this work is licensed under Apache 2.0
 [view2]: https://cdn.discordapp.com/attachments/581185346465824770/783257581169672202/unknown.png
 
 [view3]: https://cdn.discordapp.com/attachments/581185346465824770/784755406945517568/unknown.png
+
+[textures]: https://cdn.discordapp.com/attachments/581185346465824770/786656957170843688/unknown.png
+
+[game_of_life]: https://cdn.discordapp.com/attachments/581185346465824770/786663113549414440/unknown.png
+
+[stresstest]: https://cdn.discordapp.com/attachments/581185346465824770/786665995388452914/unknown.png
