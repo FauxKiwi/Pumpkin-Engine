@@ -1,6 +1,6 @@
 package com.pumpkin.core.render
 
-import com.pumpkin.core.PumpkinError
+import com.pumpkin.core.Debug
 import com.pumpkin.core.Ref
 import com.pumpkin.platform.opengl.OpenGLTexture2D
 import java.nio.ByteBuffer
@@ -18,14 +18,14 @@ interface Texture2D : Texture {
     companion object {
         fun create(path: String): Ref<Texture2D> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
-                throw PumpkinError("Having no render API is currently not supported")
+                Debug.error("Having no render API is currently not supported")
             }
             RendererAPI.API.OpenGL -> Ref(OpenGLTexture2D(path))
         }
 
         fun create(width: Int, height: Int): Ref<Texture2D> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
-                throw PumpkinError("Having no render API is currently not supported")
+                Debug.error("Having no render API is currently not supported")
             }
             RendererAPI.API.OpenGL -> Ref(OpenGLTexture2D(width, height))
         }

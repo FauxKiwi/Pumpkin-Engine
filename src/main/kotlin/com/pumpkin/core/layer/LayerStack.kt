@@ -1,6 +1,6 @@
 package com.pumpkin.core.layer
 
-import com.pumpkin.core.logWarnCore
+import com.pumpkin.core.Debug
 
 class LayerStack {
     internal val layers: MutableList<Layer> = mutableListOf()
@@ -14,7 +14,7 @@ class LayerStack {
     fun popLayer(layer: Layer) {
         val index = layers.indexOf(layer)
         if (index >= insert) {
-            logWarnCore("Layer is an overlay, please use popOverlay() instead.")
+            Debug.logWarnCore("Layer is an overlay, please use popOverlay() instead.")
             return
         }
         layers.removeAt(index)
@@ -25,7 +25,7 @@ class LayerStack {
     fun popOverlay(layer: Layer) {
         val index = layers.indexOf(layer)
         if (index < insert) {
-            logWarnCore("Layer is not an overlay, please use popLayer() instead.")
+            Debug.logWarnCore("Layer is not an overlay, please use popLayer() instead.")
             return
         }
         layers.removeAt(index)

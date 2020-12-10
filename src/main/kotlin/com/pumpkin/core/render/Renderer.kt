@@ -1,7 +1,6 @@
 package com.pumpkin.core.render
 
 import com.pumpkin.core.stack
-import com.pumpkin.platform.opengl.OpenGLShader
 import glm_.mat4x4.Mat4
 
 object Renderer {

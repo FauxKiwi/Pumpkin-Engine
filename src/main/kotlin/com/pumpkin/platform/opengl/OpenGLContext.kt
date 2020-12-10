@@ -1,10 +1,8 @@
 package com.pumpkin.platform.opengl
 
-import com.pumpkin.core.logInfoCore
+import com.pumpkin.core.Debug
 import com.pumpkin.core.render.GraphicsContext
 import com.pumpkin.core.stack
-import gln.gl
-import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11C
 import uno.glfw.GlfwWindow
@@ -17,10 +15,10 @@ class OpenGLContext(private val windowHandle: GlfwWindow) : GraphicsContext {
             GL.createCapabilities()
         }
 
-        logInfoCore("OpenGL Info:")
-        logInfoCore("  Vendor: ${getVendor()}")
-        logInfoCore("  Renderer: ${getRenderer()}")
-        logInfoCore("  Version: ${getVersion()}")
+        Debug.logInfoCore("OpenGL Info:")
+        Debug.logInfoCore("  Vendor: ${getVendor()}")
+        Debug.logInfoCore("  Renderer: ${getRenderer()}")
+        Debug.logInfoCore("  Version: ${getVersion()}")
     }
 
     override fun swapBuffers() = windowHandle.swapBuffers()

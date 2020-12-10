@@ -8,7 +8,6 @@ import com.pumpkin.core.render.RendererCommand
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
 import imgui.ImGui
-import imgui.SliderFlag
 
 class StresstestLayer : Layer("Stresstest") {
     private val cameraController = OrthographicCameraController(16f / 9f, false)

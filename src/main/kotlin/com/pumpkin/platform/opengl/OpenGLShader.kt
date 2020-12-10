@@ -1,7 +1,6 @@
 package com.pumpkin.platform.opengl
 
-import com.pumpkin.core.PumpkinError
-import com.pumpkin.core.logErrorCore
+import com.pumpkin.core.Debug
 import com.pumpkin.core.render.Shader
 import com.pumpkin.core.stack
 import glm_.mat3x3.Mat3
@@ -10,11 +9,9 @@ import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
 import gln.ShaderType
-import gln.UniformLocation
 import gln.gl
 import gln.identifiers.GlProgram
 import gln.identifiers.GlShader
-import org.lwjgl.opengl.GL20C
 import java.io.FileReader
 import kotlin.math.max
 
@@ -49,10 +46,10 @@ class OpenGLShader : Shader {
             var pos = source.indexOf(typeToken)
             while (pos != -1) {
                 val eol = source.indexOf('\r', pos)
-                if (eol == -1) throw PumpkinError().also { logErrorCore("Syntax error") }
+                if (eol == -1) Debug.error("Syntax error")
                 val begin = pos + typeTokenLength + 1
                 val type = source.substring(begin, eol)
-                if (shaderTypeFromString(type) == null) throw PumpkinError().also { logErrorCore("No valid shader type specified") }
+                if (shaderTypeFromString(type) == null) Debug.error("No valid shader type specified")
                 var nextLinePos = eol + 2
                 while (source[nextLinePos + 1] == '\n') nextLinePos += 2
                 pos = source.indexOf(typeToken, nextLinePos)
@@ -86,7 +83,7 @@ class OpenGLShader : Shader {
                 gl.compileShader(shader)
 
                 if (!shader.compileStatus) {
-                    logErrorCore("Shader (${shaderType.name()}) compile error: ${gl.getShaderInfoLog(shader)}")
+                    Debug.logErrorCore("Shader (${shaderType.name()}) compile error: ${gl.getShaderInfoLog(shader)}")
                     gl.deleteShader(shader)
                 }
 
@@ -98,7 +95,7 @@ class OpenGLShader : Shader {
             gl.linkProgram(rendererID!!)
 
             if (!rendererID!!.linkStatus) {
-                logErrorCore("Shader link error ${gl.getProgramInfoLog(rendererID!!)}")
+                Debug.logErrorCore("Shader link error ${gl.getProgramInfoLog(rendererID!!)}")
 
                 gl.deleteProgram(rendererID!!)
                 for (shader in shaderIDs) gl.deleteShader(shader)

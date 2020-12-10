@@ -1,6 +1,5 @@
 package com.pumpkin.platform.opengl
 
-import com.pumpkin.core.PumpkinError
 import com.pumpkin.core.render.RendererAPI
 import com.pumpkin.core.render.VertexArray
 import com.pumpkin.core.stack

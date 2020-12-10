@@ -1,7 +1,7 @@
 package com.pumpkin.platform.windows
 
 import com.pumpkin.core.input.AbstractInput
-import com.pumpkin.core.input.instance
+import com.pumpkin.core.input.Input
 import com.pumpkin.core.window.Window
 import glm_.vec2.Vec2
 import org.lwjgl.glfw.GLFW
@@ -9,7 +9,7 @@ import org.lwjgl.glfw.GLFW
 object WindowsInput : AbstractInput {
 
     init {
-        instance = WindowsInput
+        Input.instance = WindowsInput
     }
 
     override fun isKeyPressed(keycode: Int): Boolean {

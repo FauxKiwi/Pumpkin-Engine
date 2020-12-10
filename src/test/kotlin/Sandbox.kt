@@ -6,7 +6,6 @@ import com.pumpkin.core.event.Event
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.render.*
 import com.pumpkin.core.window.Window
-import com.pumpkin.platform.opengl.OpenGLShader
 import glm_.glm
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2

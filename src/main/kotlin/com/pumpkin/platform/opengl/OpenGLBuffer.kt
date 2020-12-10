@@ -1,6 +1,6 @@
 package com.pumpkin.platform.opengl
 
-import com.pumpkin.core.PumpkinError
+import com.pumpkin.core.Debug
 import com.pumpkin.core.render.BufferLayout
 import com.pumpkin.core.render.IndexBuffer
 import com.pumpkin.core.render.VertexBuffer
@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL15C
 class OpenGLVertexBuffer : VertexBuffer {
     private val rendererID = gl.createBuffers()
     override var layout: BufferLayout? = null
-    get() = field ?: throw PumpkinError("No Layout specified")
+    get() = field ?: Debug.error("No Layout specified")
 
     constructor(vertices: FloatArray) {
         gl.bindBuffer(BufferTarget.ARRAY, rendererID)

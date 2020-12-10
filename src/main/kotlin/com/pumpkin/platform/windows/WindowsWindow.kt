@@ -2,8 +2,6 @@ package com.pumpkin.platform.windows
 
 import com.pumpkin.core.*
 import com.pumpkin.core.event.*
-import com.pumpkin.core.logErrorCore
-import com.pumpkin.core.logInfoCore
 import com.pumpkin.core.render.GraphicsContext
 import com.pumpkin.platform.opengl.OpenGLContext
 import com.pumpkin.core.window.EventCallbackFunction
@@ -58,7 +56,7 @@ class WindowsWindow : Window {
             iconImageBuffer.put(0, iconImage)
             window.setIcon(iconImageBuffer)
 
-            logInfoCore("Created Window \"${data.title}\" (${data.width} x ${data.height})")
+            Debug.logInfoCore("Created Window \"${data.title}\" (${data.width} x ${data.height})")
 
             vSync = data.vSync
 
@@ -77,7 +75,7 @@ class WindowsWindow : Window {
             window.scrollCB = this::scrollCallback
             window.cursorPosCB = this::cursorPosCallback
 
-            logInfoCore("Installed Callbacks for Window \"${data.title}\"")
+            Debug.logInfoCore("Installed Callbacks for Window \"${data.title}\"")
 
             DEBUG = false
         }
@@ -97,7 +95,7 @@ class WindowsWindow : Window {
         data.eventCallback = callback
     }
 
-    private fun errorCallback(error: glfw.Error, message: String) = logErrorCore("GLFW error (${error.name}): $message")
+    private fun errorCallback(error: glfw.Error, message: String) = Debug.logErrorCore("GLFW error (${error.name}): $message")
 
     private fun windowSizeCallback(size: Vec2i) {
         data.width = size[0]

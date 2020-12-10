@@ -27,20 +27,20 @@ class OrthographicCameraController(aspectRatio: Float, var rotate: Boolean) {
     var rotationSpeed = 180f
 
     fun onUpdate(ts: Timestep) {
-        if (isKeyPressed(PE_KEY_A))
+        if (Input.isKeyPressed(PE_KEY_A))
             cameraPosition -= Vec3(0.05f, 0f, 0f) * translationSpeed * zoomLevel * ts
-        else if (isKeyPressed(PE_KEY_D))
+        else if (Input.isKeyPressed(PE_KEY_D))
             cameraPosition += Vec3(0.05f, 0f, 0f) * translationSpeed * zoomLevel * ts
 
-        if (isKeyPressed(PE_KEY_S))
+        if (Input.isKeyPressed(PE_KEY_S))
             cameraPosition -= Vec3(0f, 0.05f, 0f) * translationSpeed * zoomLevel * ts
-        else if (isKeyPressed(PE_KEY_W))
+        else if (Input.isKeyPressed(PE_KEY_W))
             cameraPosition += Vec3(0f, 0.05f, 0f) * translationSpeed * zoomLevel * ts
 
         if (rotate) {
-            if (isKeyPressed(PE_KEY_Q))
+            if (Input.isKeyPressed(PE_KEY_Q))
                 cameraRotation -= rotationSpeed * ts
-            else if (isKeyPressed(PE_KEY_E))
+            else if (Input.isKeyPressed(PE_KEY_E))
                 cameraRotation += rotationSpeed * ts
 
             camera.rotation = cameraRotation

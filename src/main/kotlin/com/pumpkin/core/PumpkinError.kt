@@ -1,10 +1,10 @@
 package com.pumpkin.core
 
-class PumpkinError(message: String? = null) : Throwable(message) {
+internal class PumpkinError(message: String? = null) : Throwable(message) {
 
     init {
         if (message != null) {
-            logErrorCore(message)
+            Debug.logErrorCore(message)
         }
     }
 }

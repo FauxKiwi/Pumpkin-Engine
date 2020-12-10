@@ -39,8 +39,8 @@ class MainLayer : Layer("Game of life") {
         }
 
         if (dragging) {
-            val x = (displaySize[0] * getMouseX() / Window.getWindow().width.toFloat()).toInt()
-            val y = (displaySize[1] * getMouseY() / Window.getWindow().height.toFloat()).toInt()
+            val x = (displaySize[0] * Input.getMouseX() / Window.getWindow().width.toFloat()).toInt()
+            val y = (displaySize[1] * Input.getMouseY() / Window.getWindow().height.toFloat()).toInt()
             val index = (x + arraySize[0]/2 + (y + arraySize[1]/2) * arraySize[0])
             playground[index] = !dragCopy[index]
         }
@@ -105,8 +105,8 @@ class MainLayer : Layer("Game of life") {
             dragging = true
             playground.copyInto(dragCopy)
         }
-        val x = (displaySize[0] * getMouseX() / Window.getWindow().width.toFloat()).toInt()
-        val y = (displaySize[1] * getMouseY() / Window.getWindow().height.toFloat()).toInt()
+        val x = (displaySize[0] * Input.getMouseX() / Window.getWindow().width.toFloat()).toInt()
+        val y = (displaySize[1] * Input.getMouseY() / Window.getWindow().height.toFloat()).toInt()
         val index = (x + arraySize[0]/2 + (y + arraySize[1]/2) * arraySize[0])
         playground[index] = !playground[index]
         return false

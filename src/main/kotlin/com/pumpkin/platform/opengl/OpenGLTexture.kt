@@ -1,7 +1,6 @@
 package com.pumpkin.platform.opengl
 
-import com.pumpkin.core.PumpkinError
-import com.pumpkin.core.render.Renderer2D
+import com.pumpkin.core.Debug
 import com.pumpkin.core.render.Texture2D
 import com.pumpkin.core.stack
 import gli_.gli
@@ -28,7 +27,7 @@ class OpenGLTexture2D : Texture2D {
             format = when (data.format.blockSize) {
                 3 -> Pair(GL45C.GL_RGB8, GL45C.GL_RGB)
                 4 -> Pair(GL45C.GL_RGBA8, GL45C.GL_RGBA)
-                else -> throw PumpkinError("Impossible number of channels")
+                else -> Debug.error("Impossible number of channels")
             }
 
             GL45C.glTextureStorage2D(rendererID.name, 1, format.first, width, height)

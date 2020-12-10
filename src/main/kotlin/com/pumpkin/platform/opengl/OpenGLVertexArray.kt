@@ -1,6 +1,6 @@
 package com.pumpkin.platform.opengl
 
-import com.pumpkin.core.PumpkinError
+import com.pumpkin.core.Debug
 import com.pumpkin.core.Ref
 import com.pumpkin.core.render.BufferLayout
 import com.pumpkin.core.render.IndexBuffer
@@ -16,7 +16,7 @@ class OpenGLVertexArray : VertexArray {
     override var indexBuffer: Ref<IndexBuffer>? = null
         set(value) {
             if (value == null) {
-                throw PumpkinError("Index Buffer is null")
+                Debug.error("Index Buffer is null")
             }
             stack {
                 gl.bindVertexArray(rendererID)
@@ -45,7 +45,7 @@ class OpenGLVertexArray : VertexArray {
 
     override fun addVertexBuffer(vertexBuffer: Ref<VertexBuffer>): Boolean {
         if (vertexBuffer().layout == null) {
-            throw PumpkinError("Vertex buffer has no layout")
+            Debug.error("Vertex buffer has no layout")
         }
         stack {
             gl.bindVertexArray(rendererID)

@@ -2,24 +2,19 @@ package com.pumpkin.core.imgui
 
 import com.pumpkin.core.Timestep
 import com.pumpkin.core.layer.Layer
-import com.pumpkin.core.logDebug
 import com.pumpkin.core.stack
 import com.pumpkin.core.window.Window
 import glm_.vec2.Vec2
 import imgui.*
 import imgui.classes.Context
 import imgui.classes.Style
-import imgui.demo.ShowDemoWindowWidgets
 import imgui.font.Font
 import imgui.impl.gl.ImplGL3
 import imgui.impl.glfw.ImplGlfw
-import org.lwjgl.glfw.GLFW
-import uno.glfw.glfw
-import kotlin.math.cos
-import kotlin.math.sin
 
 class ImGuiLayer : Layer("ImGui") {
     private var showDemoWindow = false
+    private var showProfiler = true
     private var lightMode = false
     //set(value) {if (value) ImGui.styleColorsLight(style) else ImGui.styleColorsDark(style); field = value}
 
@@ -68,7 +63,7 @@ class ImGuiLayer : Layer("ImGui") {
             ImGui.showDemoWindow(::showDemoWindow)
         }
         with(ImGui) {
-            begin("Framerate")
+            begin("Framerate", ::showProfiler)
             text("Your Framerate is: ${ImGui.io.framerate}")
             text("Update time: ${1000 / ImGui.io.framerate}")
             val overlay = "min ${String.format("%.3f", values0.min())}   max ${String.format("%.3f", values0.max())}"
