@@ -74,15 +74,12 @@ open class Application {
             running = false
             true
         }
-        if (event.handled) {
-            return
-        }
         dispatcher.dispatch(::onWindowResize)
         for (layer in layerStack.layersReversed) {
-            layer.onEvent(event)
             if (event.handled) {
                 break
             }
+            layer.onEvent(event)
         }
     }
 

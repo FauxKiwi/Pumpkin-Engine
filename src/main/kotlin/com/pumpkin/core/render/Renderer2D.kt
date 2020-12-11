@@ -175,6 +175,10 @@ object Renderer2D {
         }
 
         if (textureIndex == 0f) {
+            if (textureSlotIndex >= maxTextureSlots) {
+                flushAndReset()
+            }
+
             textureIndex = textureSlotIndex.toFloat()
             textureSlots[textureSlotIndex] = texture
             textureSlotIndex++

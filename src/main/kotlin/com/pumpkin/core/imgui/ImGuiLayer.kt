@@ -1,6 +1,8 @@
 package com.pumpkin.core.imgui
 
 import com.pumpkin.core.Timestep
+import com.pumpkin.core.event.Event
+import com.pumpkin.core.event.EventCategory
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.stack
 import com.pumpkin.core.window.Window
@@ -72,6 +74,11 @@ class ImGuiLayer : Layer("ImGui") {
             checkbox("VSync", Window.getWindow()::vSync)
             end()
         }
+    }
+
+    override fun onEvent(event: Event) {
+        event.handled = event.handled or event.isInCategory(EventCategory.Mouse) and ImGui.io.wantCaptureMouse
+        event.handled = event.handled or event.isInCategory(EventCategory.Keyboard) and ImGui.io.wantCaptureKeyboard
     }
 
     fun begin() {
