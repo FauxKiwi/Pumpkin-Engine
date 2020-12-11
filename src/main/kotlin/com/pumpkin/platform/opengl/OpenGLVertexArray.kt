@@ -16,7 +16,7 @@ class OpenGLVertexArray : VertexArray {
     override var indexBuffer: Ref<IndexBuffer>? = null
         set(value) {
             if (value == null) {
-                Debug.error("Index Buffer is null")
+                Debug.exception("Index Buffer is null")
             }
             stack {
                 gl.bindVertexArray(rendererID)
@@ -45,7 +45,7 @@ class OpenGLVertexArray : VertexArray {
 
     override fun addVertexBuffer(vertexBuffer: Ref<VertexBuffer>): Boolean {
         if (vertexBuffer().layout == null) {
-            Debug.error("Vertex buffer has no layout")
+            Debug.exception("Vertex buffer has no layout")
         }
         stack {
             gl.bindVertexArray(rendererID)

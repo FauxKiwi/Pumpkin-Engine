@@ -46,10 +46,10 @@ class OpenGLShader : Shader {
             var pos = source.indexOf(typeToken)
             while (pos != -1) {
                 val eol = source.indexOf('\r', pos)
-                if (eol == -1) Debug.error("Syntax error")
+                if (eol == -1) Debug.exception("Syntax error")
                 val begin = pos + typeTokenLength + 1
                 val type = source.substring(begin, eol)
-                if (shaderTypeFromString(type) == null) Debug.error("No valid shader type specified")
+                if (shaderTypeFromString(type) == null) Debug.exception("No valid shader type specified")
                 var nextLinePos = eol + 2
                 while (source[nextLinePos + 1] == '\n') nextLinePos += 2
                 pos = source.indexOf(typeToken, nextLinePos)

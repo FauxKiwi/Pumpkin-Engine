@@ -1,7 +1,6 @@
 package com.pumpkin.core.render
 
 import com.pumpkin.core.Debug
-import com.pumpkin.core.PumpkinError
 import com.pumpkin.core.Ref
 import com.pumpkin.platform.opengl.OpenGLVertexArray
 
@@ -11,7 +10,7 @@ interface VertexArray : AutoCloseable {
     companion object {
         fun create(): Ref<VertexArray> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
-                Debug.error("Having no render API is currently not supported")
+                Debug.exception("Having no render API is currently not supported")
             }
             RendererAPI.API.OpenGL -> Ref(OpenGLVertexArray())
         }

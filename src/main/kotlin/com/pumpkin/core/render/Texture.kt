@@ -18,14 +18,14 @@ interface Texture2D : Texture {
     companion object {
         fun create(path: String): Ref<Texture2D> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
-                Debug.error("Having no render API is currently not supported")
+                Debug.exception("Having no render API is currently not supported")
             }
             RendererAPI.API.OpenGL -> Ref(OpenGLTexture2D(path))
         }
 
         fun create(width: Int, height: Int): Ref<Texture2D> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
-                Debug.error("Having no render API is currently not supported")
+                Debug.exception("Having no render API is currently not supported")
             }
             RendererAPI.API.OpenGL -> Ref(OpenGLTexture2D(width, height))
         }

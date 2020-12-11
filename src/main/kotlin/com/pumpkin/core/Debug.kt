@@ -35,10 +35,19 @@ object Debug {
 
 
     fun assert(predicate: Boolean, failMessage: String? = null) {
-        if (!predicate) error(failMessage)
+        if (!predicate) exception(failMessage)
     }
 
-    fun error(message: String? = null): Nothing = throw PumpkinError(message)
+    fun assert(not0: Number, failMessage: String? = null) {
+        if (not0 == 0) exception(failMessage)
+    }
+
+    fun assert(notNull: Any?, failMessage: String? = null) {
+        if (notNull == null) exception(failMessage)
+    }
+
+
+    fun exception(message: String? = null): Nothing = throw PumpkinError(message)
 }
 
 class Logger(private val name: String) {

@@ -13,14 +13,14 @@ interface Shader : AutoCloseable {
     companion object {
         fun create(name: String, vertexSrc: String, fragmentSrc: String): Ref<Shader> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
-                Debug.error("Having no render API is currently not supported")
+                Debug.exception("Having no render API is currently not supported")
             }
             RendererAPI.API.OpenGL -> Ref(OpenGLShader(name, vertexSrc, fragmentSrc))
         }
 
         fun create(filepath: String): Ref<Shader> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
-                Debug.error("Having no render API is currently not supported")
+                Debug.exception("Having no render API is currently not supported")
             }
             RendererAPI.API.OpenGL -> Ref(OpenGLShader(filepath))
         }
@@ -54,12 +54,12 @@ class ShaderLibrary : AutoCloseable {
     }
 
     fun add(name: String, shader: Ref<Shader>) {
-        if(exists(name)) Debug.error("Shader already exists")
+        if(exists(name)) Debug.exception("Shader already exists")
         else shaders[name] = shader
     }
 
     fun add(shader: Ref<Shader>) {
-        if(exists(shader().name)) Debug.error("Shader already exists")
+        if(exists(shader().name)) Debug.exception("Shader already exists")
         else shaders[shader().name] = shader
     }
 
@@ -71,7 +71,7 @@ class ShaderLibrary : AutoCloseable {
 
     inline operator fun plusAssign(shader: Ref<Shader>) = add(shader)
 
-    operator fun get(name: String): Shader = if(!exists(name)) Debug.error("Shader does not exist") else shaders[name]!!()
+    operator fun get(name: String): Shader = if(!exists(name)) Debug.exception("Shader does not exist") else shaders[name]!!()
 
     fun exists(name: String) = shaders.containsKey(name)
 }

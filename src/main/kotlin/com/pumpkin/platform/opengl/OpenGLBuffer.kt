@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL15C
 class OpenGLVertexBuffer : VertexBuffer {
     private val rendererID = gl.createBuffers()
     override var layout: BufferLayout? = null
-    get() = field ?: Debug.error("No Layout specified")
+    get() = field ?: Debug.exception("No Layout specified")
 
     constructor(vertices: FloatArray) {
         gl.bindBuffer(BufferTarget.ARRAY, rendererID)

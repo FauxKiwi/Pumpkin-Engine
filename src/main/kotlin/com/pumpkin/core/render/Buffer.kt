@@ -71,12 +71,12 @@ interface VertexBuffer : AutoCloseable {
 
     companion object {
         fun create(size: Int) = when (Renderer.getAPI()) {
-            RendererAPI.API.None -> Debug.error("Having no render API is currently not supported")
+            RendererAPI.API.None -> Debug.exception("Having no render API is currently not supported")
             RendererAPI.API.OpenGL -> Ref(OpenGLVertexBuffer(size))
         }
 
         fun create(vertices: FloatArray) = when (Renderer.getAPI()) {
-            RendererAPI.API.None -> Debug.error("Having no render API is currently not supported")
+            RendererAPI.API.None -> Debug.exception("Having no render API is currently not supported")
             RendererAPI.API.OpenGL -> Ref(OpenGLVertexBuffer(vertices))
         }
     }
@@ -95,7 +95,7 @@ interface IndexBuffer : AutoCloseable{
         @ExperimentalUnsignedTypes
         fun create(indices: UIntArray): Ref<IndexBuffer> = when (Renderer.getAPI()) {
             RendererAPI.API.None -> {
-                Debug.error("Having no render API is currently not supported")
+                Debug.exception("Having no render API is currently not supported")
             }
             RendererAPI.API.OpenGL -> Ref(OpenGLIndexBuffer(indices))
         }
