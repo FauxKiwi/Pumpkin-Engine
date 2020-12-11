@@ -129,6 +129,9 @@ object Renderer2D {
         textureSlotIndex = 1
     }
 
+
+    private val textureIndices = arrayOf(0f, 0f, 1f, 0f, 1f, 1f, 0f, 1f)
+
     fun drawQuad(position: Vec2 = Vec2(0f), size: Vec2 = Vec2(1f), radians: Float = 0f, color: Vec4) =
         drawQuad(Vec3(position, 0), size, radians, color)
 
@@ -139,18 +142,18 @@ object Renderer2D {
             flushAndReset()
         }
 
-        val transform = if (radians == 0f)
-            glm.translate(Mat4.identity, position) * glm.scale(Mat4.identity, size.x, size.y, 1f)
-        else
-            glm.translate(Mat4.identity, position) * glm.rotate(Mat4.identity, radians, 0f, 0f, 1f) * glm.scale(Mat4.identity, size.x, size.y, 1f)
+        val transform = transformMatrix(position, size, radians)
 
-        quadVertexBufferData.put(transform * quadVertexPositions[0], color, 0f, 0f, whiteTextureID, whiteTextureTilingFactor)
-
-        quadVertexBufferData.put(transform * quadVertexPositions[1], color, 1f, 0f, whiteTextureID, whiteTextureTilingFactor)
-
-        quadVertexBufferData.put(transform * quadVertexPositions[2], color, 1f, 1f, whiteTextureID, whiteTextureTilingFactor)
-
-        quadVertexBufferData.put(transform * quadVertexPositions[3], color, 0f, 1f, whiteTextureID, whiteTextureTilingFactor)
+        for (i in 0..3) {
+            quadVertexBufferData.put(
+                transform * quadVertexPositions[i],
+                color,
+                textureIndices[2*i],
+                textureIndices[2*i + 1],
+                whiteTextureID,
+                whiteTextureTilingFactor
+            )
+        }
 
         quadIndexCount += 4
     }
@@ -165,7 +168,7 @@ object Renderer2D {
 
         var textureIndex = 0f
         for (i in 0 until textureSlotIndex) {
-            if (textureSlots[i]!!.equals(texture)) {
+            if (textureSlots[i]!! == texture) {
                 textureIndex = i.toFloat()
                 break
             }
@@ -177,22 +180,27 @@ object Renderer2D {
             textureSlotIndex++
         }
 
-        val transform = if (radians == 0f)
-            glm.translate(Mat4.identity, position) * glm.scale(Mat4.identity, size.x, size.y, 1f)
-        else
-            glm.translate(Mat4.identity, position) * glm.rotate(Mat4.identity, radians, 0f, 0f, 1f) * glm.scale(Mat4.identity, size.x, size.y, 1f)
+        val transform = transformMatrix(position, size, radians)
 
-        quadVertexBufferData.put(transform * quadVertexPositions[0], color, 0f, 0f, textureIndex, tilingFactor)
-
-        quadVertexBufferData.put(transform * quadVertexPositions[1], color, 1f, 0f, textureIndex, tilingFactor)
-
-        quadVertexBufferData.put(transform * quadVertexPositions[2], color, 1f, 1f, textureIndex, tilingFactor)
-
-        quadVertexBufferData.put(transform * quadVertexPositions[3], color, 0f, 1f, textureIndex, tilingFactor)
+        for (i in 0..3) {
+            quadVertexBufferData.put(
+                transform * quadVertexPositions[i],
+                color,
+                textureIndices[2*i],
+                textureIndices[2*i + 1],
+                textureIndex,
+                tilingFactor
+            )
+        }
 
         quadIndexCount += 4
     }
 }
+
+inline fun transformMatrix(position: Vec3, scale: Vec2, rotation: Float): Mat4 = if (rotation == 0f)
+    glm.translate(Mat4.identity, position) * glm.scale(Mat4.identity, scale.x, scale.y, 1f)
+else
+    glm.translate(Mat4.identity, position) * glm.rotate(Mat4.identity, rotation, 0f, 0f, 1f) * glm.scale(Mat4.identity, scale.x, scale.y, 1f)
 
 inline fun FloatBuffer.put(position: Vec4, color: Vec4, texCoordX: Float, texCoordY: Float, textureIndex: Float, tilingFactor: Float) {
     put(position.x); put(position.y); put(position.z);
