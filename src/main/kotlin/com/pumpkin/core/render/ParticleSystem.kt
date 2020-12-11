@@ -1,9 +1,6 @@
 package com.pumpkin.core.render
 
-import com.pumpkin.core.Debug
 import com.pumpkin.core.Timestep
-import glm_.glm
-import glm_.quat.Quat
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
@@ -12,8 +9,16 @@ import kotlin.math.PI
 class ParticleSystem {
     private val random = java.util.Random()
 
-    private val particlePool = Array(1000) { Particle() }
+    private var particlePool = Array(1000) { Particle() }
     private var poolIndex = 999
+
+    var maxParticles
+        get() = particlePool.size
+        set(value) {
+            val copy = particlePool.copyOf()
+            particlePool = Array(value) { Particle() }
+            copy.copyInto(particlePool, value - copy.size)
+        }
 
     fun onUpdate(ts: Timestep) {
         Renderer2D.flushAndReset()

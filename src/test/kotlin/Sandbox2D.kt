@@ -19,6 +19,7 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
         Vec4(0.6f, 0f, 0.2f, 1f), Vec4(0f, 0f, 1f, 0.1f),
         0.1f, 0.001f, 0.05f, 1f
     )
+    private var particleCountPerFrame = 1
 
     private val color = Vec4(0.3f, 0.2f, 0.8f, 1f)
     private val checkerboardPosition = Vec3(0f, 0f, -0.1f)
@@ -47,8 +48,10 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
         cameraController.onUpdate(ts)
 
         if (Input.isMouseButtonPressed(PE_MOUSE_BUTTON_LEFT)) {
-            particleProps.position = Input.getMousePosition() * (cameraController.zoomLevel / Window.getWindow().height)
-            particleSystem.emit(particleProps)
+            val x = (2 * Input.getMouseX() / Window.getWindow().width - 1) * cameraController.zoomLevel * cameraController.aspectRatio
+            val y = (-2 * Input.getMouseY() / Window.getWindow().height + 1) * cameraController.zoomLevel
+            particleProps.position = Vec2(x, y)
+            repeat(particleCountPerFrame) { particleSystem.emit(particleProps) }
         }
 
         ////// Render //////
@@ -83,6 +86,7 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
         combo("Wrap Mode", ::checkerboardImportWrap, arrayOf("Repeat", "Mirrored", "Clamp Edge", "Clamp Border"))
         end()
         begin("Particles")
+        dragInt("Count per Frame", ::particleCountPerFrame)
         dragVec2("Velocity", particleProps.velocity, 0.1f, format = "%.1f")
         dragVec2("Velocity Variation", particleProps.velocityVariation, 0.1f, format = "%.1f")
         colorEdit4("Color Begin", particleProps.colorBegin)
