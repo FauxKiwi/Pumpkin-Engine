@@ -1,13 +1,13 @@
 # Pumpkin Engine
 This is the Pumpkin Game Engine. A powerful and capable Kotlin 2D game engine using LWJGL and therefore your GPU. If you like the project, please consider to give it a star and support it. Also, your help with contributing is always welcome.<br>
-Current version: 1.0
+Current version: 1.1
 ***
 ## Screenshots
 ### A demo of texture rendering
 ![Texture Rendering][textures]
 ### Conways Game Of Life implementation
 ![Game of Life][game_of_life]
-### Renderer stress test: 400,000 quads at stable 60 FPS (vSync on)
+### Renderer stress test: 40,000 quads at stable 60 FPS (vSync on)
 ![Stress test][stresstest]
 ***
 ## Roadmap
