@@ -1,5 +1,8 @@
 import com.pumpkin.core.*
 import com.pumpkin.core.event.Event
+import com.pumpkin.core.event.EventDispatcher
+import com.pumpkin.core.event.MouseButtonPressedEvent
+import com.pumpkin.core.event.MouseButtonReleasedEvent
 import com.pumpkin.core.input.Input
 import com.pumpkin.core.input.PE_MOUSE_BUTTON_1
 import com.pumpkin.core.input.PE_MOUSE_BUTTON_LEFT
@@ -15,6 +18,8 @@ import imgui.ImGui
 class Sandbox2DLayer : Layer("Sandbox2D") {
     private val cameraController = OrthographicCameraController(16f / 9f, false)
     private val particleSystem = ParticleSystem()
+
+    private var mouseClicked = false
     private val particleProps = ParticleProps(Vec2(0), Vec2(0f), Vec2(0.4f, 0.4f),
         Vec4(0.6f, 0f, 0.2f, 1f), Vec4(0f, 0f, 1f, 0.1f),
         0.1f, 0.001f, 0.05f, 1f
@@ -47,9 +52,9 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
         ////// Update //////
         cameraController.onUpdate(ts)
 
-        if (Input.isMouseButtonPressed(PE_MOUSE_BUTTON_LEFT)) {
-            val x = (2 * Input.getMouseX() / Window.getWindow().width - 1) * cameraController.zoomLevel * cameraController.aspectRatio
-            val y = (-2 * Input.getMouseY() / Window.getWindow().height + 1) * cameraController.zoomLevel
+        if (mouseClicked) {
+            val x = (2 * Input.getMouseX() / Window.getWindow().width - 1) * cameraController.zoomLevel * cameraController.aspectRatio + cameraController.cameraPosition.x
+            val y = (-2 * Input.getMouseY() / Window.getWindow().height + 1) * cameraController.zoomLevel + cameraController.cameraPosition.y
             particleProps.position = Vec2(x, y)
             repeat(particleCountPerFrame) { particleSystem.emit(particleProps) }
         }
@@ -100,6 +105,9 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
 
     override fun onEvent(event: Event) {
         cameraController.onEvent(event)
+        val dispatcher = EventDispatcher(event)
+        dispatcher.dispatch<MouseButtonPressedEvent> { if (button != PE_MOUSE_BUTTON_LEFT) return@dispatch false; mouseClicked = true; false }
+        dispatcher.dispatch<MouseButtonReleasedEvent> { if (button != PE_MOUSE_BUTTON_LEFT) return@dispatch false; mouseClicked = false; false }
     }
 }
 
