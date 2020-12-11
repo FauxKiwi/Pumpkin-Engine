@@ -20,14 +20,12 @@ import java.nio.FloatBuffer
 const val sizeOfQuadVertex = 11 // 3 + 4 + 2 + 1 + 1
 
 object Renderer2D {
-    lateinit var camera: OrthographicCamera
-
     var quadIndexCount = 0
     lateinit var quadVertexBufferData: FloatBuffer
     lateinit var textureSlots: Array<Texture2D?>
     var textureSlotIndex = 1
 
-    var maxQuads = 100000
+    var maxQuads = 10000
         set(value) {
             field = value
             maxVertices = maxQuads * 4
@@ -100,7 +98,6 @@ object Renderer2D {
     }
 
     fun beginScene(camera: OrthographicCamera) {
-        this.camera = camera
         textureShader().run {
             bind()
             setMat4("u_ViewProjection", camera.viewProjectionMatrix)
@@ -123,6 +120,15 @@ object Renderer2D {
         RendererCommand.drawIndexed(quadVertexArray(), quadIndexCount)
     }
 
+    private fun flushAndReset() {
+        endScene()
+
+        quadIndexCount = 0
+        quadVertexBufferData.position(0)
+
+        textureSlotIndex = 1
+    }
+
     fun drawQuad(position: Vec2 = Vec2(0f), size: Vec2 = Vec2(1f), radians: Float = 0f, color: Vec4) =
         drawQuad(Vec3(position, 0), size, radians, color)
 
@@ -130,8 +136,7 @@ object Renderer2D {
     private const val whiteTextureTilingFactor = 1f
     fun drawQuad(position: Vec3 = Vec3(0f), size: Vec2 = Vec2(1f), radians: Float = 0f, color: Vec4) = stack {
         if (quadVertexBufferData.position() >= maxQuads) {
-            endScene()
-            beginScene(camera)
+            flushAndReset()
         }
 
         val transform = if (radians == 0f)
@@ -155,8 +160,7 @@ object Renderer2D {
 
     fun drawQuad(position: Vec3 = Vec3(0f), size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f) = stack {
         if (quadVertexBufferData.position() >= maxQuads) {
-            endScene()
-            beginScene(camera)
+            flushAndReset()
         }
 
         var textureIndex = 0f
