@@ -30,7 +30,6 @@ class StresstestLayer : Layer("Stresstest") {
         ImGui.begin("Stresstest")
         ImGui.dragInt("Number", ::sqrt, 1f, 1, 1000)
         ImGui.inputInt("Capacity", Renderer2D::maxQuads)
-        ImGui.text("Drawing ${sqrt * sqrt} quads in ${(sqrt * sqrt - 1) / Renderer2D.maxQuads + 1} draw calls")
         ImGui.end()
     }
 

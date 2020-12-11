@@ -4,6 +4,7 @@ import com.pumpkin.core.Timestep
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.EventCategory
 import com.pumpkin.core.layer.Layer
+import com.pumpkin.core.render.Renderer2D
 import com.pumpkin.core.stack
 import com.pumpkin.core.window.Window
 import glm_.vec2.Vec2
@@ -65,13 +66,14 @@ class ImGuiLayer : Layer("ImGui") {
             ImGui.showDemoWindow(::showDemoWindow)
         }
         with(ImGui) {
-            begin("Framerate", ::showProfiler)
+            begin("Profiler", ::showProfiler)
             text("Your Framerate is: ${ImGui.io.framerate}")
             text("Update time: ${1000 / ImGui.io.framerate}")
             val overlay = "min ${String.format("%.3f", values0.min())}   max ${String.format("%.3f", values0.max())}"
             plotLines("Frametime", values0, valuesOffset/*, scaleMin = 0f, scaleMax = 60f*/, overlayText = overlay, graphSize = Vec2(0f, 80f))
-            checkbox("Demo", ::showDemoWindow)
             checkbox("VSync", Window.getWindow()::vSync)
+            text("Drawing ${Renderer2D.quadCount} quads")
+            text("Draw calls: ${Renderer2D.drawCalls}")
             end()
         }
     }
