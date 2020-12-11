@@ -152,7 +152,7 @@ object Renderer2D {
 
         val transform = transformMatrix(position, size, radians)
 
-        for (i in 0..3) {
+        /*for (i in 0..3) {
             quadVertexBufferData.put(
                 transform * quadVertexPositions[i],
                 color,
@@ -161,7 +161,35 @@ object Renderer2D {
                 whiteTextureID,
                 whiteTextureTilingFactor
             )
-        }
+        }*/
+        quadVertexBufferData.put(
+            transform * quadVertexPositions[0],
+            color,
+            textureIndices[0],
+            textureIndices[1],
+            whiteTextureID,
+            whiteTextureTilingFactor)
+        quadVertexBufferData.put(
+            transform * quadVertexPositions[1],
+            color,
+            textureIndices[2],
+            textureIndices[3],
+            whiteTextureID,
+            whiteTextureTilingFactor)
+        quadVertexBufferData.put(
+            transform * quadVertexPositions[2],
+            color,
+            textureIndices[4],
+            textureIndices[5],
+            whiteTextureID,
+            whiteTextureTilingFactor)
+        quadVertexBufferData.put(
+            transform * quadVertexPositions[3],
+            color,
+            textureIndices[6],
+            textureIndices[7],
+            whiteTextureID,
+            whiteTextureTilingFactor)
 
         quadIndexCount += 4
 
@@ -196,7 +224,7 @@ object Renderer2D {
 
         val transform = transformMatrix(position, size, radians)
 
-        for (i in 0..3) {
+        /*for (i in 0..3) {
             quadVertexBufferData.put(
                 transform * quadVertexPositions[i],
                 color,
@@ -205,7 +233,35 @@ object Renderer2D {
                 textureIndex,
                 tilingFactor
             )
-        }
+        }*/
+        quadVertexBufferData.put(
+            transform * quadVertexPositions[0],
+            color,
+            textureIndices[0],
+            textureIndices[1],
+            textureIndex,
+            tilingFactor)
+        quadVertexBufferData.put(
+            transform * quadVertexPositions[1],
+            color,
+            textureIndices[2],
+            textureIndices[3],
+            textureIndex,
+            tilingFactor)
+        quadVertexBufferData.put(
+            transform * quadVertexPositions[2],
+            color,
+            textureIndices[4],
+            textureIndices[5],
+            textureIndex,
+            tilingFactor)
+        quadVertexBufferData.put(
+            transform * quadVertexPositions[3],
+            color,
+            textureIndices[6],
+            textureIndices[7],
+            textureIndex,
+            tilingFactor)
 
         quadIndexCount += 4
 
