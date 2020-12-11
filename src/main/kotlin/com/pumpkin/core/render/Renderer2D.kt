@@ -121,12 +121,12 @@ object Renderer2D {
         flush()
     }
 
-    private fun flush() {
+    fun flush() {
         for (i in 0 until textureSlotIndex) textureSlots[i]!!.bind(i)
         RendererCommand.drawIndexed(quadVertexArray(), quadIndexCount)
     }
 
-    private fun flushAndReset() {
+    fun flushAndReset() {
         endScene()
 
         quadIndexCount = 0
