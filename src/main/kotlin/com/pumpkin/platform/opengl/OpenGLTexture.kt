@@ -15,8 +15,10 @@ class OpenGLTexture2D : Texture2D {
 
     override var width = 0
     override var height = 0
+    override val rendererID: Int
+        get() = _rendererID.name
 
-    private val rendererID: GlTexture = gl.createTextures(TextureTarget._2D)
+    private val _rendererID: GlTexture = gl.createTextures(TextureTarget._2D)
 
     constructor(path: String) {
         stack {
@@ -30,12 +32,12 @@ class OpenGLTexture2D : Texture2D {
                 else -> Debug.exception("Impossible number of channels")
             }
 
-            GL45C.glTextureStorage2D(rendererID.name, 1, format.first, width, height)
+            GL45C.glTextureStorage2D(_rendererID.name, 1, format.first, width, height)
 
             setFilter(Texture2D.Filter.Linear, Texture2D.Filter.Nearest)
             setWrap(Texture2D.WrapMode.Repeat)
 
-            GL45C.glTextureSubImage2D(rendererID.name, 0, 0, 0, width, height, format.second, GL45C.GL_UNSIGNED_BYTE, data.data())
+            GL45C.glTextureSubImage2D(_rendererID.name, 0, 0, 0, width, height, format.second, GL45C.GL_UNSIGNED_BYTE, data.data())
         }
     }
 
@@ -44,7 +46,7 @@ class OpenGLTexture2D : Texture2D {
         this.height = height
         stack {
             format = Pair(GL45C.GL_RGBA8, GL45C.GL_RGBA)
-            GL45C.glTextureStorage2D(rendererID.name, 1, format.first, width, height)
+            GL45C.glTextureStorage2D(_rendererID.name, 1, format.first, width, height)
 
             setFilter(Texture2D.Filter.Linear, Texture2D.Filter.Nearest)
             setWrap(Texture2D.WrapMode.Repeat)
@@ -52,22 +54,22 @@ class OpenGLTexture2D : Texture2D {
     }
 
     override fun setData(data: ByteBuffer, size: Int) = stack {
-        GL45C.glTextureSubImage2D(rendererID.name, 0, 0, 0, width, height, format.second, GL45C.GL_UNSIGNED_BYTE, data)
+        GL45C.glTextureSubImage2D(_rendererID.name, 0, 0, 0, width, height, format.second, GL45C.GL_UNSIGNED_BYTE, data)
     }
 
-    override fun close() = gl.deleteTexture(rendererID)
+    override fun close() = gl.deleteTexture(_rendererID)
 
-    override fun bind(slot: Int) = gl.bindTextureUnit(slot, rendererID)
+    override fun bind(slot: Int) = gl.bindTextureUnit(slot, _rendererID)
 
     override fun equals(other: Any?) = if (other is OpenGLTexture2D) rendererID == other.rendererID else false
 
     override fun setFilter(minFilter: Texture2D.Filter, magFilter: Texture2D.Filter) {
-        GL45C.glTextureParameteri(rendererID.name, GL45C.GL_TEXTURE_MIN_FILTER, when (minFilter) {
+        GL45C.glTextureParameteri(_rendererID.name, GL45C.GL_TEXTURE_MIN_FILTER, when (minFilter) {
             Texture2D.Filter.Linear -> GL45C.GL_LINEAR
             Texture2D.Filter.Nearest -> GL45C.GL_NEAREST
         })
         GL45C.glTextureParameteri(
-            rendererID.name, GL45C.GL_TEXTURE_MAG_FILTER, when (magFilter) {
+            _rendererID.name, GL45C.GL_TEXTURE_MAG_FILTER, when (magFilter) {
                 Texture2D.Filter.Linear -> GL45C.GL_LINEAR
                 Texture2D.Filter.Nearest -> GL45C.GL_NEAREST
             }
@@ -81,7 +83,7 @@ class OpenGLTexture2D : Texture2D {
             Texture2D.WrapMode.ClampEdge -> GL45C.GL_CLAMP_TO_EDGE
             Texture2D.WrapMode.ClampBorder -> GL45C.GL_CLAMP_TO_BORDER
         }
-        GL45C.glTextureParameteri(rendererID.name, GL45C.GL_TEXTURE_WRAP_S, glWrapMode)
-        GL45C.glTextureParameteri(rendererID.name, GL45C.GL_TEXTURE_WRAP_T, glWrapMode)
+        GL45C.glTextureParameteri(_rendererID.name, GL45C.GL_TEXTURE_WRAP_S, glWrapMode)
+        GL45C.glTextureParameteri(_rendererID.name, GL45C.GL_TEXTURE_WRAP_T, glWrapMode)
     }
 }

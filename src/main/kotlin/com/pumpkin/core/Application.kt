@@ -126,6 +126,10 @@ open class Application {
 
     open fun shutdown() = Unit
 
+    fun close() {
+        running = false
+    }
+
     private fun onWindowResize(event: WindowResizeEvent): Boolean {
         if (event.width == 0 || event.height == 0) {
             minimized = true

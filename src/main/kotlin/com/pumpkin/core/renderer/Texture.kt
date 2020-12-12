@@ -30,6 +30,7 @@ interface Texture2D : Texture {
             RendererAPI.API.OpenGL -> Ref(OpenGLTexture2D(width, height))
         }
     }
+    val rendererID: Int
 
     fun setData(data: ByteBuffer, size: Int)
 
