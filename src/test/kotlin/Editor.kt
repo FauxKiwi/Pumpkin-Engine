@@ -4,9 +4,7 @@ import com.pumpkin.core.Timestep
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.imgui.ImGuiProfiler
 import com.pumpkin.core.layer.Layer
-import com.pumpkin.core.renderer.Renderer2D
-import com.pumpkin.core.renderer.RendererCommand
-import com.pumpkin.core.renderer.Texture2D
+import com.pumpkin.core.renderer.*
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
 import imgui.*
@@ -19,6 +17,8 @@ class EditorLayer : Layer("Editor") {
     private var optFullscreenPersistent = dockingEnabled
     private var dockspaceFlags: DockNodeFlags = DockNodeFlag.None.i
 
+    private val framebuffer = Framebuffer.create(FramebufferSpecification(1280, 720))
+
     override fun onAttach() {
         ImGuiProfiler.onAttach()
     }
@@ -29,6 +29,10 @@ class EditorLayer : Layer("Editor") {
     }
 
     override fun onUpdate(ts: Timestep) {
+        framebuffer.bind()
+        RendererCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f))
+        RendererCommand.clear()
+
         cameraController.onUpdate(ts)
         ImGuiProfiler.onUpdate(ts)
 
@@ -37,6 +41,7 @@ class EditorLayer : Layer("Editor") {
         Renderer2D.drawQuad(texture = texture())
 
         Renderer2D.endScene()
+        framebuffer.unbind()
     }
 
     override fun onImGuiRender() {
@@ -80,9 +85,17 @@ class EditorLayer : Layer("Editor") {
 
             ImGuiProfiler.onImGuiRender()
 
+            ImGui.begin("Framebuffer")
+            ImGui.image(framebuffer.colorAttachmentID, Vec2(1280, 720))
+            ImGui.end()
+
             ImGui.end()
         } else {
             ImGuiProfiler.onImGuiRender()
+
+            ImGui.begin("Framebuffer")
+            ImGui.image(framebuffer.colorAttachmentID, Vec2(1280, 720))
+            ImGui.end()
         }
     }
 
@@ -95,11 +108,6 @@ class EditorApp : Application() {
 
     override fun init() {
         pushLayer(EditorLayer())
-    }
-
-    override fun run() {
-        RendererCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f))
-        RendererCommand.clear()
     }
 }
 
