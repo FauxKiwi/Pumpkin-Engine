@@ -7,7 +7,7 @@ Current version: 1.1
 ![Texture Rendering][textures]
 ### Conways Game Of Life implementation
 ![Game of Life][game_of_life]
-### Renderer stress test: 40,000 quads at stable 60 FPS (vSync on)
+### Renderer stress test: Drawing over 100,000 quads at over 90 FPS
 ![Stress test][stresstest]
 ***
 ## Roadmap
@@ -115,4 +115,6 @@ Remember this work is licensed under Apache 2.0
 
 [game_of_life]: https://cdn.discordapp.com/attachments/581185346465824770/786663113549414440/unknown.png
 
-[stresstest]: https://cdn.discordapp.com/attachments/581185346465824770/786665995388452914/unknown.png
+[stresstest_]: https://cdn.discordapp.com/attachments/581185346465824770/786665995388452914/unknown.png
+
+[stresstest]: https://cdn.discordapp.com/attachments/581185346465824770/787288977237475328/unknown.png
