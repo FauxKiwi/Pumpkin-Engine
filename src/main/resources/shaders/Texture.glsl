@@ -32,7 +32,7 @@ void main() {
 #version 330 core
 
 layout (points) in;
-layout (triangle_strip, max_vertices = 5) out;
+layout (triangle_strip, max_vertices = 4) out;
 
 in vec2 g_Size[];
 in float g_Rotation[];
@@ -101,6 +101,4 @@ uniform sampler2D u_Textures[32];
 
 void main() {
     color = texture(u_Textures[int(f_TexIndex)], f_TexCoord * f_TilingFactor) * f_Color;
-    //color = vec4(0.0, 1.0, 0.0, 1.0);
-    //color = f_Color;
 }
