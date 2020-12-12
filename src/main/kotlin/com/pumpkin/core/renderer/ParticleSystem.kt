@@ -28,6 +28,7 @@ class ParticleSystem {
             if (!particle.active)
                 continue
 
+
             particle.lifeRemaining -= (ts * 0.1f)
 
             if (particle.lifeRemaining <= 0.0f) {
@@ -46,7 +47,7 @@ class ParticleSystem {
             val size = Vec2(particle.sizeEnd + (particle.sizeBegin - particle.sizeEnd) * life)
 
             Renderer2D.drawQuad(
-                Vec3(particle.position, 0.5f),
+                Vec3(particle.position, 0.5f + i * (0.1 / maxParticles)),
                 size,
                 particle.rotation,
                 color
