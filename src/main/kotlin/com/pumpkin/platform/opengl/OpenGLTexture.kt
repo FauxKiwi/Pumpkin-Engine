@@ -20,7 +20,7 @@ class OpenGLTexture2D : Texture2D {
 
     constructor(path: String) {
         stack {
-            val data = gli.load(path, true)
+            val data = gli.load(ClassLoader.getSystemResource(path).toURI(), true)
             width = data.extent()[0]
             height = data.extent()[1]
 

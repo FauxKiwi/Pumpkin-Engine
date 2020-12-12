@@ -38,7 +38,7 @@ object Renderer2D {
 
     private var quadVertexArray = VertexArray.create()
     private var quadVertexBuffer = VertexBuffer.create(maxVertices * sizeOfQuadVertex)
-    private var textureShader = Shader.create("./src/main/resources/shaders/Texture.glsl")
+    private var textureShader = Shader.create("shaders/Texture.glsl")
     private var whiteTexture = Texture2D.create(1, 1)
 
     //private lateinit var quadVertexPositions: Array<Vec4>

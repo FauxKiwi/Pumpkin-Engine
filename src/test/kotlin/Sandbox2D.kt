@@ -29,7 +29,7 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
     private val checkerboardPosition = Vec3(0f, 0f, -0.1f)
     private val checkerboardScale = Vec2(10f)
     private var checkerboardRotation = 0
-    private val checkerboardTexture = Texture2D.create("./src/test/resources/textures/Checkerboard.png")
+    private val checkerboardTexture = Texture2D.create("textures/Checkerboard.png")
     private val checkerboardColor = Vec4(1f)
     private var checkerboardTiling = 1f
     private var checkerboardImportFilter = 1
@@ -42,7 +42,7 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
             field = value
             checkerboardTexture().setWrap(Texture2D.WrapMode.values()[value])
         }
-    private val pumpkinLogoTexture = Texture2D.create("./src/test/resources/textures/PumpkinLogo.png")
+    private val pumpkinLogoTexture = Texture2D.create("textures/PumpkinLogo.png")
 
     override fun onDetach() {
         checkerboardTexture.release()

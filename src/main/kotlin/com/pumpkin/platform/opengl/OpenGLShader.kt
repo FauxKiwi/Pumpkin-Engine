@@ -12,6 +12,7 @@ import gln.ShaderType
 import gln.gl
 import gln.identifiers.GlProgram
 import gln.identifiers.GlShader
+import java.io.File
 import java.io.FileReader
 import kotlin.math.max
 
@@ -22,7 +23,7 @@ class OpenGLShader : Shader {
 
     constructor(filepath: String) {
         stack {
-            val source = FileReader(filepath).readText()
+            val source = FileReader(File(ClassLoader.getSystemResource(filepath).toURI())).readText()
             val shaderSources = preProcess(source)
             compile(shaderSources)
         }
