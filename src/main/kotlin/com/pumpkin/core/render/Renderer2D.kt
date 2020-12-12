@@ -83,10 +83,10 @@ object Renderer2D {
             Vec4(-0.5f,  0.5f, 0.0f, 1.0f),
         )
 
-        val quadIndices = UIntArray(maxIndices) { it.toUInt() }
+        //val quadIndices = UIntArray(maxIndices) { it.toUInt() }
 
-        val quadIB = IndexBuffer.create(quadIndices)
-        quadVertexArray().indexBuffer = quadIB.take()
+        //val quadIB = IndexBuffer.create(quadIndices)
+        //quadVertexArray().indexBuffer = quadIB.take()
 
         //textureShader().setInt("u_Texture", 0)
         textureShader().bind()
@@ -95,7 +95,7 @@ object Renderer2D {
         textureSlots[0] = whiteTexture()
 
         quadVertexBuffer.release()
-        quadIB.release()
+        //quadIB.release()
     }
 
     fun shutdown() {

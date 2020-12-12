@@ -11,6 +11,7 @@ class ParticleSystem {
 
     private var particlePool = Array(1000) { Particle() }
     private var poolIndex = 999
+    private var activeParticles = 0
 
     var maxParticles
         get() = particlePool.size
@@ -22,7 +23,8 @@ class ParticleSystem {
 
     fun onUpdate(ts: Timestep) {
         Renderer2D.flushAndReset()
-        for (particle in particlePool) {
+        for (i in 0 until activeParticles) {
+            val particle = particlePool[(i+poolIndex) % maxParticles]
             if (!particle.active)
                 continue
 
@@ -30,6 +32,7 @@ class ParticleSystem {
 
             if (particle.lifeRemaining <= 0.0f) {
                 particle.active = false
+                activeParticles--
                 continue
             }
 
@@ -53,6 +56,8 @@ class ParticleSystem {
 
     fun emit(particleProps: ParticleProps): Particle {
         val particle = particlePool[poolIndex]
+        if (!particle.active) activeParticles++
+
         particle.active = true
         particle.position = Vec2(particleProps.position)
         particle.rotation = random.nextFloat() * 2f * PI.toFloat()
