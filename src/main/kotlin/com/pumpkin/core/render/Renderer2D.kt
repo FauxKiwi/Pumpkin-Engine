@@ -76,12 +76,12 @@ object Renderer2D {
 
         quadVertexBufferData = FloatBuffer.allocate(maxVertices * sizeOfQuadVertex)
 
-        quadVertexPositions = arrayOf(
+        /*quadVertexPositions = arrayOf(
             Vec4(-0.5f, -0.5f, 0.0f, 1.0f),
             Vec4( 0.5f, -0.5f, 0.0f, 1.0f),
             Vec4( 0.5f,  0.5f, 0.0f, 1.0f),
             Vec4(-0.5f,  0.5f, 0.0f, 1.0f),
-        )
+        )*/
 
         //val quadIndices = UIntArray(maxIndices) { it.toUInt() }
 
@@ -141,9 +141,6 @@ object Renderer2D {
         drawCalls++
     }
 
-
-    private val textureIndices = arrayOf(0f, 0f, 1f, 0f, 1f, 1f, 0f, 1f)
-
     fun drawQuad(position: Vec2 = Vec2(0f), size: Vec2 = Vec2(1f), radians: Float = 0f, color: Vec4) =
         drawQuad(Vec3(position, 0), size, radians, color)
 
@@ -154,44 +151,6 @@ object Renderer2D {
             flushAndReset()
         }
 
-        /*for (i in 0..3) {
-            quadVertexBufferData.put(
-                transform * quadVertexPositions[i],
-                color,
-                textureIndices[2*i],
-                textureIndices[2*i + 1],
-                whiteTextureID,
-                whiteTextureTilingFactor
-            )
-        }*/
-        /*quadVertexBufferData.put(
-            transform * quadVertexPositions[0],
-            color,
-            textureIndices[0],
-            textureIndices[1],
-            whiteTextureID,
-            whiteTextureTilingFactor)
-        quadVertexBufferData.put(
-            transform * quadVertexPositions[1],
-            color,
-            textureIndices[2],
-            textureIndices[3],
-            whiteTextureID,
-            whiteTextureTilingFactor)
-        quadVertexBufferData.put(
-            transform * quadVertexPositions[2],
-            color,
-            textureIndices[4],
-            textureIndices[5],
-            whiteTextureID,
-            whiteTextureTilingFactor)
-        quadVertexBufferData.put(
-            transform * quadVertexPositions[3],
-            color,
-            textureIndices[6],
-            textureIndices[7],
-            whiteTextureID,
-            whiteTextureTilingFactor)*/
         quadVertexBufferData.put(position.x); quadVertexBufferData.put(position.y); quadVertexBufferData.put(position.z)
         quadVertexBufferData.put(size.x); quadVertexBufferData.put(size.y)
         quadVertexBufferData.put(radians)
@@ -231,44 +190,6 @@ object Renderer2D {
             textureSlotIndex++
         }
 
-        /*for (i in 0..3) {
-            quadVertexBufferData.put(
-                transform * quadVertexPositions[i],
-                color,
-                textureIndices[2*i],
-                textureIndices[2*i + 1],
-                textureIndex,
-                tilingFactor
-            )
-        }*/
-        /*quadVertexBufferData.put(
-            transform * quadVertexPositions[0],
-            color,
-            textureIndices[0],
-            textureIndices[1],
-            textureIndex,
-            tilingFactor)
-        quadVertexBufferData.put(
-            transform * quadVertexPositions[1],
-            color,
-            textureIndices[2],
-            textureIndices[3],
-            textureIndex,
-            tilingFactor)
-        quadVertexBufferData.put(
-            transform * quadVertexPositions[2],
-            color,
-            textureIndices[4],
-            textureIndices[5],
-            textureIndex,
-            tilingFactor)
-        quadVertexBufferData.put(
-            transform * quadVertexPositions[3],
-            color,
-            textureIndices[6],
-            textureIndices[7],
-            textureIndex,
-            tilingFactor)*/
         quadVertexBufferData.put(position.x); quadVertexBufferData.put(position.y); quadVertexBufferData.put(position.z)
         quadVertexBufferData.put(size.x); quadVertexBufferData.put(size.y)
         quadVertexBufferData.put(radians)
@@ -281,17 +202,4 @@ object Renderer2D {
 
         quadCount++
     }
-}
-
-inline fun transformMatrix(position: Vec3, scale: Vec2, rotation: Float): Mat4 = if (rotation == 0f)
-    glm.translate(Mat4.identity, position) * glm.scale(Mat4.identity, scale.x, scale.y, 1f)
-else
-    glm.translate(Mat4.identity, position) * glm.rotate(Mat4.identity, rotation, 0f, 0f, 1f) * glm.scale(Mat4.identity, scale.x, scale.y, 1f)
-
-inline fun FloatBuffer.put(position: Vec4, color: Vec4, texCoordX: Float, texCoordY: Float, textureIndex: Float, tilingFactor: Float) {
-    put(position.x); put(position.y); put(position.z);
-    put(color.x); put(color.y); put(color.z); put(color.w);
-    put(texCoordX); put(texCoordY);
-    put(textureIndex)
-    put(tilingFactor)
 }
