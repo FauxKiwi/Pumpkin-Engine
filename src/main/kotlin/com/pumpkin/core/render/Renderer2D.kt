@@ -12,12 +12,14 @@ import java.nio.FloatBuffer
 // QuadVertex data class: Just for layout purposes
 /* data class QuadVertex(
     val position: Vec3,
+    val size: Vec2,
+    val rotation: Float,
     val color: Vec4,
-    val texCoord: Vec2,
+    val texCoord: Vec4,
     val texIndex: Float,
     val tilingFactor: Float
 )*/
-const val sizeOfQuadVertex = 11 // 3 + 4 + 2 + 1 + 1
+const val sizeOfQuadVertex = 3 + 2 + 1 + 4 + 4 + 1 + 1
 
 object Renderer2D {
     private var quadIndexCount = 0
@@ -25,15 +27,15 @@ object Renderer2D {
     private lateinit var textureSlots: Array<Texture2D?>
     private var textureSlotIndex = 1
 
-    var maxQuads = 300
+    var maxQuads = 1200
         set(value) {
             field = value
-            maxVertices = maxQuads * 4
-            maxIndices = maxQuads * 4
+            maxVertices = maxQuads
+            maxIndices = maxQuads
             quadVertexBufferData = FloatBuffer.allocate(maxVertices * sizeOfQuadVertex)
         }
-    private var maxVertices = maxQuads * 4
-    private var maxIndices = maxQuads * 4
+    private var maxVertices = maxQuads
+    private var maxIndices = maxQuads
     var maxTextureSlots = 32
 
     private var quadVertexArray = VertexArray.create()
@@ -62,8 +64,10 @@ object Renderer2D {
         quadVertexBuffer().layout = BufferLayout(
             mutableListOf(
                 BufferElement(ShaderDataType.Float3, "a_Position"),
+                BufferElement(ShaderDataType.Float2, "a_Size"),
+                BufferElement(ShaderDataType.Float, "a_Rotation"),
                 BufferElement(ShaderDataType.Float4, "a_Color"),
-                BufferElement(ShaderDataType.Float2, "a_TexCoord"),
+                BufferElement(ShaderDataType.Float4, "a_TexCoords"),
                 BufferElement(ShaderDataType.Float, "a_TexIndex"),
                 BufferElement(ShaderDataType.Float, "a_TilingFactor"),
             )
@@ -150,8 +154,6 @@ object Renderer2D {
             flushAndReset()
         }
 
-        val transform = transformMatrix(position, size, radians)
-
         /*for (i in 0..3) {
             quadVertexBufferData.put(
                 transform * quadVertexPositions[i],
@@ -162,7 +164,7 @@ object Renderer2D {
                 whiteTextureTilingFactor
             )
         }*/
-        quadVertexBufferData.put(
+        /*quadVertexBufferData.put(
             transform * quadVertexPositions[0],
             color,
             textureIndices[0],
@@ -189,7 +191,14 @@ object Renderer2D {
             textureIndices[6],
             textureIndices[7],
             whiteTextureID,
-            whiteTextureTilingFactor)
+            whiteTextureTilingFactor)*/
+        quadVertexBufferData.put(position.x); quadVertexBufferData.put(position.y); quadVertexBufferData.put(position.z)
+        quadVertexBufferData.put(size.x); quadVertexBufferData.put(size.y)
+        quadVertexBufferData.put(radians)
+        quadVertexBufferData.put(color.x); quadVertexBufferData.put(color.y); quadVertexBufferData.put(color.z); quadVertexBufferData.put(color.w)
+        quadVertexBufferData.put(0f); quadVertexBufferData.put(0f); quadVertexBufferData.put(1f); quadVertexBufferData.put(1f)
+        quadVertexBufferData.put(whiteTextureID)
+        quadVertexBufferData.put(whiteTextureTilingFactor)
 
         quadIndexCount += 4
 
@@ -222,8 +231,6 @@ object Renderer2D {
             textureSlotIndex++
         }
 
-        val transform = transformMatrix(position, size, radians)
-
         /*for (i in 0..3) {
             quadVertexBufferData.put(
                 transform * quadVertexPositions[i],
@@ -234,7 +241,7 @@ object Renderer2D {
                 tilingFactor
             )
         }*/
-        quadVertexBufferData.put(
+        /*quadVertexBufferData.put(
             transform * quadVertexPositions[0],
             color,
             textureIndices[0],
@@ -261,7 +268,14 @@ object Renderer2D {
             textureIndices[6],
             textureIndices[7],
             textureIndex,
-            tilingFactor)
+            tilingFactor)*/
+        quadVertexBufferData.put(position.x); quadVertexBufferData.put(position.y); quadVertexBufferData.put(position.z)
+        quadVertexBufferData.put(size.x); quadVertexBufferData.put(size.y)
+        quadVertexBufferData.put(radians)
+        quadVertexBufferData.put(color.x); quadVertexBufferData.put(color.y); quadVertexBufferData.put(color.z); quadVertexBufferData.put(color.w)
+        quadVertexBufferData.put(0f); quadVertexBufferData.put(0f); quadVertexBufferData.put(1f); quadVertexBufferData.put(1f)
+        quadVertexBufferData.put(textureIndex)
+        quadVertexBufferData.put(tilingFactor)
 
         quadIndexCount += 4
 

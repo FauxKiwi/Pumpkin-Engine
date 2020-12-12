@@ -25,7 +25,7 @@ class OpenGLRendererAPI : RendererAPI {
     override fun clear() = gl.clear(ClearBufferMask.COLOR_BUFFER_BIT or ClearBufferMask.DEPTH_BUFFER_BIT)
 
     override fun drawIndexed(vertexArray: VertexArray, count: Int) {
-        GL11C.glDrawElements(GL11C.GL_QUADS, if(count == 0) vertexArray.indexBuffer!!().count else count, GL11C.GL_UNSIGNED_INT, 0)
+        gl.drawArrays(DrawMode.POINTS, 0, if(count == 0) vertexArray.indexBuffer!!().count else count)
         gl.bindTexture(TextureTarget._2D, GlTexture())
     }
 

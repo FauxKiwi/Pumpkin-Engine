@@ -62,13 +62,17 @@ class OpenGLShader : Shader {
 
     private fun shaderTypeFromString(string: String): ShaderType? = when (string) {
         "vertex" -> ShaderType.VERTEX_SHADER
-        "fragment", "pixel" -> ShaderType.FRAGMENT_SHADER
+        "geometry" -> ShaderType.GEOMETRY_SHADER
+        "fragment" -> ShaderType.FRAGMENT_SHADER
+        "compute" -> ShaderType.COMPUTE_SHADER
         else -> null
     }
 
     private fun ShaderType.name() = when (this.i) {
         ShaderType.VERTEX_SHADER.i -> "Vertex"
+        ShaderType.GEOMETRY_SHADER.i -> "Geometry"
         ShaderType.FRAGMENT_SHADER.i -> "Fragment"
+        ShaderType.COMPUTE_SHADER.i -> "Compute"
         else -> "Unknown"
     }
 
@@ -85,6 +89,8 @@ class OpenGLShader : Shader {
                 if (!shader.compileStatus) {
                     Debug.logErrorCore("Shader (${shaderType.name()}) compile error: ${gl.getShaderInfoLog(shader)}")
                     gl.deleteShader(shader)
+                } else {
+                    Debug.logInfoCore("Compiled Shader (${shaderType.name()})")
                 }
 
                 gl.attachShader(program, shader)
@@ -99,6 +105,8 @@ class OpenGLShader : Shader {
 
                 gl.deleteProgram(rendererID!!)
                 for (shader in shaderIDs) gl.deleteShader(shader)
+            } else {
+                Debug.logInfoCore("Linked Shader")
             }
 
             for (shader in shaderIDs) gl.detachShader(rendererID!!, shader).also { gl.deleteShader(shader) }
