@@ -1,4 +1,4 @@
-package com.pumpkin.core.render
+package com.pumpkin.core.renderer
 
 import com.pumpkin.core.stack
 import glm_.mat4x4.Mat4

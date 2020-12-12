@@ -7,8 +7,8 @@ import com.pumpkin.core.event.WindowResizeEvent
 import com.pumpkin.core.imgui.ImGuiLayer
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.layer.LayerStack
-import com.pumpkin.core.render.Renderer
-import com.pumpkin.core.render.Renderer2D
+import com.pumpkin.core.renderer.Renderer
+import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.window.Window
 import com.pumpkin.core.window.WindowProps
 import uno.glfw.glfw

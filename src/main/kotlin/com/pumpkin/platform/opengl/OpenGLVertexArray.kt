@@ -2,10 +2,10 @@ package com.pumpkin.platform.opengl
 
 import com.pumpkin.core.Debug
 import com.pumpkin.core.Ref
-import com.pumpkin.core.render.BufferLayout
-import com.pumpkin.core.render.IndexBuffer
-import com.pumpkin.core.render.VertexArray
-import com.pumpkin.core.render.VertexBuffer
+import com.pumpkin.core.renderer.BufferLayout
+import com.pumpkin.core.renderer.IndexBuffer
+import com.pumpkin.core.renderer.VertexArray
+import com.pumpkin.core.renderer.VertexBuffer
 import com.pumpkin.core.stack
 import gln.gl
 import gln.identifiers.GlVertexArray

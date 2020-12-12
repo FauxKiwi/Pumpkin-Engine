@@ -1,8 +1,6 @@
-package com.pumpkin.core.render
+package com.pumpkin.core.renderer
 
 import com.pumpkin.core.stack
-import glm_.glm
-import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
@@ -22,7 +20,7 @@ import java.nio.FloatBuffer
 const val sizeOfQuadVertex = 3 + 2 + 1 + 4 + 4 + 1 + 1
 
 object Renderer2D {
-    private var quadIndexCount = 0
+    //private var quadIndexCount = 0
     private lateinit var quadVertexBufferData: FloatBuffer
     private lateinit var textureSlots: Array<Texture2D?>
     private var textureSlotIndex = 1
@@ -43,7 +41,7 @@ object Renderer2D {
     private var textureShader = Shader.create("./src/main/resources/shaders/Texture.glsl")
     private var whiteTexture = Texture2D.create(1, 1)
 
-    private lateinit var quadVertexPositions: Array<Vec4>
+    //private lateinit var quadVertexPositions: Array<Vec4>
 
     var quadCount = 0
     var drawCalls = 0
@@ -109,7 +107,6 @@ object Renderer2D {
             bind()
             setMat4("u_ViewProjection", camera.viewProjectionMatrix)
         }
-        quadIndexCount = 0
         textureSlotIndex = 1
 
         quadCount = 0
@@ -125,15 +122,15 @@ object Renderer2D {
         flush()
     }
 
-    fun flush() {
+    private fun flush() {
+        if (quadCount == 0) return
         for (i in 0 until textureSlotIndex) textureSlots[i]!!.bind(i)
-        RendererCommand.drawIndexed(quadVertexArray(), quadIndexCount)
+        RendererCommand.drawIndexed(quadVertexArray(), quadCount)
     }
 
     fun flushAndReset() {
         endScene()
 
-        quadIndexCount = 0
         quadVertexBufferData.position(0)
 
         textureSlotIndex = 1
@@ -158,8 +155,6 @@ object Renderer2D {
         quadVertexBufferData.put(0f); quadVertexBufferData.put(0f); quadVertexBufferData.put(1f); quadVertexBufferData.put(1f)
         quadVertexBufferData.put(whiteTextureID)
         quadVertexBufferData.put(whiteTextureTilingFactor)
-
-        quadIndexCount += 4
 
         quadCount++
     }
@@ -197,8 +192,6 @@ object Renderer2D {
         quadVertexBufferData.put(0f); quadVertexBufferData.put(0f); quadVertexBufferData.put(1f); quadVertexBufferData.put(1f)
         quadVertexBufferData.put(textureIndex)
         quadVertexBufferData.put(tilingFactor)
-
-        quadIndexCount += 4
 
         quadCount++
     }

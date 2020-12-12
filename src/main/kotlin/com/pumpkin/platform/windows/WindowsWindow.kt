@@ -2,7 +2,7 @@ package com.pumpkin.platform.windows
 
 import com.pumpkin.core.*
 import com.pumpkin.core.event.*
-import com.pumpkin.core.render.GraphicsContext
+import com.pumpkin.core.renderer.GraphicsContext
 import com.pumpkin.platform.opengl.OpenGLContext
 import com.pumpkin.core.window.EventCallbackFunction
 import com.pumpkin.core.window.Window

@@ -4,7 +4,7 @@ import com.pumpkin.core.Timestep
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.EventCategory
 import com.pumpkin.core.layer.Layer
-import com.pumpkin.core.render.Renderer2D
+import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.stack
 import com.pumpkin.core.window.Window
 import glm_.vec2.Vec2
@@ -103,13 +103,6 @@ class ImGuiLayer : Layer("ImGui") {
     }
 
     override fun onUpdate(ts: Timestep) {
-        /*if (refreshTime == 0.0) refreshTime =
-            ImGui.time
-        while (refreshTime < ImGui.time) {
-            values0[valuesOffset] = 1000 / ImGui.io.framerate
-            valuesOffset = (valuesOffset + 1) % values0.size
-            refreshTime += 1f / 60f
-        }*/
         values0[valuesOffset] = if (ImGui.io.framerate == 0f) values0[max(valuesOffset-1, 0)] else 1000 / ImGui.io.framerate
         valuesOffset++
         if (valuesOffset >= 100) valuesOffset = 0

@@ -5,7 +5,7 @@ import com.pumpkin.core.event.EventDispatcher
 import com.pumpkin.core.event.MouseScrolledEvent
 import com.pumpkin.core.event.WindowResizeEvent
 import com.pumpkin.core.input.*
-import com.pumpkin.core.render.OrthographicCamera
+import com.pumpkin.core.renderer.OrthographicCamera
 import glm_.vec3.Vec3
 import kotlin.math.max
 

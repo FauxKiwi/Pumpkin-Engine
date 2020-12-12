@@ -1,7 +1,7 @@
 package com.pumpkin.platform.opengl
 
 import com.pumpkin.core.Debug
-import com.pumpkin.core.render.Shader
+import com.pumpkin.core.renderer.Shader
 import com.pumpkin.core.stack
 import glm_.mat3x3.Mat3
 import glm_.mat4x4.Mat4

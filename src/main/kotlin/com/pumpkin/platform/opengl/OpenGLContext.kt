@@ -1,7 +1,7 @@
 package com.pumpkin.platform.opengl
 
 import com.pumpkin.core.Debug
-import com.pumpkin.core.render.GraphicsContext
+import com.pumpkin.core.renderer.GraphicsContext
 import com.pumpkin.core.stack
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11C

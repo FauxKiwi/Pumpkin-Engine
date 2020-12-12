@@ -4,10 +4,9 @@ import com.pumpkin.core.event.EventDispatcher
 import com.pumpkin.core.event.MouseButtonPressedEvent
 import com.pumpkin.core.event.MouseButtonReleasedEvent
 import com.pumpkin.core.input.Input
-import com.pumpkin.core.input.PE_MOUSE_BUTTON_1
 import com.pumpkin.core.input.PE_MOUSE_BUTTON_LEFT
 import com.pumpkin.core.layer.Layer
-import com.pumpkin.core.render.*
+import com.pumpkin.core.renderer.*
 import com.pumpkin.core.window.Window
 import glm_.glm
 import glm_.vec2.Vec2

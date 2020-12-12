@@ -4,8 +4,8 @@ import com.pumpkin.core.Timestep
 import com.pumpkin.core.event.*
 import com.pumpkin.core.input.*
 import com.pumpkin.core.layer.Layer
-import com.pumpkin.core.render.OrthographicCamera
-import com.pumpkin.core.render.Renderer2D
+import com.pumpkin.core.renderer.OrthographicCamera
+import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.window.Window
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3

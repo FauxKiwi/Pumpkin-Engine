@@ -1,4 +1,4 @@
-package com.pumpkin.core.render
+package com.pumpkin.core.renderer
 
 import com.pumpkin.core.Timestep
 import glm_.vec2.Vec2

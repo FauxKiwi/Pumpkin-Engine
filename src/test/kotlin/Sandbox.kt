@@ -4,7 +4,7 @@ import com.pumpkin.core.Ref
 import com.pumpkin.core.Timestep
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.layer.Layer
-import com.pumpkin.core.render.*
+import com.pumpkin.core.renderer.*
 import com.pumpkin.core.window.Window
 import glm_.glm
 import glm_.mat4x4.Mat4

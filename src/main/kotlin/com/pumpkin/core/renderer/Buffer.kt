@@ -1,4 +1,4 @@
-package com.pumpkin.core.render
+package com.pumpkin.core.renderer
 
 import com.pumpkin.core.Debug
 import com.pumpkin.core.Ref

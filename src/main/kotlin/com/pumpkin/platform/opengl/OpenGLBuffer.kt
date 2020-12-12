@@ -1,9 +1,9 @@
 package com.pumpkin.platform.opengl
 
 import com.pumpkin.core.Debug
-import com.pumpkin.core.render.BufferLayout
-import com.pumpkin.core.render.IndexBuffer
-import com.pumpkin.core.render.VertexBuffer
+import com.pumpkin.core.renderer.BufferLayout
+import com.pumpkin.core.renderer.IndexBuffer
+import com.pumpkin.core.renderer.VertexBuffer
 import gln.BufferTarget
 import gln.gl
 import gln.identifiers.GlBuffer

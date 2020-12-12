@@ -1,7 +1,7 @@
 package com.pumpkin.platform.opengl
 
 import com.pumpkin.core.Debug
-import com.pumpkin.core.render.Texture2D
+import com.pumpkin.core.renderer.Texture2D
 import com.pumpkin.core.stack
 import gli_.gli
 import gln.TextureTarget

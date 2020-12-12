@@ -1,12 +1,11 @@
 package com.pumpkin.platform.opengl
 
-import com.pumpkin.core.render.RendererAPI
-import com.pumpkin.core.render.VertexArray
+import com.pumpkin.core.renderer.RendererAPI
+import com.pumpkin.core.renderer.VertexArray
 import com.pumpkin.core.stack
 import glm_.vec4.Vec4
 import gln.*
 import gln.identifiers.GlTexture
-import org.lwjgl.opengl.GL11C
 
 class OpenGLRendererAPI : RendererAPI {
     override val api = RendererAPI.API.OpenGL

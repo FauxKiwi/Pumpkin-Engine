@@ -1,6 +1,6 @@
 package game_of_life
 
-import com.pumpkin.core.render.RendererCommand
+import com.pumpkin.core.renderer.RendererCommand
 import glm_.vec4.Vec4
 import com.pumpkin.core.Application as PEApp
 

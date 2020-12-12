@@ -3,8 +3,8 @@ import com.pumpkin.core.OrthographicCameraController
 import com.pumpkin.core.Timestep
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.layer.Layer
-import com.pumpkin.core.render.Renderer2D
-import com.pumpkin.core.render.RendererCommand
+import com.pumpkin.core.renderer.Renderer2D
+import com.pumpkin.core.renderer.RendererCommand
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
 import imgui.ImGui
