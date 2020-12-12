@@ -1,23 +1,21 @@
 package com.pumpkin.core.imgui
 
-import com.pumpkin.core.Timestep
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.EventCategory
 import com.pumpkin.core.layer.Layer
-import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.stack
 import com.pumpkin.core.window.Window
-import glm_.vec2.Vec2
 import imgui.*
 import imgui.classes.Context
 import imgui.classes.Style
 import imgui.font.Font
 import imgui.impl.gl.ImplGL3
 import imgui.impl.glfw.ImplGlfw
+import org.lwjgl.glfw.GLFW
+import uno.glfw.glfw
 
 class ImGuiLayer : Layer("ImGui") {
     private var showDemoWindow = false
-    private var showProfiler = true
     private var lightMode = false
     //set(value) {if (value) ImGui.styleColorsLight(style) else ImGui.styleColorsDark(style); field = value}
 
@@ -28,20 +26,17 @@ class ImGuiLayer : Layer("ImGui") {
     private var font: Font? = null
     private lateinit var style: Style
 
-    private var values0 = FloatArray(100) {0f}
-    private var refreshTime = 0.0
-    private var valuesOffset = 0
-
     override fun onAttach() {
         context = Context()
 
         stack {
             ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableKeyboard     // Enable Keyboard Controls
             ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableGamepad    // Enable Gamepad Controls
-            //ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.DockingEnable         // Enable Docking
+            ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.DockingEnable         // Enable Docking
             //ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.ViewportsEnable
 
-            ImGui.styleColorsDark()
+            if (lightMode) ImGui.styleColorsLight()
+            else ImGui.styleColorsDark()
 
             style = context.style
             style.windowRounding = 0f
@@ -65,17 +60,6 @@ class ImGuiLayer : Layer("ImGui") {
         if (showDemoWindow) {
             ImGui.showDemoWindow(::showDemoWindow)
         }
-        with(ImGui) {
-            begin("Profiler", ::showProfiler)
-            text("Your Framerate is: ${ImGui.io.framerate}")
-            text("Update time: ${1000 / ImGui.io.framerate}")
-            val overlay = "min ${String.format("%.3f", values0.min())}   max ${String.format("%.3f", values0.max())}"
-            plotLines("Frametime", values0, valuesOffset/*, scaleMin = 0f, scaleMax = 60f*/, overlayText = overlay, graphSize = Vec2(0f, 80f))
-            checkbox("VSync", Window.getWindow()::vSync)
-            text("Drawing ${Renderer2D.quadCount} quads")
-            text("Draw calls: ${Renderer2D.drawCalls}")
-            end()
-        }
     }
 
     override fun onEvent(event: Event) {
@@ -94,17 +78,11 @@ class ImGuiLayer : Layer("ImGui") {
 
         ImGui.drawData?.let { implGL3.renderDrawData(it) }
 
-        /*if (ImGui.io.configFlags has ConfigFlag.ViewportsEnable) {
+        if (ImGui.io.configFlags has ConfigFlag.ViewportsEnable) {
             val backupCurrentContext = glfw.currentContext
             ImGui.updatePlatformWindows()
             ImGui.renderPlatformWindowsDefault()
             GLFW.glfwMakeContextCurrent(backupCurrentContext.value)
-        }*/
-    }
-
-    override fun onUpdate(ts: Timestep) {
-        values0[valuesOffset] = if (ImGui.io.framerate == 0f) values0[max(valuesOffset-1, 0)] else 1000 / ImGui.io.framerate
-        valuesOffset++
-        if (valuesOffset >= 100) valuesOffset = 0
+        }
     }
 }

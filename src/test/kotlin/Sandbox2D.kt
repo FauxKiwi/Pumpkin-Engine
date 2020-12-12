@@ -3,6 +3,7 @@ import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.EventDispatcher
 import com.pumpkin.core.event.MouseButtonPressedEvent
 import com.pumpkin.core.event.MouseButtonReleasedEvent
+import com.pumpkin.core.imgui.ImGuiProfiler
 import com.pumpkin.core.input.Input
 import com.pumpkin.core.input.PE_MOUSE_BUTTON_LEFT
 import com.pumpkin.core.layer.Layer
@@ -44,13 +45,19 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
         }
     private val pumpkinLogoTexture = Texture2D.create("textures/PumpkinLogo.png")
 
+    override fun onAttach() {
+        ImGuiProfiler.onAttach()
+    }
+
     override fun onDetach() {
+        ImGuiProfiler.onDetach()
         checkerboardTexture.release()
     }
 
     override fun onUpdate(ts: Timestep) {
         ////// Update //////
         cameraController.onUpdate(ts)
+        ImGuiProfiler.onUpdate(ts)
 
         if (mouseClicked) {
             val x = (2 * Input.getMouseX() / Window.getWindow().width - 1) * cameraController.zoomLevel * cameraController.aspectRatio + cameraController.cameraPosition.x
@@ -76,6 +83,7 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
     }
 
     override fun onImGuiRender() = with(ImGui) {
+        ImGuiProfiler.onImGuiRender()
         begin("Square")
         colorEdit4("Color", color)
         end()
