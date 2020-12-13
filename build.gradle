@@ -39,4 +39,5 @@ dependencies {
     ["", "-jemalloc", "-glfw", "-opengl", "-remotery", "-stb", "-openal", "-opengles"].each {
         runtime "org.lwjgl:lwjgl$it:3.2.3:natives-windows"
     }
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.10"
 }

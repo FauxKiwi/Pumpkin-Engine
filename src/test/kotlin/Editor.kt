@@ -1,17 +1,21 @@
-import com.pumpkin.core.Application
-import com.pumpkin.core.OrthographicCameraController
-import com.pumpkin.core.Timestep
+import com.pumpkin.core.*
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.imgui.ImGuiProfiler
+import com.pumpkin.core.input.Input
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.renderer.*
+import com.pumpkin.core.window.Window
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
 import imgui.*
 
 class EditorLayer : Layer("Editor") {
     private val cameraController = OrthographicCameraController(16f / 9f, true)
-    private val texture = Texture2D.create("textures/Checkerboard.png")
+    private var texture by Reference<Ref<Texture2D>>()
+    private val particleSystem = ParticleSystem()
+    private val particleProps = ParticleProps(Vec2(), Vec2(0f, 1f), Vec2(0.7f, 0.7f),
+        Vec4(1f, 0.8f, 0f, 1f), Vec4(0.8f, 0f, 0f, 0.5f), 0.1f, 0.001f, 0.05f, 0.1f)
+
     private var dockingEnabled = true
     private var dockspaceOpen = dockingEnabled
     private var optFullscreenPersistent = dockingEnabled
@@ -21,11 +25,11 @@ class EditorLayer : Layer("Editor") {
 
     override fun onAttach() {
         ImGuiProfiler.onAttach()
+        texture = Texture2D.create("textures/Checkerboard.png")
     }
 
     override fun onDetach() {
         ImGuiProfiler.onDetach()
-        texture.release()
     }
 
     override fun onUpdate(ts: Timestep) {
@@ -35,10 +39,15 @@ class EditorLayer : Layer("Editor") {
 
         cameraController.onUpdate(ts)
         ImGuiProfiler.onUpdate(ts)
+        /*val x = (2 * Input.getMouseX() / Window.getWindow().width - 1) * cameraController.zoomLevel * cameraController.aspectRatio + cameraController.cameraPosition.x
+        val y = (-2 * Input.getMouseY() / Window.getWindow().height + 1) * cameraController.zoomLevel + cameraController.cameraPosition.y
+        particleProps.position = Vec2(x, y)
+        particleSystem.emit(particleProps)*/
 
         Renderer2D.beginScene(cameraController.camera)
 
-        Renderer2D.drawQuad(texture = texture())
+        Renderer2D.drawQuad(texture = texture!!())
+        //particleSystem.onUpdate(ts)
 
         Renderer2D.endScene()
         framebuffer.unbind()

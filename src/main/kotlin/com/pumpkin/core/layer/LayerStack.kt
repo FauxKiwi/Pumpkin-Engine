@@ -18,7 +18,7 @@ class LayerStack {
             return
         }
         layers.removeAt(index)
-        layer.onDetach()
+        layer.close() //layer.onDetach()
         insert--
     }
 
@@ -29,7 +29,7 @@ class LayerStack {
             return
         }
         layers.removeAt(index)
-        layer.onDetach()
+        layer.close() //layer.onDetach()
     }
 
     internal fun getInsert() = insert

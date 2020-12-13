@@ -2,16 +2,16 @@ package com.pumpkin.core
 
 import org.lwjgl.system.MemoryStack
 
-data class Scope<out T : AutoCloseable>(private val value: T) : AutoCloseable {
+data class Scope<out T : AutoCloseable>(private val value: T) : Referencable() {
 
-    override fun close() {
+    override fun destruct() {
         value.close()
     }
 
     operator fun invoke() = value
 }
 
-data class Ref<out T : AutoCloseable>(private val value: T) : AutoCloseable {
+data class Ref<out T : AutoCloseable>(private val value: T) : Referencable() {
     @Volatile
     private var refCount = 0
 
@@ -19,7 +19,7 @@ data class Ref<out T : AutoCloseable>(private val value: T) : AutoCloseable {
         refCount++
     }
 
-    override fun close() {
+    override fun destruct() {
         release()
     }
 
