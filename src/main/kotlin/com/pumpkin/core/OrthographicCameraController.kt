@@ -55,6 +55,11 @@ class OrthographicCameraController(aspectRatio: Float, var rotate: Boolean) {
         dispatcher.dispatch(::onWindowResized)
     }
 
+    fun onResize(width: Float, height: Float) {
+        aspectRatio = width / height
+        camera.setProjection(-aspectRatio * zoomLevel, aspectRatio * zoomLevel, -zoomLevel, zoomLevel)
+    }
+
     private fun onMouseScrolled(event: MouseScrolledEvent): Boolean {
         val zoomLevel = this.zoomLevel - event.yOffset * 0.25f
         this.zoomLevel = max(zoomLevel, 0.25f)
@@ -62,7 +67,7 @@ class OrthographicCameraController(aspectRatio: Float, var rotate: Boolean) {
     }
 
     private fun onWindowResized(event: WindowResizeEvent): Boolean {
-        aspectRatio = (event.width.toFloat()) / (event.height.toFloat())
+        onResize(event.width.toFloat(), (event.height.toFloat()))
         return false
     }
 }

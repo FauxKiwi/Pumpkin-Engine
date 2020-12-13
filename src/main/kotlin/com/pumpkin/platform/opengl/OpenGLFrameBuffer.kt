@@ -3,7 +3,6 @@ package com.pumpkin.platform.opengl
 import com.pumpkin.core.Debug
 import com.pumpkin.core.renderer.Framebuffer
 import com.pumpkin.core.renderer.FramebufferSpecification
-import org.lwjgl.opengl.GL30C
 import org.lwjgl.opengl.GL45C.*
 import java.nio.IntBuffer
 
@@ -20,10 +19,23 @@ class OpenGLFrameBuffer(override val specification: FramebufferSpecification) : 
     }
 
     override fun close() {
-        GL30C.glDeleteFramebuffers(rendererID)
+        glDeleteFramebuffers(rendererID)
+        glDeleteTextures(colorAttachment)
+        glDeleteTextures(depthAttachment)
+    }
+
+    override fun resize(width: Int, height: Int) {
+        specification.width = width
+        specification.height = height
+        invalidate()
     }
 
     fun invalidate() {
+        if (rendererID != 0) {
+            glDeleteFramebuffers(rendererID)
+            glDeleteTextures(colorAttachment)
+            glDeleteTextures(depthAttachment)
+        }
         rendererID = glCreateFramebuffers()
         glBindFramebuffer(GL_FRAMEBUFFER, rendererID)
 
@@ -47,6 +59,7 @@ class OpenGLFrameBuffer(override val specification: FramebufferSpecification) : 
 
     override fun bind() {
         glBindFramebuffer(GL_FRAMEBUFFER, rendererID)
+        glViewport(0, 0, specification.width, specification.height)
     }
 
     override fun unbind() {
