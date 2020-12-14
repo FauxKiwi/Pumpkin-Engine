@@ -39,6 +39,13 @@ class EditorLayer : Layer("Editor") {
     }
 
     override fun onUpdate(ts: Timestep) {
+        if (viewportSize.x > 0f && viewportSize.y > 0f &&
+            (framebuffer.specification.width != viewportSize.x.toInt() || framebuffer.specification.height != viewportSize.y.toInt())
+        ) {
+            framebuffer.resize(viewportSize.x.toInt(), viewportSize.y.toInt())
+            cameraController.onResize(viewportSize.x, viewportSize.y)
+        }
+
         framebuffer.bind()
         RendererCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f))
         RendererCommand.clear()
@@ -106,11 +113,11 @@ class EditorLayer : Layer("Editor") {
         viewportFocused = isWindowFocused()
         viewportHovered = isWindowHovered()
         Application.get().getImGuiLayer().blockEvents = !viewportHovered || !viewportFocused
-        if (viewportSize != contentRegionAvail) {
-            framebuffer.resize(contentRegionAvail.x.toInt(), contentRegionAvail.y.toInt())
+        //if (viewportSize != contentRegionAvail) {
+        //    framebuffer.resize(contentRegionAvail.x.toInt(), contentRegionAvail.y.toInt())
             viewportSize = Vec2(contentRegionAvail.x, contentRegionAvail.y)
-            cameraController.onResize(contentRegionAvail.x, contentRegionAvail.y)
-        }
+        //    cameraController.onResize(contentRegionAvail.x, contentRegionAvail.y)
+        //}
         image(framebuffer.colorAttachmentID, viewportSize, Vec2(0, 1), Vec2(1, 0))
         end()
         popStyleVar()
