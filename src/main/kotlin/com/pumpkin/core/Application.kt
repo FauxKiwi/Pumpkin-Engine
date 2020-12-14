@@ -139,4 +139,6 @@ open class Application {
         Renderer.onWindowResize(event.width, event.height)
         return false
     }
+
+    fun getImGuiLayer(): ImGuiLayer = imGuiLayer
 }

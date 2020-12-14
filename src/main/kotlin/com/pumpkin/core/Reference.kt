@@ -3,16 +3,16 @@ package com.pumpkin.core
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-class Reference<T: Referencable> : ReadWriteProperty<Referencable, T?> {
+class Reference<T: Referencable> : ReadWriteProperty<Referencable, T> {
     private var ref: T? = null
 
-    override fun setValue(thisRef: Referencable, property: KProperty<*>, value: T?) {
+    override fun setValue(thisRef: Referencable, property: KProperty<*>, value: T) {
         ref = value
-        if (!thisRef.references.contains(ref)) ref?.let { thisRef.references.add(it) }
+        if (!thisRef.references.contains(ref)) thisRef.references.add(ref!!)
     }
 
-    override fun getValue(thisRef: Referencable, property: KProperty<*>): T? {
-        return ref
+    override fun getValue(thisRef: Referencable, property: KProperty<*>): T {
+        return ref!!
     }
 }
 

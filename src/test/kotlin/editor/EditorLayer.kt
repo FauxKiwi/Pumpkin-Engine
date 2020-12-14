@@ -1,3 +1,5 @@
+package editor
+
 import com.pumpkin.core.*
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.imgui.ImGuiProfiler
@@ -24,6 +26,8 @@ class EditorLayer : Layer("Editor") {
 
     private val framebuffer = Framebuffer.create(FramebufferSpecification(1280, 720))
     private var viewportSize = Vec2()
+    private var viewportFocused = false
+    private var viewportHovered = false
 
     override fun onAttach() {
         ImGuiProfiler.onAttach()
@@ -39,7 +43,9 @@ class EditorLayer : Layer("Editor") {
         RendererCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f))
         RendererCommand.clear()
 
-        cameraController.onUpdate(ts)
+        if (viewportFocused) {
+            cameraController.onUpdate(ts)
+        }
         ImGuiProfiler.onUpdate(ts)
         val x = (2 * Input.getMouseX() / Window.getWindow().width - 1) * cameraController.zoomLevel * cameraController.aspectRatio + cameraController.cameraPosition.x
         val y = (-2 * Input.getMouseY() / Window.getWindow().height + 1) * cameraController.zoomLevel + cameraController.cameraPosition.y
@@ -48,7 +54,7 @@ class EditorLayer : Layer("Editor") {
 
         Renderer2D.beginScene(cameraController.camera)
 
-        Renderer2D.drawQuad(texture = texture!!())
+        Renderer2D.drawQuad(texture = texture())
         particleSystem.onUpdate(ts)
 
         Renderer2D.endScene()
@@ -97,6 +103,9 @@ class EditorLayer : Layer("Editor") {
 
         pushStyleVar(StyleVar.WindowPadding, Vec2())
         begin("Viewport")
+        viewportFocused = isWindowFocused()
+        viewportHovered = isWindowHovered()
+        Application.get().getImGuiLayer().blockEvents = !viewportHovered || !viewportFocused
         if (viewportSize != contentRegionAvail) {
             framebuffer.resize(contentRegionAvail.x.toInt(), contentRegionAvail.y.toInt())
             viewportSize = Vec2(contentRegionAvail.x, contentRegionAvail.y)
@@ -113,15 +122,4 @@ class EditorLayer : Layer("Editor") {
     override fun onEvent(event: Event) {
         cameraController.onEvent(event)
     }
-}
-
-class EditorApp : Application() {
-
-    override fun init() {
-        pushLayer(EditorLayer())
-    }
-}
-
-fun main() {
-    Application.set(EditorApp())
 }

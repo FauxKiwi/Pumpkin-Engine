@@ -26,6 +26,8 @@ class ImGuiLayer : Layer("ImGui") {
     private var font: Font? = null
     private lateinit var style: Style
 
+    var blockEvents = true
+
     override fun onAttach() {
         context = Context()
 
@@ -63,8 +65,10 @@ class ImGuiLayer : Layer("ImGui") {
     }
 
     override fun onEvent(event: Event) {
-        event.handled = event.handled or event.isInCategory(EventCategory.Mouse) and ImGui.io.wantCaptureMouse
-        event.handled = event.handled or event.isInCategory(EventCategory.Keyboard) and ImGui.io.wantCaptureKeyboard
+        if (blockEvents) {
+            event.handled = event.handled or event.isInCategory(EventCategory.Mouse) and ImGui.io.wantCaptureMouse
+            event.handled = event.handled or event.isInCategory(EventCategory.Keyboard) and ImGui.io.wantCaptureKeyboard
+        }
     }
 
     fun begin() {
