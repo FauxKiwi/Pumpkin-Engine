@@ -41,15 +41,15 @@ class EditorLayer : Layer("Editor") {
 
         cameraController.onUpdate(ts)
         ImGuiProfiler.onUpdate(ts)
-        /*val x = (2 * Input.getMouseX() / Window.getWindow().width - 1) * cameraController.zoomLevel * cameraController.aspectRatio + cameraController.cameraPosition.x
+        val x = (2 * Input.getMouseX() / Window.getWindow().width - 1) * cameraController.zoomLevel * cameraController.aspectRatio + cameraController.cameraPosition.x
         val y = (-2 * Input.getMouseY() / Window.getWindow().height + 1) * cameraController.zoomLevel + cameraController.cameraPosition.y
         particleProps.position = Vec2(x, y)
-        particleSystem.emit(particleProps)*/
+        particleSystem.emit(particleProps)
 
         Renderer2D.beginScene(cameraController.camera)
 
         Renderer2D.drawQuad(texture = texture!!())
-        //particleSystem.onUpdate(ts)
+        particleSystem.onUpdate(ts)
 
         Renderer2D.endScene()
         framebuffer.unbind()

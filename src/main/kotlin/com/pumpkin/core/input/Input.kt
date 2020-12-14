@@ -4,38 +4,23 @@ import com.pumpkin.platform.windows.WindowsInput
 import glm_.vec2.Vec2
 
 object Input {
-    internal var instance: AbstractInput = WindowsInput
-
     fun isKeyPressed(keycode: Int): Boolean {
-        return instance.isKeyPressed(keycode)
+        return WindowsInput.isKeyPressed(keycode)
     }
 
     fun isMouseButtonPressed(button: Int): Boolean {
-        return instance.isMouseButtonPressed(button)
+        return WindowsInput.isMouseButtonPressed(button)
     }
 
     fun getMousePosition(): Vec2 {
-        return instance.getMousePosition()
+        return WindowsInput.getMousePosition()
     }
 
     fun getMouseX(): Float {
-        return instance.getMouseX()
+        return WindowsInput.getMouseX()
     }
 
     fun getMouseY(): Float {
-        return instance.getMouseY()
+        return WindowsInput.getMouseY()
     }
-}
-
-interface AbstractInput {
-
-    fun isKeyPressed(keycode: Int): Boolean
-
-    fun isMouseButtonPressed(button: Int): Boolean
-
-    fun getMousePosition(): Vec2
-
-    fun getMouseX(): Float
-
-    fun getMouseY(): Float
 }
