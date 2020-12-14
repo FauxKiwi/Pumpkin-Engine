@@ -6,7 +6,11 @@ import com.pumpkin.core.imgui.ImGuiProfiler
 import com.pumpkin.core.input.Input
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.renderer.*
+import com.pumpkin.core.scene.Scene
+import com.pumpkin.core.scene.SpriteRendererComponent
+import com.pumpkin.core.scene.TransformComponent
 import com.pumpkin.core.window.Window
+import com.pumpkin.ecs.Entity
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
 import imgui.*
@@ -29,9 +33,17 @@ class EditorLayer : Layer("Editor") {
     private var viewportFocused = false
     private var viewportHovered = false
 
+    private var activeScene by Reference<Scene>()
+    private var squareEntity: Entity = Entity(-1)
+
     override fun onAttach() {
         ImGuiProfiler.onAttach()
         texture = Texture2D.create("textures/Checkerboard.png")
+        activeScene = Scene()
+        val square = activeScene.createEntity()
+        activeScene.registry.emplace(square, TransformComponent(floatArrayOf(0f, 0f, 0f, 1f, 1f, 0f)))
+        activeScene.registry.emplace(square, SpriteRendererComponent(floatArrayOf(1f, 0f, 1f, 1f)))
+        squareEntity = square
     }
 
     override fun onDetach() {
@@ -54,15 +66,16 @@ class EditorLayer : Layer("Editor") {
             cameraController.onUpdate(ts)
         }
         ImGuiProfiler.onUpdate(ts)
-        val x = (2 * Input.getMouseX() / Window.getWindow().width - 1) * cameraController.zoomLevel * cameraController.aspectRatio + cameraController.cameraPosition.x
+        /*val x = (2 * Input.getMouseX() / Window.getWindow().width - 1) * cameraController.zoomLevel * cameraController.aspectRatio + cameraController.cameraPosition.x
         val y = (-2 * Input.getMouseY() / Window.getWindow().height + 1) * cameraController.zoomLevel + cameraController.cameraPosition.y
         particleProps.position = Vec2(x, y)
-        particleSystem.emit(particleProps)
+        particleSystem.emit(particleProps)*/
 
         Renderer2D.beginScene(cameraController.camera)
 
-        Renderer2D.drawQuad(texture = texture())
-        particleSystem.onUpdate(ts)
+        //Renderer2D.drawQuad(texture = texture())
+        //particleSystem.onUpdate(ts)
+        activeScene.onUpdate(ts)
 
         Renderer2D.endScene()
         framebuffer.unbind()

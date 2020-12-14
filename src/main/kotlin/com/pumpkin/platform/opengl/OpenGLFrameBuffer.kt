@@ -25,6 +25,10 @@ class OpenGLFrameBuffer(override val specification: FramebufferSpecification) : 
     }
 
     override fun resize(width: Int, height: Int) {
+        if (width <= 0 || height <= 0) {
+            Debug.logWarnCore("Couldn't resize framebuffer to $width, $height")
+            return
+        }
         specification.width = width
         specification.height = height
         invalidate()
