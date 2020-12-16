@@ -2,6 +2,7 @@ import com.pumpkin.core.Application
 import com.pumpkin.core.OrthographicCameraController
 import com.pumpkin.core.Timestep
 import com.pumpkin.core.event.Event
+import com.pumpkin.core.imgui.ImGuiProfiler
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.renderer.RendererCommand
@@ -14,7 +15,16 @@ class StresstestLayer : Layer("Stresstest") {
 
     private var sqrt = 10
 
+    override fun onAttach() {
+        ImGuiProfiler.onAttach()
+    }
+
+    override fun onDetach() {
+        ImGuiProfiler.onDetach()
+    }
+
     override fun onUpdate(ts: Timestep) {
+        ImGuiProfiler.onUpdate(ts)
         cameraController.onUpdate(ts)
 
         Renderer2D.beginScene(cameraController.camera)
@@ -27,6 +37,7 @@ class StresstestLayer : Layer("Stresstest") {
     }
 
     override fun onImGuiRender() {
+        ImGuiProfiler.onImGuiRender()
         ImGui.begin("Stresstest")
         ImGui.dragInt("Number", ::sqrt, 1f, 1, 1000)
         ImGui.inputInt("Capacity", Renderer2D::maxQuads)

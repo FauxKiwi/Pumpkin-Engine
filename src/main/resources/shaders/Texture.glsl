@@ -60,14 +60,13 @@ void main() {
 
     mat4 transform = u_ViewProjection *
     mat4(
-        size.x, 0.0, 0.0, 0.0,
-        0.0, size.y, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0
-    ) *
-    mat4(
         cos(rotation), -sin(rotation), 0.0, 0.0,
         sin(rotation), cos(rotation), 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    ) * mat4(
+        size.x, 0.0, 0.0, 0.0,
+        0.0, size.y, 0.0, 0.0,
         0.0, 0.0, 1.0, 0.0,
         0.0, 0.0, 0.0, 1.0
     );

@@ -6,7 +6,7 @@ import com.pumpkin.core.renderer.FramebufferSpecification
 import org.lwjgl.opengl.GL45C.*
 import java.nio.IntBuffer
 
-class OpenGLFrameBuffer(override val specification: FramebufferSpecification) : Framebuffer {
+class OpenGLFramebuffer(override val specification: FramebufferSpecification) : Framebuffer {
     private var rendererID: Int = 0
     private var colorAttachment: Int = 0
     private var depthAttachment: Int = 0

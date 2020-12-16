@@ -1,6 +1,7 @@
 package com.pumpkin.ecs
 
 import kotlin.reflect.KClass
+import kotlin.reflect.cast
 
 inline class Entity(val id: Int) {
 
@@ -9,84 +10,83 @@ inline class Entity(val id: Int) {
 class Registry {
     private val entities = mutableListOf<Entity>()
     private var entityID: Int = 0
-    val classes = hashMapOf<Entity, MutableList<KClass<*>>>()
-    val components = hashMapOf<Entity, HashMap<KClass<*>, Any>>()
+    val classes = mutableListOf<MutableList<KClass<*>>>()
+    val classEntities = hashMapOf<KClass<*>, MutableList<Entity>>()
+    val components = mutableListOf<HashMap<KClass<*>, Any>>()
     val constructionHandlers = hashMapOf<KClass<*>, ConstructionHandler>()
 
     fun create(): Entity {
         return Entity(entityID++).also {
-            entities.add(it)
-            classes[it] = mutableListOf()
-            components[it] = hashMapOf()
+            entities.add(it.id, it)
+            classes.add(it.id, mutableListOf())
+            components.add(it.id, hashMapOf())
         }
     }
 
-    fun emplace(entity: Entity, element: Any) {
-        classes[entity]?.add(element::class)
-        components[entity]?.put(element::class, element)
+    fun <T : Any> emplace(entity: Entity, element: T): T {
+        classes[entity.id].add(element::class)
+        if (!classEntities.containsKey(element::class))
+            classEntities[element::class] = mutableListOf()
+        classEntities[element::class]!!.add(entity)
+        components[entity.id][element::class] = element
         constructionHandlers[element::class]?.handles?.forEach { it(this, entity) }
+        return element
     }
 
-    inline fun <reified T> onConstruct(): ConstructionHandler {
-        return ConstructionHandler(mutableListOf()).also {
-            constructionHandlers[T::class] = it
-        }
+    inline fun <reified T : Any> onConstruct(): ConstructionHandler = onConstruct(T::class)
+    fun onConstruct(clazz: KClass<*>): ConstructionHandler = ConstructionHandler(mutableListOf()).also {
+        constructionHandlers[clazz] = it
     }
 
-    inline fun <reified T> has(entity: Entity): Boolean = classes[entity]?.contains(T::class) ?: false
+    inline fun <reified T : Any> has(entity: Entity): Boolean = has(T::class, entity)
+    fun has(clazz: KClass<*>, entity: Entity): Boolean = classes[entity.id].contains(clazz)
 
-    inline fun <reified T> get(entity: Entity): T = components[entity]?.get(T::class) as T
+    inline fun <reified T : Any> get(entity: Entity): T = components[entity.id][T::class] as T
+    fun <T : Any> get(clazz: KClass<T>, entity: Entity): T = clazz.cast(components[entity.id][clazz])
 
-    inline fun <reified T> view(): RegistryView<T> {
-        val entities = mutableListOf<Entity>()
+    inline fun <reified T : Any> remove(entity: Entity) = remove(T::class, entity)
+    fun remove(clazz: KClass<*>, entity: Entity) {
+        classes[entityID].remove(clazz)
+        classEntities[clazz]?.remove(entity)
+        components[entityID].remove(clazz)
+    }
+
+    inline fun <reified T : Any> view(): RegistryView<T> = view(T::class)
+    fun <T : Any> view(clazz: KClass<T>): RegistryView<T> {
         val components = hashMapOf<Entity, T>()
-        for ((e, l) in classes) for (c in l) {
-            if (c == T::class) {
-                entities.add(e)
-                components[e] = get(e)
-            }
+        val entities = classEntities[clazz]!!
+        entities.forEach {
+            components[it] = get(clazz, it)
         }
-        return RegistryView(entities, components)
+        return RegistryView(components)
     }
 
-    inline fun <reified A, reified B> group(): RegistryGroup<A, B> {
-        val entities = mutableListOf<Entity>()
+    inline fun <reified A : Any, reified B : Any> group(): RegistryGroup<A, B> = group(A::class, B::class)
+    fun <A : Any, B : Any> group(clazzA: KClass<A>, clazzB: KClass<B>): RegistryGroup<A, B> {
+        val entities: List<Entity>
         val components = hashMapOf<Entity, Pair<A, B>>()
-        for ((e, l) in classes) {
-            var a = false
-            var b = false
-            inn@for (c in l) {
-                if (c == A::class) {
-                    if (b) {
-                        entities.add(e)
-                        components[e] = Pair(get(e), get(e))
-                        break@inn
-                    } else a = true
-                } else if (c == B::class) {
-                    if (a) {
-                        entities.add(e)
-                        components[e] = Pair(get(e), get(e))
-                        break@inn
-                    } else b = true
-                }
-            }
+        val aEntities = classEntities[clazzA]!!
+        val bEntities = classEntities[clazzB]!!.filter { aEntities.contains(it) }
+        entities = aEntities.filter { bEntities.contains(it) }
+        entities.forEach {
+            components[it] = Pair(get(clazzA, it), get(clazzB, it))
         }
-        return RegistryGroup(entities, components)
+        return RegistryGroup(components)
     }
 }
 
-class RegistryView<T>(private val entities: MutableList<Entity>, private val components: HashMap<Entity, T>) {
+class RegistryView<T>(private val components: HashMap<Entity, T>) {
 
     fun get(entity: Entity): T = components[entity]!!
 
-    operator fun iterator(): Iterator<Entity> = entities.iterator()
+    operator fun iterator(): Iterator<Entity> = components.keys.iterator()
 }
 
-class RegistryGroup<A, B>(private val entities: MutableList<Entity>, private val components: HashMap<Entity, Pair<A, B>>) {
+class RegistryGroup<A, B>(private val components: HashMap<Entity, Pair<A, B>>) {
 
     fun get(entity: Entity): Pair<A, B> = components[entity]!!
 
-    operator fun iterator(): Iterator<Entity> = entities.iterator()
+    operator fun iterator(): Iterator<Entity> = components.keys.iterator()
 }
 
 inline class ConstructionHandler(val handles: MutableList<ConstructionHandle>) {

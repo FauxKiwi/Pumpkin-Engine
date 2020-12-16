@@ -3,20 +3,19 @@ package editor
 import com.pumpkin.core.*
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.imgui.ImGuiProfiler
-import com.pumpkin.core.input.Input
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.renderer.*
-import com.pumpkin.core.scene.Scene
-import com.pumpkin.core.scene.SpriteRendererComponent
-import com.pumpkin.core.scene.TransformComponent
-import com.pumpkin.core.window.Window
-import com.pumpkin.ecs.Entity
+import com.pumpkin.core.scene.*
+import glm_.glm
 import glm_.vec2.Vec2
+import glm_.vec3.Vec3
 import glm_.vec4.Vec4
 import imgui.*
 
 class EditorLayer : Layer("Editor") {
     private val cameraController = OrthographicCameraController(16f / 9f, true)
+    private lateinit var cameraEntity: Entity
+
     private var texture by Reference<Ref<Texture2D>>()
     private val particleSystem = ParticleSystem()
     private val particleProps = ParticleProps(
@@ -34,16 +33,30 @@ class EditorLayer : Layer("Editor") {
     private var viewportHovered = false
 
     private var activeScene by Reference<Scene>()
-    private var squareEntity: Entity = Entity(-1)
+    private lateinit var squareEntity: Entity
+    private lateinit var entity2: Entity
+    private lateinit var secondCamera: Entity
+    private var primary = true
 
     override fun onAttach() {
-        ImGuiProfiler.onAttach()
         texture = Texture2D.create("textures/Checkerboard.png")
         activeScene = Scene()
-        val square = activeScene.createEntity()
-        activeScene.registry.emplace(square, TransformComponent(floatArrayOf(0f, 0f, 0f, 1f, 1f, 0f)))
-        activeScene.registry.emplace(square, SpriteRendererComponent(floatArrayOf(1f, 0f, 1f, 1f)))
-        squareEntity = square
+
+        cameraEntity = activeScene.createEntity("Camera Entity")
+        cameraEntity.addComponent(CameraComponent(Camera(glm.ortho(-16f, 16f, -9f, 9f, -1f, 1f))))
+
+        secondCamera = activeScene.createEntity("Clip-Space Entity")
+        val cc = secondCamera.addComponent(CameraComponent(Camera(glm.ortho(-1f, 1f, -1f, 1f, -1f, 1f))))
+        cc.primary = false
+
+        squareEntity = activeScene.createEntity("Square")
+        squareEntity.addComponent(SpriteRendererComponent(floatArrayOf(0f, 1f, 0f, 1f)))
+
+        entity2 = activeScene.createEntity("2")
+        entity2.addComponent(SpriteRendererComponent(floatArrayOf(1f, 0f, 0f, 1f)))
+        entity2.getComponent<TransformComponent>().position = Vec3(0.5f, 0.5f, 0.5f)
+
+        ImGuiProfiler.onAttach()
     }
 
     override fun onDetach() {
@@ -51,6 +64,7 @@ class EditorLayer : Layer("Editor") {
     }
 
     override fun onUpdate(ts: Timestep) {
+        ImGuiProfiler.onUpdate(ts)
         if (viewportSize.x > 0f && viewportSize.y > 0f &&
             (framebuffer.specification.width != viewportSize.x.toInt() || framebuffer.specification.height != viewportSize.y.toInt())
         ) {
@@ -65,19 +79,18 @@ class EditorLayer : Layer("Editor") {
         if (viewportFocused) {
             cameraController.onUpdate(ts)
         }
-        ImGuiProfiler.onUpdate(ts)
         /*val x = (2 * Input.getMouseX() / Window.getWindow().width - 1) * cameraController.zoomLevel * cameraController.aspectRatio + cameraController.cameraPosition.x
         val y = (-2 * Input.getMouseY() / Window.getWindow().height + 1) * cameraController.zoomLevel + cameraController.cameraPosition.y
         particleProps.position = Vec2(x, y)
         particleSystem.emit(particleProps)*/
 
-        Renderer2D.beginScene(cameraController.camera)
+        //Renderer2D.beginScene(cameraController.camera)
 
         //Renderer2D.drawQuad(texture = texture())
         //particleSystem.onUpdate(ts)
         activeScene.onUpdate(ts)
 
-        Renderer2D.endScene()
+        //Renderer2D.endScene()
         framebuffer.unbind()
     }
 
@@ -120,6 +133,43 @@ class EditorLayer : Layer("Editor") {
         }
 
         ImGuiProfiler.onImGuiRender()
+
+        begin("Inspector")
+        if (collapsingHeader("Transform", TreeNodeFlag.DefaultOpen.i)) {
+            val transform = squareEntity.getComponent<TransformComponent>()
+            val position = transform.position
+            dragVec3("Position", position, 0.01f, format = "%.2f")
+            transform.position = position
+            val scale = transform.scale
+            dragVec2("Scale", scale, 0.1f, format = "%.1f")
+            transform.scale = scale
+            val rotation = intArrayOf(glm.degrees(transform.rotation).toInt())
+            dragInt("Rotation", rotation, 0)
+            transform.rotation = glm.radians(rotation[0].toFloat())
+        }
+        if (collapsingHeader("SpriteRenderer", TreeNodeFlag.DefaultOpen.i)) {
+            val spriteRenderer = squareEntity.getComponent<SpriteRendererComponent>()
+            val color = spriteRenderer.color
+            colorEdit4("Color", color)
+            spriteRenderer.color = color
+        }
+        end()
+
+        begin("Camera")
+        if (checkbox("Primary", ::primary)) {
+            cameraEntity.getComponent<CameraComponent>().primary = primary
+            secondCamera.getComponent<CameraComponent>().primary = !primary
+        }
+        val cTransform = cameraEntity.getComponent<TransformComponent>()
+        val cPosition = cTransform.position
+        dragVec3("Position", cPosition, 0.01f, format = "%.2f")
+        cTransform.position = cPosition
+        val cScale = cTransform.scale
+        dragVec2("Scale", cScale, 0.1f, format = "%.1f")
+        cTransform.scale = cScale
+        val rotation = intArrayOf(glm.degrees(cTransform.rotation).toInt())
+        dragInt("Rotation", rotation, 0)
+        cTransform.rotation = glm.radians(rotation[0].toFloat())
 
         pushStyleVar(StyleVar.WindowPadding, Vec2())
         begin("Viewport")

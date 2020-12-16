@@ -1,7 +1,7 @@
 package com.pumpkin.core.renderer
 
 import com.pumpkin.core.Debug
-import com.pumpkin.platform.opengl.OpenGLFrameBuffer
+import com.pumpkin.platform.opengl.OpenGLFramebuffer
 
 data class FramebufferSpecification(
     var width: Int = 0,
@@ -14,7 +14,7 @@ interface Framebuffer : AutoCloseable {
     companion object {
         fun create(specification: FramebufferSpecification) = when (Renderer.getAPI()) {
             RendererAPI.API.None -> Debug.exception("Having no renderer api is currently not supported")
-            RendererAPI.API.OpenGL -> OpenGLFrameBuffer(specification)
+            RendererAPI.API.OpenGL -> OpenGLFramebuffer(specification)
         }
     }
 

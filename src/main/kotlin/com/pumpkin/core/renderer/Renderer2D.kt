@@ -1,6 +1,7 @@
 package com.pumpkin.core.renderer
 
 import com.pumpkin.core.stack
+import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
@@ -106,6 +107,19 @@ object Renderer2D {
         textureShader().run {
             bind()
             setMat4("u_ViewProjection", camera.viewProjectionMatrix)
+        }
+        textureSlotIndex = 1
+
+        quadCount = 0
+        drawCalls = 1
+    }
+
+    fun beginScene(camera: Camera, transform: Mat4) {
+        val viewProj = camera.projection * transform.inverse()
+
+        textureShader().apply {
+            bind()
+            setMat4("u_ViewProjection", viewProj)
         }
         textureSlotIndex = 1
 
