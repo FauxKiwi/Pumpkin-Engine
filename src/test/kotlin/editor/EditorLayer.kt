@@ -144,45 +144,6 @@ class EditorLayer : Layer("Editor") {
 
         sceneHierarchyPanel.onImGuiRender()
 
-        begin("Inspector")
-        if (collapsingHeader("Transform", TreeNodeFlag.DefaultOpen.i)) {
-            val transform = squareEntity.getComponent<TransformComponent>()
-            val position = transform.position
-            dragVec3("Position", position, 0.01f, format = "%.2f")
-            transform.position = position
-            val scale = transform.scale
-            dragVec2("Scale", scale, 0.1f, format = "%.1f")
-            transform.scale = scale
-            val rotation = intArrayOf(glm.degrees(transform.rotation).toInt())
-            dragInt("Rotation", rotation, 0)
-            transform.rotation = glm.radians(rotation[0].toFloat())
-        }
-        if (collapsingHeader("SpriteRenderer", TreeNodeFlag.DefaultOpen.i)) {
-            val spriteRenderer = squareEntity.getComponent<SpriteRendererComponent>()
-            val color = spriteRenderer.color
-            colorEdit4("Color", color)
-            spriteRenderer.color = color
-        }
-        end()
-
-        begin("Camera")
-        val secondCameraComponent = secondCamera.getComponent<CameraComponent>()
-        if (checkbox("Primary", ::primary)) {
-            cameraEntity.getComponent<CameraComponent>().primary = primary
-            secondCameraComponent.primary = !primary
-        }
-        val cTransform = cameraEntity.getComponent<TransformComponent>()
-        val cPosition = cTransform.position
-        dragVec3("Position", cPosition, 0.01f, format = "%.2f")
-        cTransform.position = cPosition
-        val cScale = cTransform.scale
-        dragVec2("Scale", cScale, 0.1f, format = "%.1f")
-        cTransform.scale = cScale
-        val rotation = intArrayOf(glm.degrees(cTransform.rotation).toInt())
-        dragInt("Rotation", rotation, 0)
-        cTransform.rotation = glm.radians(rotation[0].toFloat())
-        ImGui.dragFloat("Second Camera Ortho Size", secondCameraComponent.camera::othographicSize)
-
         pushStyleVar(StyleVar.WindowPadding, Vec2())
         begin("Viewport")
         viewportFocused = isWindowFocused()

@@ -1,17 +1,19 @@
 package com.pumpkin.core.scene
 
-import com.pumpkin.core.Timestep
 import glm_.glm
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
+import imgui.toByteArray
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
-inline class TagComponent(@ComponentSize(1) private val t: String) {
-    val tag: String
-        get() = t
+class TagComponent(str: String) {
+    var byteArray = str.toByteArray(64)
+    var tag: String
+        get() = byteArray.decodeToString()
+        set(value) { byteArray = value.toByteArray(64) }
 }
 
 inline class TransformComponent(@ComponentSize(6) private val t: FloatArray) {
@@ -28,6 +30,17 @@ inline class TransformComponent(@ComponentSize(6) private val t: FloatArray) {
         get() = glm.translate(glm.rotate(glm.scale(Mat4.identity, Vec3(scale, 1f)), rotation, Vec3(0, 0, 1)), position)
 }
 
+class CameraComponent(@ComponentSize(2) val camera: SceneCamera) {
+    var primary = true
+    var fixedAspectRatio = false
+}
+
+inline class SpriteRendererComponent(@ComponentSize(4) private val c: FloatArray) {
+    var color: Vec4
+        get() = Vec4(c[0], c[1], c[2], c[3])
+        set(value) { c[0] = value[0]; c[1] = value[1]; c[2] = value[2]; c[3] = value[3] }
+}
+
 class NativeScriptComponent {
     @PublishedApi internal var i: ScriptableEntity? = null
     inline val instance: ScriptableEntity get() = i!!
@@ -39,17 +52,6 @@ class NativeScriptComponent {
         instantiateScript = { entity -> i = clazz.primaryConstructor!!.call().instantiate(entity) }
         destroyScript = { i = null }
     }
-}
-
-inline class SpriteRendererComponent(@ComponentSize(4) private val c: FloatArray) {
-    var color: Vec4
-        get() = Vec4(c[0], c[1], c[2], c[3])
-        set(value) { c[0] = value[0]; c[1] = value[1]; c[2] = value[2]; c[3] = value[3] }
-}
-
-class CameraComponent(@ComponentSize(2) val camera: SceneCamera) {
-    var primary = true
-    var fixedAspectRatio = false
 }
 
 @Target(AnnotationTarget.VALUE_PARAMETER)
