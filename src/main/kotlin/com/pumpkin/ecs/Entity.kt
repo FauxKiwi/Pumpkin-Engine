@@ -9,7 +9,7 @@ inline class Entity(val id: Int) {
 }
 
 class Registry {
-    private val entities = mutableListOf<Entity>()
+    @PublishedApi internal val entities = mutableListOf<Entity>()
     private var entityID: Int = 0
     val classes = mutableListOf<MutableList<KClass<*>>>()
     val classEntities = hashMapOf<KClass<*>, MutableList<Entity>>()
@@ -85,6 +85,8 @@ class Registry {
         }
         return RegistryGroup(components)
     }
+
+    inline fun each(operation: (Entity) -> Unit) = entities.forEach(operation)
 }
 
 class RegistryView<T>(@PublishedApi internal val components: HashMap<Entity, T>) {
@@ -94,7 +96,7 @@ class RegistryView<T>(@PublishedApi internal val components: HashMap<Entity, T>)
     @Suppress("NOTHING_TO_INLINE")
     inline operator fun iterator(): Iterator<Entity> = components.keys.iterator()
 
-    inline fun forEach(operation: (MutableMap.MutableEntry<Entity, T>) -> Unit) = components.iterator().forEach(operation)
+    inline fun each(operation: (MutableMap.MutableEntry<Entity, T>) -> Unit) = components.iterator().forEach(operation)
 }
 
 class RegistryGroup<A, B>(private val components: HashMap<Entity, Pair<A, B>>) {

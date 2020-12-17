@@ -13,4 +13,22 @@ class Entity(val entityHandle: EntityHandle, val scene: Scene) {
     inline fun <reified T : Any> getComponent(): T = scene.registry.get(entityHandle)
 
     inline fun <reified T : Any> removeComponent() = scene.registry.remove(T::class, entityHandle)
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Entity
+
+        if (entityHandle != other.entityHandle) return false
+        if (scene != other.scene) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = entityHandle.hashCode()
+        result = 31 * result + scene.hashCode()
+        return result
+    }
 }

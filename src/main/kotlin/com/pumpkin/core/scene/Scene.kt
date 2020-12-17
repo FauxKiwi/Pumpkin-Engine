@@ -26,7 +26,7 @@ class Scene : Referencable() {
 
     fun onUpdate(ts: Timestep) {
         run {
-            registry.view<NativeScriptComponent>().forEach { (entity, nsc) ->
+            registry.view<NativeScriptComponent>().each { (entity, nsc) ->
                 if (nsc.i == null) {
                     nsc.instantiateScript(Entity(entity, this))
                     nsc.instance.onCreate()

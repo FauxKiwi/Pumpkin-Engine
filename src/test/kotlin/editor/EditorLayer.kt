@@ -6,6 +6,7 @@ import com.pumpkin.core.event.Event
 import com.pumpkin.core.imgui.ImGuiProfiler
 import com.pumpkin.core.input.*
 import com.pumpkin.core.layer.Layer
+import com.pumpkin.core.panels.SceneHierarchyPanel
 import com.pumpkin.core.renderer.*
 import com.pumpkin.core.scene.*
 import glm_.glm
@@ -17,6 +18,7 @@ import imgui.*
 class EditorLayer : Layer("Editor") {
     private val cameraController = OrthographicCameraController(16f / 9f, true)
     private lateinit var cameraEntity: Entity
+    private lateinit var sceneHierarchyPanel: SceneHierarchyPanel
 
     private var texture by Reference<Ref<Texture2D>>()
     private val particleSystem = ParticleSystem()
@@ -47,6 +49,8 @@ class EditorLayer : Layer("Editor") {
         cameraEntity = activeScene.createEntity("Camera Entity")
         cameraEntity.addComponent<CameraComponent>(SceneCamera())
         cameraEntity.addComponent<NativeScriptComponent>().bind<CameraController>()
+
+        sceneHierarchyPanel = SceneHierarchyPanel(activeScene)
 
         secondCamera = activeScene.createEntity("Clip-Space Entity")
         val cc = secondCamera.addComponent<CameraComponent>(SceneCamera())
@@ -137,6 +141,8 @@ class EditorLayer : Layer("Editor") {
         }
 
         ImGuiProfiler.onImGuiRender()
+
+        sceneHierarchyPanel.onImGuiRender()
 
         begin("Inspector")
         if (collapsingHeader("Transform", TreeNodeFlag.DefaultOpen.i)) {
