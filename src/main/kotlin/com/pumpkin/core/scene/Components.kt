@@ -1,6 +1,5 @@
 package com.pumpkin.core.scene
 
-import com.pumpkin.core.renderer.Camera
 import glm_.glm
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
@@ -32,9 +31,10 @@ inline class SpriteRendererComponent(@ComponentSize(4) private val c: FloatArray
         set(value) { c[0] = value[0]; c[1] = value[1]; c[2] = value[2]; c[3] = value[3] }
 }
 
-class CameraComponent(@ComponentSize(2) val camera: Camera) {
+class CameraComponent(@ComponentSize(2) val camera: SceneCamera) {
     var primary = true
-};
+    var fixedAspectRatio = false
+}
 
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.SOURCE)

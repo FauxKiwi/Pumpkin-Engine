@@ -43,17 +43,17 @@ class EditorLayer : Layer("Editor") {
         activeScene = Scene()
 
         cameraEntity = activeScene.createEntity("Camera Entity")
-        cameraEntity.addComponent(CameraComponent(Camera(glm.ortho(-16f, 16f, -9f, 9f, -1f, 1f))))
+        cameraEntity.addComponent<CameraComponent>(SceneCamera())
 
         secondCamera = activeScene.createEntity("Clip-Space Entity")
-        val cc = secondCamera.addComponent(CameraComponent(Camera(glm.ortho(-1f, 1f, -1f, 1f, -1f, 1f))))
+        val cc = secondCamera.addComponent<CameraComponent>(SceneCamera())
         cc.primary = false
 
         squareEntity = activeScene.createEntity("Square")
-        squareEntity.addComponent(SpriteRendererComponent(floatArrayOf(0f, 1f, 0f, 1f)))
+        squareEntity.addComponent<SpriteRendererComponent>(floatArrayOf(0f, 1f, 0f, 1f))
 
         entity2 = activeScene.createEntity("2")
-        entity2.addComponent(SpriteRendererComponent(floatArrayOf(1f, 0f, 0f, 1f)))
+        entity2.addComponent<SpriteRendererComponent>(floatArrayOf(1f, 0f, 0f, 1f))
         entity2.getComponent<TransformComponent>().position = Vec3(0.5f, 0.5f, 0.5f)
 
         ImGuiProfiler.onAttach()
@@ -70,6 +70,7 @@ class EditorLayer : Layer("Editor") {
         ) {
             framebuffer.resize(viewportSize.x.toInt(), viewportSize.y.toInt())
             cameraController.onResize(viewportSize.x, viewportSize.y)
+            activeScene.onViewportResize(viewportSize.x.toInt(), viewportSize.y.toInt())
         }
 
         framebuffer.bind()
@@ -156,9 +157,10 @@ class EditorLayer : Layer("Editor") {
         end()
 
         begin("Camera")
+        val secondCameraComponent = secondCamera.getComponent<CameraComponent>()
         if (checkbox("Primary", ::primary)) {
             cameraEntity.getComponent<CameraComponent>().primary = primary
-            secondCamera.getComponent<CameraComponent>().primary = !primary
+            secondCameraComponent.primary = !primary
         }
         val cTransform = cameraEntity.getComponent<TransformComponent>()
         val cPosition = cTransform.position
@@ -170,6 +172,7 @@ class EditorLayer : Layer("Editor") {
         val rotation = intArrayOf(glm.degrees(cTransform.rotation).toInt())
         dragInt("Rotation", rotation, 0)
         cTransform.rotation = glm.radians(rotation[0].toFloat())
+        ImGui.dragFloat("Second Camera Ortho Size", secondCameraComponent.camera::othographicSize)
 
         pushStyleVar(StyleVar.WindowPadding, Vec2())
         begin("Viewport")

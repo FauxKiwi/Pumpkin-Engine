@@ -4,7 +4,9 @@ import com.pumpkin.ecs.Entity as EntityHandle
 
 class Entity(val entityHandle: EntityHandle, val scene: Scene) {
 
-    inline fun <reified T : Any> addComponent(component: T): T = scene.registry.emplace(entityHandle, component)
+    inline fun <reified T : Any> addComponent(vararg args: Any?) = scene.registry.emplace(T::class, entityHandle, args)
+
+    inline fun <reified T : Any> addComponent(component: T): T = scene.registry.insert(entityHandle, component)
 
     inline fun <reified T : Any> hasComponent(): Boolean = scene.registry.has(T::class, entityHandle)
 

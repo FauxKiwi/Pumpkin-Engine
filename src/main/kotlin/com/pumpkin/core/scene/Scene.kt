@@ -10,14 +10,17 @@ import glm_.mat4x4.Mat4
 class Scene : Referencable() {
     val registry: Registry = Registry()
 
+    var viewportWidth: Int = 0
+    var viewportHeight: Int = 0
+
     override fun destruct() {
 
     }
 
     fun createEntity(name: String? = null): Entity {
         val entity = Entity(registry.create(), this)
-        entity.addComponent(TransformComponent(floatArrayOf(0f, 0f, 0f, 1f, 1f, 0f)))
-        entity.addComponent(TagComponent(name ?: "Entity"))
+        entity.addComponent<TransformComponent>(floatArrayOf(0f, 0f, 0f, 1f, 1f, 0f))
+        entity.addComponent<TagComponent>(name ?: "Entity")
         return entity
     }
 
@@ -41,6 +44,19 @@ class Scene : Referencable() {
                 Renderer2D.drawQuad(transform.position, transform.scale, transform.rotation, sprite.color)
             }
             Renderer2D.endScene()
+        }
+    }
+
+    fun onViewportResize(width: Int, height: Int) {
+        viewportWidth = width
+        viewportHeight = height
+
+        val view = registry.view<CameraComponent>()
+        for (entity in view) {
+            val cameraComponent = view.get(entity)
+            if (!cameraComponent.fixedAspectRatio) {
+                cameraComponent.camera.setViewportSize(width, height)
+            }
         }
     }
 }

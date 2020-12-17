@@ -2,6 +2,7 @@ package com.pumpkin.ecs
 
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
+import kotlin.reflect.full.primaryConstructor
 
 inline class Entity(val id: Int) {
 
@@ -23,7 +24,18 @@ class Registry {
         }
     }
 
-    fun <T : Any> emplace(entity: Entity, element: T): T {
+    inline fun <reified T : Any> emplace(entity: Entity, vararg args: Any?): T = emplace(T::class, entity, args)
+    fun <T : Any> emplace(clazz: KClass<T>, entity: Entity, args: Array<out Any?>): T {
+        classes[entity.id].add(clazz)
+        if (!classEntities.containsKey(clazz))
+            classEntities[clazz] = mutableListOf()
+        classEntities[clazz]!!.add(entity)
+        val element = clazz.primaryConstructor!!.call(*args).also { components[entity.id][clazz] = it }
+        constructionHandlers[clazz]?.handles?.forEach { it(this, entity) }
+        return element
+    }
+
+    fun <T : Any> insert(entity: Entity, element: T): T {
         classes[entity.id].add(element::class)
         if (!classEntities.containsKey(element::class))
             classEntities[element::class] = mutableListOf()
