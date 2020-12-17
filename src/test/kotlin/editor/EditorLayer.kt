@@ -206,13 +206,13 @@ class CameraController : ScriptableEntity() {
     override fun onUpdate(ts: Timestep) {
         val transform = getComponent<TransformComponent>()
         val position = transform.position
-        if (Input.isKeyPressed(PE_KEY_A))
+        if (Input.isKeyPressed(KeyCode.A))
             position.x -= speed * ts
-        if (Input.isKeyPressed(PE_KEY_D))
+        if (Input.isKeyPressed(KeyCode.D))
             position.x += speed * ts
-        if (Input.isKeyPressed(PE_KEY_S))
+        if (Input.isKeyPressed(KeyCode.S))
             position.y -= speed * ts
-        if (Input.isKeyPressed(PE_KEY_W))
+        if (Input.isKeyPressed(KeyCode.W))
             position.y += speed * ts
         transform.position = position
     }

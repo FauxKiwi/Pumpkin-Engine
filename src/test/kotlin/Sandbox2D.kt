@@ -5,7 +5,7 @@ import com.pumpkin.core.event.MouseButtonPressedEvent
 import com.pumpkin.core.event.MouseButtonReleasedEvent
 import com.pumpkin.core.imgui.ImGuiProfiler
 import com.pumpkin.core.input.Input
-import com.pumpkin.core.input.PE_MOUSE_BUTTON_LEFT
+import com.pumpkin.core.input.MouseButton
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.renderer.*
 import com.pumpkin.core.window.Window
@@ -115,8 +115,8 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
     override fun onEvent(event: Event) {
         cameraController.onEvent(event)
         val dispatcher = EventDispatcher(event)
-        dispatcher.dispatch<MouseButtonPressedEvent> { if (button != PE_MOUSE_BUTTON_LEFT) return@dispatch false; mouseClicked = true; false }
-        dispatcher.dispatch<MouseButtonReleasedEvent> { if (button != PE_MOUSE_BUTTON_LEFT) return@dispatch false; mouseClicked = false; false }
+        dispatcher.dispatch<MouseButtonPressedEvent> { if (button != MouseButton.LEFT) return@dispatch false; mouseClicked = true; false }
+        dispatcher.dispatch<MouseButtonReleasedEvent> { if (button != MouseButton.LEFT) return@dispatch false; mouseClicked = false; false }
     }
 }
 

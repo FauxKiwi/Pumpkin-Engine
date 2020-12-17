@@ -121,19 +121,19 @@ class MainLayer : Layer("Game of life") {
 
     private fun onKeyPressed(event: KeyPressedEvent): Boolean {
         when (event.keyCode) {
-            PE_KEY_SPACE -> {
+            KeyCode.SPACE -> {
                 simulation = !simulation
                 timePassed = 0f
             }
-            PE_KEY_RIGHT -> {
+            KeyCode.RIGHT -> {
                 speed += 0.1f
                 speed = min(50f, speed)
             }
-            PE_KEY_LEFT -> {
+            KeyCode.LEFT -> {
                 speed -= 0.1f
                 speed = max(0.1f, speed)
             }
-            PE_KEY_R -> {
+            KeyCode.R -> {
                 playground.fill(false)
                 simulation = false
             }
