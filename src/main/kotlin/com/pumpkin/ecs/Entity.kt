@@ -87,11 +87,14 @@ class Registry {
     }
 }
 
-class RegistryView<T>(private val components: HashMap<Entity, T>) {
+class RegistryView<T>(@PublishedApi internal val components: HashMap<Entity, T>) {
 
     fun get(entity: Entity): T = components[entity]!!
 
-    operator fun iterator(): Iterator<Entity> = components.keys.iterator()
+    @Suppress("NOTHING_TO_INLINE")
+    inline operator fun iterator(): Iterator<Entity> = components.keys.iterator()
+
+    inline fun forEach(operation: (MutableMap.MutableEntry<Entity, T>) -> Unit) = components.iterator().forEach(operation)
 }
 
 class RegistryGroup<A, B>(private val components: HashMap<Entity, Pair<A, B>>) {

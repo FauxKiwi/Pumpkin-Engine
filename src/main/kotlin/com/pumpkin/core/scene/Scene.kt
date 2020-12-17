@@ -25,6 +25,15 @@ class Scene : Referencable() {
     }
 
     fun onUpdate(ts: Timestep) {
+        run {
+            registry.view<NativeScriptComponent>().forEach { (entity, nsc) ->
+                if (nsc.i == null) {
+                    nsc.instantiateScript(Entity(entity, this))
+                    nsc.instance.onCreate()
+                }
+                nsc.instance.onUpdate(ts)
+            }
+        }
         var mainCamera: Camera? = null
         var cameraTransform: Mat4? = null
         val cameraGroup = registry.group<TransformComponent, CameraComponent>()

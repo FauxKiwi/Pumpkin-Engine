@@ -1,8 +1,10 @@
 package editor
 
 import com.pumpkin.core.*
+import com.pumpkin.core.Debug
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.imgui.ImGuiProfiler
+import com.pumpkin.core.input.*
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.renderer.*
 import com.pumpkin.core.scene.*
@@ -44,6 +46,7 @@ class EditorLayer : Layer("Editor") {
 
         cameraEntity = activeScene.createEntity("Camera Entity")
         cameraEntity.addComponent<CameraComponent>(SceneCamera())
+        cameraEntity.addComponent<NativeScriptComponent>().bind<CameraController>()
 
         secondCamera = activeScene.createEntity("Clip-Space Entity")
         val cc = secondCamera.addComponent<CameraComponent>(SceneCamera())
@@ -194,5 +197,23 @@ class EditorLayer : Layer("Editor") {
 
     override fun onEvent(event: Event) {
         cameraController.onEvent(event)
+    }
+}
+
+class CameraController : ScriptableEntity() {
+    private val speed = 5f
+
+    override fun onUpdate(ts: Timestep) {
+        val transform = getComponent<TransformComponent>()
+        val position = transform.position
+        if (Input.isKeyPressed(PE_KEY_A))
+            position.x -= speed * ts
+        if (Input.isKeyPressed(PE_KEY_D))
+            position.x += speed * ts
+        if (Input.isKeyPressed(PE_KEY_S))
+            position.y -= speed * ts
+        if (Input.isKeyPressed(PE_KEY_W))
+            position.y += speed * ts
+        transform.position = position
     }
 }

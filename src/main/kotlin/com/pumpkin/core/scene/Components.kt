@@ -1,10 +1,13 @@
 package com.pumpkin.core.scene
 
+import com.pumpkin.core.Timestep
 import glm_.glm
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
+import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 
 inline class TagComponent(@ComponentSize(1) private val t: String) {
     val tag: String
@@ -23,6 +26,19 @@ inline class TransformComponent(@ComponentSize(6) private val t: FloatArray) {
         set(value) { t[5] = glm.radians(value) }
     val transform: Mat4
         get() = glm.translate(glm.rotate(glm.scale(Mat4.identity, Vec3(scale, 1f)), rotation, Vec3(0, 0, 1)), position)
+}
+
+class NativeScriptComponent {
+    @PublishedApi internal var i: ScriptableEntity? = null
+    inline val instance: ScriptableEntity get() = i!!
+    internal var instantiateScript: (Entity) -> Unit = {  }
+    internal var destroyScript: () -> Unit = {  }
+
+    inline fun <reified T : ScriptableEntity> bind() = bind(T::class)
+    fun <C : ScriptableEntity> bind(clazz: KClass<C>) {
+        instantiateScript = { entity -> i = clazz.primaryConstructor!!.call().instantiate(entity) }
+        destroyScript = { i = null }
+    }
 }
 
 inline class SpriteRendererComponent(@ComponentSize(4) private val c: FloatArray) {
