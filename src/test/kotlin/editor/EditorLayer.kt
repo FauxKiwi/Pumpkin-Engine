@@ -81,8 +81,6 @@ class EditorLayer : Layer("Editor") {
         }
 
         framebuffer.bind()
-        RendererCommand.setClearColor(Vec4(0.1f, 0.1f, 0.1f, 1.0f))
-        RendererCommand.clear()
 
         if (viewportFocused) {
             cameraController.onUpdate(ts)
@@ -131,12 +129,62 @@ class EditorLayer : Layer("Editor") {
             val dockspaceID = getID("MyDockSpace")
             dockSpace(dockspaceID, Vec2(0f, 0f), dockspaceFlags)
         }
+
+
         if (beginMenuBar()) {
             if (beginMenu("File")) {
-                if (menuItem("Exit"))
-                    Application.get().close()
+                if (menuItem("New", "Ctrl+N")) {}
+                if (menuItem("Open", "Ctrl+O")) {}
+                if (menuItem("Open Recent")) {}
+                if (menuItem("Close Project", "Ctrl+W")) {}
+                separator()
+                if (menuItem("Settings", "Ctrl+Shift+S")) {}
+                if (menuItem("Build Settings", "Ctrl+Shift+B")) {}
+                separator()
+                if (menuItem("Save All", "Ctrl+S")) {}
+                if (menuItem("Reload All from Disk")) {}
+                separator()
+                if (menuItem("Exit")) { Application.get().close() }
                 endMenu()
             }
+
+            if (beginMenu("Edit")) {
+                if (menuItem("Undo", "Ctrl+Z")) {}
+                if (menuItem("Redo", "Ctrl+Y")) {}
+                separator()
+                if (menuItem("Cut", "Ctrl+X")) {}
+                if (menuItem("Copy", "Ctrl+C")) {}
+                if (menuItem("Paste", "Ctrl+V")) {}
+                if (menuItem("Delete", "Del")) {}
+                separator()
+                if (menuItem("Find", "Ctrl+F")) {}
+                endMenu()
+            }
+
+            if (beginMenu("View")) {
+                if (menuItem("Windows")) {}
+                if (menuItem("Appearance")) {}
+                endMenu()
+            }
+
+            if (beginMenu("Build & Run")) {
+                if (menuItem("Run")) {}
+                if (menuItem("Build")) {}
+                endMenu()
+            }
+
+            if (beginMenu("Tools")) {
+                if (menuItem("Tasks")) {}
+                separator()
+                //Plugins
+                endMenu()
+            }
+
+            if (beginMenu("Help")) {
+                if (menuItem("Help")) {}
+                endMenu()
+            }
+
             endMenuBar()
         }
 

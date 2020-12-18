@@ -71,6 +71,7 @@ class SceneHierarchyPanel(var context: Scene) {
             ImGui.dragFloat("Orthographic Size", camera.camera::othographicSize)
             ImGui.checkbox("Fixed Aspect Ratio", camera::fixedAspectRatio)
             ImGui.checkbox("Primary Camera", camera::primary)
+            ImGui.colorEdit3("Clear Color", camera.camera.clearColor)
         }
 
         if (

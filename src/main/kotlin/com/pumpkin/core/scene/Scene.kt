@@ -4,6 +4,7 @@ import com.pumpkin.core.Referencable
 import com.pumpkin.core.Timestep
 import com.pumpkin.core.renderer.Camera
 import com.pumpkin.core.renderer.Renderer2D
+import com.pumpkin.core.renderer.RendererCommand
 import com.pumpkin.ecs.Registry
 import glm_.mat4x4.Mat4
 
@@ -40,6 +41,8 @@ class Scene : Referencable() {
         for (entity in cameraGroup) {
             val (transform, camera) = cameraGroup.get(entity)
             if (camera.primary) {
+                RendererCommand.setClearColor(camera.camera.clearColor)
+                RendererCommand.clear()
                 mainCamera = camera.camera
                 cameraTransform = transform.transform
                 break

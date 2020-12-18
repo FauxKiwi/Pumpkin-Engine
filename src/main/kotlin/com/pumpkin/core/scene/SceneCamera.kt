@@ -2,6 +2,7 @@ package com.pumpkin.core.scene
 
 import com.pumpkin.core.renderer.Camera
 import glm_.glm
+import glm_.vec4.Vec4
 
 class SceneCamera : Camera() {
     var othographicSize = 10f
@@ -12,6 +13,8 @@ class SceneCamera : Camera() {
     private var orthographicNear = -1f
     private var orthographicFar = 1f
     private var aspectRatio = 0f
+
+    val clearColor = Vec4(0.25f, 0.3f, 0.655f, 1.0f)
 
     init {
         recalculateProjection()
