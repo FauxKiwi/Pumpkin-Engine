@@ -1,5 +1,6 @@
 package com.pumpkin.core.panels
 
+import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
 import com.pumpkin.ecs.Entity
 import com.pumpkin.ecs.Registry
@@ -40,8 +41,7 @@ class SceneHierarchyPanel(var context: Scene) {
 
     private fun drawProperties(entity: Entity) {
         if (
-            registry.has<TagComponent>(entity) &&
-            ImGui.collapsingHeader("Tag", TreeNodeFlag.DefaultOpen.i)
+            registry.has<TagComponent>(entity)
         ) {
             val tag = registry.get<TagComponent>(entity)
             ImGui.inputText("Name", tag.byteArray)
@@ -49,7 +49,7 @@ class SceneHierarchyPanel(var context: Scene) {
 
         if (
             registry.has<TransformComponent>(entity) &&
-            ImGui.collapsingHeader("Transform", TreeNodeFlag.DefaultOpen.i)
+            ImGui.treeNodeEx("Transform", TreeNodeFlag.DefaultOpen.i)
         ) {
             val transform = registry.get<TransformComponent>(entity)
             val position = transform.position
@@ -61,17 +61,28 @@ class SceneHierarchyPanel(var context: Scene) {
             val rotation = intArrayOf(glm.degrees(transform.rotation).toInt())
             ImGui.dragInt("Rotation", rotation, 0)
             transform.rotation = glm.radians(rotation[0].toFloat())
+            ImGui.treePop()
         }
 
         if (
             registry.has<CameraComponent>(entity) &&
-            ImGui.collapsingHeader("Camera", TreeNodeFlag.DefaultOpen.i)
+            ImGui.treeNodeEx("Camera", TreeNodeFlag.DefaultOpen.i)
         ) {
             val camera = registry.get<CameraComponent>(entity)
-            ImGui.dragFloat("Orthographic Size", camera.camera::othographicSize)
-            ImGui.checkbox("Fixed Aspect Ratio", camera::fixedAspectRatio)
             ImGui.checkbox("Primary Camera", camera::primary)
+            ImGui.combo("Projection Type", camera.camera::projectionTypePtr, ProjectionType.projectionTypes)
+            if (camera.camera.projectionType == ProjectionType.Orthographic) {
+                ImGui.dragFloat("Orthographic Size", camera.camera::othographicSize)
+                ImGui.dragFloat("Near Clip", camera.camera::orthographicNear)
+                ImGui.dragFloat("Far Clip", camera.camera::orthographicFar)
+            } else {
+                ImGui.dragFloat("Field of View", camera.camera::perspectiveFov)
+                ImGui.dragFloat("Near Clip", camera.camera::perspectiveNear)
+                ImGui.dragFloat("Far Clip", camera.camera::perspectiveFar)
+            }
+            ImGui.checkbox("Fixed Aspect Ratio", camera::fixedAspectRatio)
             ImGui.colorEdit3("Clear Color", camera.camera.clearColor)
+            ImGui.treePop()
         }
 
         if (

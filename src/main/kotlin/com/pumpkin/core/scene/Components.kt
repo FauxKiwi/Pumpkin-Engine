@@ -16,7 +16,7 @@ class TagComponent(str: String) {
         set(value) { byteArray = value.toByteArray(64) }
 }
 
-inline class TransformComponent(@ComponentSize(6) private val t: FloatArray) {
+inline class TransformComponent(@ComponentSize(6) val t: FloatArray) {
     var position: Vec3
         get() = Vec3(t[0], t[1], t[2])
         set(value) { t[0] = value[0]; t[1] = value[1]; t[2] = value[2] }
@@ -35,7 +35,7 @@ class CameraComponent(@ComponentSize(2) val camera: SceneCamera) {
     var fixedAspectRatio = false
 }
 
-inline class SpriteRendererComponent(@ComponentSize(4) private val c: FloatArray) {
+inline class SpriteRendererComponent(@ComponentSize(4) val c: FloatArray) {
     var color: Vec4
         get() = Vec4(c[0], c[1], c[2], c[3])
         set(value) { c[0] = value[0]; c[1] = value[1]; c[2] = value[2]; c[3] = value[3] }

@@ -36,7 +36,7 @@ class Scene : Referencable() {
             }
         }
         var mainCamera: Camera? = null
-        var cameraTransform: Mat4? = null
+        var cameraTransform: FloatArray? = null
         val cameraGroup = registry.group<TransformComponent, CameraComponent>()
         for (entity in cameraGroup) {
             val (transform, camera) = cameraGroup.get(entity)
@@ -44,7 +44,7 @@ class Scene : Referencable() {
                 RendererCommand.setClearColor(camera.camera.clearColor)
                 RendererCommand.clear()
                 mainCamera = camera.camera
-                cameraTransform = transform.transform
+                cameraTransform = transform.t
                 break
             }
         }
