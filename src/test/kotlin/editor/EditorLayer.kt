@@ -65,6 +65,8 @@ class EditorLayer : Layer("Editor") {
         entity2.getComponent<TransformComponent>().position = Vec3(0.5f, 0.5f, 0.5f)
 
         ImGuiProfiler.onAttach()
+
+        SceneSerializer(activeScene).serialize("Hi")
     }
 
     override fun onDetach() {
@@ -240,7 +242,7 @@ object Keybinds { operator fun invoke(event: KeyPressedEvent) {
 }}
 
 class CameraController : ScriptableEntity() {
-    private val speed = 5f
+    var speed = 5f
 
     override fun onUpdate(ts: Timestep) {
         val transform = getComponent<TransformComponent>()

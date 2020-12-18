@@ -10,6 +10,9 @@ import glm_.vec3.swizzle.xy
 import glm_.vec4.Vec4
 import imgui.*
 import kotlin.reflect.KClass
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KProperty
+import kotlin.reflect.KType
 
 class SceneHierarchyPanel(var context: Scene) {
     private val registry: Registry get() = context.registry

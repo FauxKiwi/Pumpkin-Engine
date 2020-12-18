@@ -6,8 +6,9 @@ import com.pumpkin.core.renderer.Camera
 import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.renderer.RendererCommand
 import com.pumpkin.ecs.Registry
-import glm_.mat4x4.Mat4
 import glm_.vec4.Vec4
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 class Scene : Referencable() {
     val registry: Registry = Registry()

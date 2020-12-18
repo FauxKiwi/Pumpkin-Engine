@@ -6,6 +6,7 @@ import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
 import imgui.toByteArray
+import kotlinx.serialization.Serializable
 import kotlin.math.cos
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
@@ -15,6 +16,8 @@ class TagComponent(str: String) {
     var tag: String
         get() = byteArray.decodeToString()
         set(value) { byteArray = value.toByteArray(64) }
+    val trimTag: String
+        get() = tag.trim('\u0000')
 }
 
 inline class TransformComponent(@ComponentSize(8) val t: FloatArray) {

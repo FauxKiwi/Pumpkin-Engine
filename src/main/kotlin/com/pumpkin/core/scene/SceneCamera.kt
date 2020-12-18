@@ -24,7 +24,6 @@ class SceneCamera : Camera() {
     var orthographicFar
         get() = _orthographicFar
         set(value) { _orthographicFar = value; recalculateProjection() }
-    private var aspectRatio = 0f
 
     private var _perspectiveFov = 45f
     var perspectiveFov
@@ -38,6 +37,10 @@ class SceneCamera : Camera() {
     var perspectiveFar
         get() = _perspectiveFar
         set(value) { _perspectiveFar = value; recalculateProjection() }
+
+    private var _aspectRatio = 0f
+    val aspectRatio
+        get() = _aspectRatio
 
     val clearColor = Vec4(0.25f, 0.3f, 0.655f, 1.0f)
 
@@ -64,22 +67,22 @@ class SceneCamera : Camera() {
     }
 
     fun setViewportSize(width: Float, height: Float) {
-        aspectRatio = width / height
+        _aspectRatio = width / height
         recalculateProjection()
     }
 
     private fun recalculateProjection() {
         projection =
         if (projectionType == ProjectionType.Orthographic) glm.ortho(
-            -_orthographicSize * aspectRatio * 0.5f,
-            _orthographicSize * aspectRatio * 0.5f,
+            -_orthographicSize * _aspectRatio * 0.5f,
+            _orthographicSize * _aspectRatio * 0.5f,
             -_orthographicSize * 0.5f,
             _orthographicSize * 0.5f,
             _orthographicNear,
             _orthographicFar
         ) else glm.perspective(
             glm.radians(perspectiveFov),
-            aspectRatio,
+            _aspectRatio,
             perspectiveNear,
             perspectiveFar
         )
