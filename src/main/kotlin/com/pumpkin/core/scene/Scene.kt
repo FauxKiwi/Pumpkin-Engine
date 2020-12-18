@@ -15,6 +15,12 @@ class Scene : Referencable() {
     var viewportWidth: Int = 0
     var viewportHeight: Int = 0
 
+    init {
+        registry.onConstruct<CameraComponent>().connect { r, e ->
+            r.get<CameraComponent>(e).camera.setViewportSize(viewportWidth, viewportHeight)
+        }
+    }
+
     override fun destruct() {
 
     }
@@ -24,6 +30,10 @@ class Scene : Referencable() {
         entity.addComponent<TransformComponent>(floatArrayOf(0f, 0f, 0f, 1f, 1f, 0f))
         entity.addComponent<TagComponent>(name ?: "Entity")
         return entity
+    }
+
+    fun destroyEntity(entity: Entity) {
+        registry.destroy(entity.entityHandle)
     }
 
     fun onUpdate(ts: Timestep) {

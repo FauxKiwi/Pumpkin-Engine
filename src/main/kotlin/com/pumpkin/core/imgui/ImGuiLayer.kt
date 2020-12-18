@@ -47,52 +47,6 @@ class ImGuiLayer : Layer("ImGui") {
             style.frameRounding = 0f
 
             run {
-            /*val colors = ImGui.style.colors
-            colors[Col.Text]                    = Vec4(1.00ff, 1.00ff, 1.00ff, 1.00f)
-            colors[Col.TextDisabled]            = Vec4(0.50ff, 0.50ff, 0.50ff, 1.00f)
-            colors[Col.WindowBg]                = Vec4(0.09ff, 0.09ff, 0.09ff, 1.00f)
-            colors[Col.ChildBg]                 = Vec4(0.09ff, 0.09ff, 0.09ff, 0.00f)
-            colors[Col.PopupBg]                 = Vec4(0.08ff, 0.08ff, 0.08ff, 0.94f)
-            colors[Col.Border]                  = Vec4(0.43ff, 0.43ff, 0.50ff, 0.50f)
-            colors[Col.FrameBg]                 = Vec4(0.16ff, 0.16ff, 0.16ff, 0.54f)
-            colors[Col.FrameBgHovered]          = Vec4(0.55ff, 0.55ff, 0.55ff, 0.40f)
-            colors[Col.FrameBgActive]           = Vec4(0.55ff, 0.55ff, 0.55ff, 0.67f)
-            colors[Col.TitleBg]                 = Vec4(0.04ff, 0.04ff, 0.04ff, 1.00f)
-            colors[Col.TitleBgActive]           = Vec4(0.31ff, 0.31ff, 0.31ff, 1.00f)
-            colors[Col.TitleBgCollapsed]        = Vec4(0.00ff, 0.00ff, 0.00ff, 0.51f)
-            colors[Col.MenuBarBg]               = Vec4(0.14ff, 0.14ff, 0.14ff, 1.00f)
-            colors[Col.ScrollbarBg]             = Vec4(0.02ff, 0.02ff, 0.02ff, 0.53f)
-            colors[Col.ScrollbarGrab]           = Vec4(0.31ff, 0.31ff, 0.31ff, 1.00f)
-            colors[Col.ScrollbarGrabHovered]    = Vec4(0.41ff, 0.41ff, 0.41ff, 1.00f)
-            colors[Col.ScrollbarGrabActive]     = Vec4(0.51ff, 0.51ff, 0.51ff, 1.00f)
-            colors[Col.CheckMark]               = Vec4(0.26ff, 0.59ff, 0.98ff, 1.00f)
-            colors[Col.SliderGrab]              = Vec4(0.24ff, 0.52ff, 0.88ff, 1.00f)
-            colors[Col.SliderGrabActive]        = Vec4(0.26ff, 0.59ff, 0.98ff, 1.00f)
-            colors[Col.Button]                  = Vec4(0.39ff, 0.39ff, 0.39ff, 0.40f)
-            colors[Col.ButtonHovered]           = Vec4(0.39ff, 0.39ff, 0.39ff, 1.00f)
-            colors[Col.ButtonActive]            = Vec4(0.39ff, 0.39ff, 0.39ff, 1.00f)
-            colors[Col.Header]                  = Vec4(0.15ff, 0.15ff, 0.15ff, 0.31f)
-            colors[Col.HeaderHovered]           = Vec4(0.15ff, 0.15ff, 0.15ff, 0.80f)
-            colors[Col.HeaderActive]            = Vec4(0.15ff, 0.15ff, 0.15ff, 1.00f)
-            colors[Col.Separator]               = Vec4(0.43ff, 0.43ff, 0.50ff, 0.50f)
-            colors[Col.SeparatorHovered]        = Vec4(0.10ff, 0.40ff, 0.75ff, 0.78f)
-            colors[Col.SeparatorActive]         = Vec4(0.10ff, 0.40ff, 0.75ff, 1.00f)
-            colors[Col.ResizeGrip]              = Vec4(0.00ff, 0.00ff, 0.00ff, 0.00f)
-            colors[Col.ResizeGripHovered]       = Vec4(0.98ff, 0.98ff, 0.98ff, 0.67f)
-            colors[Col.ResizeGripActive]        = Vec4(0.98ff, 0.98ff, 0.98ff, 0.95f)
-            colors[Col.Tab]                     = Vec4(0.16ff, 0.16ff, 0.16ff, 0.86f)
-            colors[Col.TabHovered]              = Vec4(0.26ff, 0.59ff, 0.98ff, 0.80f)
-            colors[Col.TabActive]               = Vec4(0.20ff, 0.41ff, 0.68ff, 1.00f)
-            colors[Col.TabUnfocused]            = Vec4(0.07ff, 0.10ff, 0.15ff, 0.97f)
-            colors[Col.TabUnfocusedActive]      = Vec4(0.14ff, 0.26ff, 0.42ff, 1.00f)
-            colors[Col.DockingPreview]          = Vec4(0.26ff, 0.59ff, 0.98ff, 0.70f)
-            colors[Col.DockingEmptyBg]          = Vec4(0.00ff, 0.00ff, 0.00ff, 1.00f)
-            colors[Col.PlotLines]               = Vec4(0.61ff, 0.61ff, 0.61ff, 1.00f)
-            colors[Col.PlotLinesHovered]        = Vec4(1.00ff, 0.43ff, 0.35ff, 1.00f)
-            colors[Col.TextSelectedBg]          = Vec4(0.26ff, 0.59ff, 0.98ff, 0.35f)
-            colors[Col.NavHighlight]            = Vec4(0.26ff, 0.59ff, 0.98ff, 1.00f)
-            colors[Col.ModalWindowDimBg]        = Vec4(0.80ff, 0.80ff, 0.80ff, 0.35f)
-            }*/
             val colors = ImGui.style.colors
             colors[Col.Text]                    = Vec4(1.00f, 1.00f, 1.00f, 1.00f)
             colors[Col.TextDisabled]            = Vec4(0.50f, 0.50f, 0.50f, 1.00f)
@@ -117,7 +71,7 @@ class ImGuiLayer : Layer("ImGui") {
             colors[Col.Button]                  = Vec4(0.39f, 0.39f, 0.39f, 0.40f)
             colors[Col.ButtonHovered]           = Vec4(0.39f, 0.39f, 0.39f, 1.00f)
             colors[Col.ButtonActive]            = Vec4(0.39f, 0.39f, 0.39f, 1.00f)
-            colors[Col.Header]                  = Vec4(0.15f, 0.15f, 0.15f, 0.31f)
+            colors[Col.Header]                  = Vec4(0.15f, 0.15f, 0.15f, 0.80f)
             colors[Col.HeaderHovered]           = Vec4(0.15f, 0.15f, 0.15f, 0.80f)
             colors[Col.HeaderActive]            = Vec4(0.15f, 0.15f, 0.15f, 1.00f)
             colors[Col.Separator]               = Vec4(0.50f, 0.46f, 0.43f, 0.50f)
@@ -145,7 +99,7 @@ class ImGuiLayer : Layer("ImGui") {
         implGlfw = ImplGlfw.initForOpenGL(Window.getWindow().window, true)/*(Window.getWindow().window)*/
         implGL3 = ImplGL3()
 
-        font = ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Medium.ttf", 16.0f)
+        ImGui.io.fontDefault = ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Regular.ttf", 16.0f)
     }
 
     override fun onDetach() {

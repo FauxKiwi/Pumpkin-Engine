@@ -18,11 +18,30 @@ class SceneHierarchyPanel(var context: Scene) {
     fun onImGuiRender() {
         ImGui.begin("Hierarchy")
         registry.each(::drawEntityNode)
+        if (ImGui.beginPopupContextWindow(popupFlags = PopupFlag.MouseButtonRight.i or PopupFlag.NoOpenOverItems.i)) {
+            if (ImGui.menuItem("Create Empty Entity"))
+                context.createEntity("Empty Entity")
+            ImGui.endPopup()
+        }
         ImGui.end()
 
         ImGui.begin("Inspector")
         if (selectionContext != null) {
             drawProperties(selectionContext!!)
+            if (ImGui.button("Add Component"))
+                ImGui.openPopup("AddComponent")
+
+            if (ImGui.beginPopup("AddComponent")) {
+                if (ImGui.menuItem("Camera")) {
+                    registry.emplace<CameraComponent>(selectionContext!!, SceneCamera())
+                    ImGui.closeCurrentPopup()
+                }
+                if (ImGui.menuItem("Sprite Renderer")) {
+                    registry.emplace<SpriteRendererComponent>(selectionContext!!, floatArrayOf(1f, 1f, 1f, 1f))
+                    ImGui.closeCurrentPopup()
+                }
+                ImGui.endPopup()
+            }
         }
         ImGui.end()
 
@@ -31,12 +50,27 @@ class SceneHierarchyPanel(var context: Scene) {
 
     private fun drawEntityNode(entity: Entity) {
         val tag = registry.get<TagComponent>(entity).tag
-        val flags: TreeNodeFlags = (if (selectionContext == entity) TreeNodeFlag.Selected.i else 0) or TreeNodeFlag.OpenOnArrow.i
+        val flags: TreeNodeFlags =
+            (if (selectionContext == entity) TreeNodeFlag.Selected.i else 0) or TreeNodeFlag.OpenOnArrow.i
         val opened = ImGui.treeNodeEx(tag, flags)
         if (ImGui.isItemClicked())
             selectionContext = entity
+
+        var entityDeleted = false
+        if (ImGui.beginPopupContextItem()) {
+            if (ImGui.menuItem("Delete Entity"))
+                entityDeleted = true
+            ImGui.endPopup()
+        }
+
         if (opened) {
             ImGui.treePop()
+        }
+
+        if (entityDeleted) {
+            registry.destroy(entity)
+            if (selectionContext == entity)
+                selectionContext = null
         }
     }
 
@@ -48,21 +82,19 @@ class SceneHierarchyPanel(var context: Scene) {
             ImGui.inputText("Name", tag.byteArray)
         }
 
+        val treeNodeFlags = TreeNodeFlag.DefaultOpen or TreeNodeFlag.AllowItemOverlap
         if (
             registry.has<TransformComponent>(entity) &&
-            ImGui.treeNodeEx("Transform", TreeNodeFlag.DefaultOpen.i)
+            ImGui.treeNodeEx("Transform", treeNodeFlags)
         ) {
             val transform = registry.get<TransformComponent>(entity)
             val position = transform.position
-            //ImGui.dragVec3("Position", position, 0.01f, format = "%.2f")
             drawVec3Control("Position", position)
             transform.position = position
             val scale = Vec3(transform.scale, 1f)
-            //ImGui.dragVec2("Scale", scale, 0.1f, format = "%.1f")
             drawVec3Control("Scale", scale)
             transform.scale = scale.xy
             val rotation = Vec3(0f, 0f, transform.rotation)
-            //ImGui.dragInt("Rotation", rotation, 0)
             drawVec3Control("Rotation", rotation)
             transform.rotation = rotation.z
             ImGui.treePop()
@@ -70,7 +102,7 @@ class SceneHierarchyPanel(var context: Scene) {
 
         if (
             registry.has<CameraComponent>(entity) &&
-            ImGui.treeNodeEx("Camera", TreeNodeFlag.DefaultOpen.i)
+            ImGui.treeNodeEx("Camera", treeNodeFlags)
         ) {
             val camera = registry.get<CameraComponent>(entity)
             ImGui.checkbox("Primary Camera", camera::primary)
@@ -89,22 +121,42 @@ class SceneHierarchyPanel(var context: Scene) {
             ImGui.treePop()
         }
 
-        if (
-            registry.has<SpriteRendererComponent>(entity) &&
-            ImGui.treeNodeEx("Sprite Renderer", TreeNodeFlag.DefaultOpen.i)
-        ) {
-            val spriteRenderer = registry.get<SpriteRendererComponent>(entity)
-            val color = spriteRenderer.color
-            ImGui.colorEdit4("Color", color)
-            spriteRenderer.color = color
+        if (registry.has<SpriteRendererComponent>(entity)) {
+            ImGui.pushStyleVar(StyleVar.FramePadding, Vec2(4, 4))
+            val open = ImGui.treeNodeEx("Sprite Renderer", treeNodeFlags)
+            ImGui.sameLine(ImGui.windowWidth - 25.0f)
+            if (ImGui.button("+", Vec2(20, 20))) {
+                ImGui.openPopup("ComponentSettings")
+            }
+            ImGui.popStyleVar()
+
+            var removeComponent = false
+            if (ImGui.beginPopup("ComponentSettings")) {
+                if (ImGui.menuItem("Remove component"))
+                    removeComponent = true
+                ImGui.endPopup()
+            }
+
+            if (open) {
+                val spriteRenderer = registry.get<SpriteRendererComponent>(entity)
+                val color = spriteRenderer.color
+                ImGui.colorEdit4("Color", color)
+                spriteRenderer.color = color
+                ImGui.treePop()
+            }
+
+            if (removeComponent) {
+                registry.remove<SpriteRendererComponent>(entity)
+            }
         }
 
         if (
             registry.has<NativeScriptComponent>(entity) &&
-            ImGui.treeNodeEx("Native Script", TreeNodeFlag.DefaultOpen.i)
+            ImGui.treeNodeEx("Native Script", treeNodeFlags)
         ) {
             val script = registry.get<NativeScriptComponent>(entity)
             ImGui.text(script.instance::class.qualifiedName ?: "")
+            ImGui.treePop()
         }
     }
 

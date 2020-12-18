@@ -46,6 +46,7 @@ class WindowsWindow : Window {
             glfw.errorCallback = this::errorCallback
 
             window = GlfwWindow(data.width, data.height, data.title)
+            window.maximize()
             context = OpenGLContext(window)
             context.init()
 

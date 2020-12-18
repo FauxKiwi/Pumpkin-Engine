@@ -11,10 +11,10 @@ inline class Entity(val id: Int) {
 class Registry {
     @PublishedApi internal val entities = mutableListOf<Entity>()
     private var entityID: Int = 0
-    val classes = mutableListOf<MutableList<KClass<*>>>()
-    val classEntities = hashMapOf<KClass<*>, MutableList<Entity>>()
+    private val classes = mutableListOf<MutableList<KClass<*>>>()
+    private val classEntities = hashMapOf<KClass<*>, MutableList<Entity>>()
     val components = mutableListOf<HashMap<KClass<*>, Any>>()
-    val constructionHandlers = hashMapOf<KClass<*>, ConstructionHandler>()
+    private val constructionHandlers = hashMapOf<KClass<*>, ConstructionHandler>()
 
     fun create(): Entity {
         return Entity(entityID++).also {
@@ -22,6 +22,15 @@ class Registry {
             classes.add(it.id, mutableListOf())
             components.add(it.id, hashMapOf())
         }
+    }
+
+    fun destroy(entity: Entity) {
+        entities.removeAt(entity.id)
+        for (clazz in classes[entity.id]) {
+            classEntities[clazz]?.remove(entity)
+        }
+        classes.removeAt(entity.id)
+        components.removeAt(entity.id)
     }
 
     inline fun <reified T : Any> emplace(entity: Entity, vararg args: Any?): T = emplace(T::class, entity, args)
@@ -45,11 +54,6 @@ class Registry {
         return element
     }
 
-    inline fun <reified T : Any> onConstruct(): ConstructionHandler = onConstruct(T::class)
-    fun onConstruct(clazz: KClass<*>): ConstructionHandler = ConstructionHandler(mutableListOf()).also {
-        constructionHandlers[clazz] = it
-    }
-
     inline fun <reified T : Any> has(entity: Entity): Boolean = has(T::class, entity)
     fun has(clazz: KClass<*>, entity: Entity): Boolean = classes[entity.id].contains(clazz)
 
@@ -58,9 +62,9 @@ class Registry {
 
     inline fun <reified T : Any> remove(entity: Entity) = remove(T::class, entity)
     fun remove(clazz: KClass<*>, entity: Entity) {
-        classes[entityID].remove(clazz)
+        classes[entity.id].remove(clazz)
         classEntities[clazz]?.remove(entity)
-        components[entityID].remove(clazz)
+        components[entity.id].remove(clazz)
     }
 
     inline fun <reified T : Any> view(): RegistryView<T> = view(T::class)
@@ -87,6 +91,12 @@ class Registry {
     }
 
     inline fun each(operation: (Entity) -> Unit) = entities.forEach(operation)
+
+
+    inline fun <reified T : Any> onConstruct(): ConstructionHandler = onConstruct(T::class)
+    fun onConstruct(clazz: KClass<*>): ConstructionHandler = ConstructionHandler(mutableListOf()).also {
+        constructionHandlers[clazz] = it
+    }
 }
 
 class RegistryView<T>(@PublishedApi internal val components: HashMap<Entity, T>) {

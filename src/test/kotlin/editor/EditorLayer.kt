@@ -138,11 +138,12 @@ class EditorLayer : Layer("Editor") {
                 if (menuItem("Open Recent")) {}
                 if (menuItem("Close Project", "Ctrl+W")) {}
                 separator()
-                if (menuItem("Settings", "Ctrl+Shift+S")) {}
-                if (menuItem("Build Settings", "Ctrl+Shift+B")) {}
+                if (menuItem("Settings", "Ctrl+Alt+S")) {}
+                if (menuItem("Build Settings", "Ctrl+Alt+B")) {}
                 separator()
-                if (menuItem("Save All", "Ctrl+S")) {}
-                if (menuItem("Reload All from Disk")) {}
+                if (menuItem("Save Scene", "Ctrl+S")) {}
+                if (menuItem("Save All", "Ctrl+Shift+S"))
+                if (menuItem("Reload")) {}
                 separator()
                 if (menuItem("Exit")) { Application.get().close() }
                 endMenu()
