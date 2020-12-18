@@ -2,11 +2,9 @@ package com.pumpkin.core.settings
 
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
-import imgui.Col
-import imgui.ImGui
-import imgui.WindowFlag
+import imgui.*
 import imgui.classes.Style
-import imgui.set
+import imgui.internal.sections.OldColumnsFlag
 
 object Settings {
     private var open = false
@@ -27,21 +25,62 @@ object Settings {
         }
         ImGui.begin("Settings", Settings::open, WindowFlag.NoCollapse.i)
 
-        ImGui.text("Outer")
+        val childFlags = WindowFlag.NoCollapse.i or WindowFlag.NoTitleBar.i or WindowFlag.NoBackground.i or WindowFlag.NoResize.i
+
+        ImGui.beginColumns("SettingsColumns", 2, OldColumnsFlag.NoResize.i)
+        ImGui.setColumnWidth(-1, 250f)
+        ImGui.beginChild("SettingsTree", Vec2(ImGui.getColumnWidth(-1) - 15f, 0f), flags = childFlags)
+
+        var currentSettings = "None"
+        if (ImGui.treeNodeEx("Appearance")) {
+            currentSettings = "Appearance"
+            if (ImGui.treeNodeEx("Theme", TreeNodeFlag.Bullet.i)) currentSettings = "Theme"
+            ImGui.treePop()
+        }
+
+        ImGui.endChild()
+        ImGui.nextColumn()
+        ImGui.beginChild("SettingsDisplay", flags = childFlags)
+
+        when (currentSettings) {
+            "None" -> ImGui.text("Open a context menu on the left to edit settings")
+            "Appearance" -> ImGui.text("Appearance")
+            "Theme" -> {
+                if (ImGui.combo("Theme", Theme::current, "Dark"))
+                    ImGui.currentContext?.style = Theme[Theme.current].style
+            }
+        }
+
+        ImGui.endChild()
+        ImGui.endColumns()
 
         ImGui.end()
     }
 
-    fun setTheme(theme: Theme) {
-        ImGui.currentContext?.style = theme.style
+    fun setTheme(theme: Int) {
+        Theme.current = theme
+        ImGui.currentContext?.style = Theme[theme].style
     }
+
+    fun getTheme(): Int = Theme.current
 }
 
-interface Theme {
+object Theme {
+    private val themes = mutableListOf<EditorStyle>(DarkTheme)
+    private var currentTheme: EditorStyle = DarkTheme
+    var current: Int = 0
+        set(value) { field = value; currentTheme = themes[value] }
+
+    operator fun get(i: Int): EditorStyle = themes[i]
+}
+
+interface EditorStyle {
+    val name: String
     val style: Style
 }
 
-object DarkTheme : Theme {
+object DarkTheme : EditorStyle {
+    override val name: String = "Dark"
     override val style = Style()
 
     init {

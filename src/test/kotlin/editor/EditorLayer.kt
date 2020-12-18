@@ -162,8 +162,8 @@ class EditorLayer : Layer("Editor") {
     }
 
     override fun onEvent(event: Event) {
-        val dispatcher = EventDispatcher(event)
-        dispatcher.dispatch<KeyPressedEvent> { Keybinds(this); false }
+        if (event is KeyPressedEvent)
+            Keybinds(event)
     }
 }
 

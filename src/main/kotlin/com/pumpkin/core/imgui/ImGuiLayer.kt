@@ -43,7 +43,7 @@ class ImGuiLayer : Layer("ImGui") {
             if (lightMode) ImGui.styleColorsLight()
             else ImGui.styleColorsDark()
 
-            Settings.setTheme(DarkTheme)
+            Settings.setTheme(0)
         }
 
         implGlfw = ImplGlfw.initForOpenGL(Window.getWindow().window, true)/*(Window.getWindow().window)*/
