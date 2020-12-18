@@ -45,7 +45,8 @@ object Renderer2D {
 
     //private lateinit var quadVertexPositions: Array<Vec4>
 
-    var quadCount = 0
+    private var batchQuadCount = 0
+    val quadCount get() = (drawCalls - 1) * maxQuads + batchQuadCount
     var drawCalls = 0
 
     fun init() {
@@ -109,10 +110,9 @@ object Renderer2D {
             bind()
             setMat4("u_ViewProjection", camera.viewProjectionMatrix)
         }
-        textureSlotIndex = 1
 
-        quadCount = 0
-        drawCalls = 1
+        drawCalls = 0
+        startBatch()
     }
 
     fun beginScene(camera: Camera, transform: FloatArray) {
@@ -121,15 +121,13 @@ object Renderer2D {
             -transform[5], Vec3(0, 0, 1)),
             Vec3(-transform[0], -transform[1], -transform[2]))
 
-
         textureShader().apply {
             bind()
             setMat4("u_ViewProjection", viewProj)
         }
-        textureSlotIndex = 1
 
-        quadCount = 0
-        drawCalls = 1
+        drawCalls = 0
+        startBatch()
     }
 
     fun beginScene(camera: Camera, transform: Mat4) {
@@ -139,35 +137,42 @@ object Renderer2D {
             bind()
             setMat4("u_ViewProjection", viewProj)
         }
-        textureSlotIndex = 1
 
-        quadCount = 0
-        drawCalls = 1
+        drawCalls = 0
+        startBatch()
     }
 
     fun endScene() {
+        flush()
+    }
+
+    private fun startBatch() {
+        quadVertexBufferData.position(0)
+
+        textureSlotIndex = 1
+
+        batchQuadCount = 0
+
+        drawCalls++
+    }
+
+    private fun nextBatch() {
+        flush()
+        startBatch()
+    }
+
+    private fun flush() {
+        if (batchQuadCount == 0) return
+
         val array = FloatArray(quadVertexBufferData.position())
         quadVertexBufferData.position(0)
         quadVertexBufferData[array, 0, array.size]
         quadVertexBufferData.position(0)
         quadVertexBuffer().setData(array)
-        flush()
-    }
 
-    private fun flush() {
-        if (quadCount == 0) return
         for (i in 0 until textureSlotIndex) textureSlots[i]!!.bind(i)
-        RendererCommand.drawIndexed(quadVertexArray(), quadCount)
-    }
 
-    fun flushAndReset() {
-        endScene()
-
-        quadVertexBufferData.position(0)
-
-        textureSlotIndex = 1
-
-        drawCalls++
+        RendererCommand.drawIndexed(quadVertexArray(), batchQuadCount)
     }
 
     fun drawQuad(position: Vec2 = Vec2(), size: Vec2 = Vec2(1f), radians: Float = 0f, color: Vec4) =
@@ -177,7 +182,7 @@ object Renderer2D {
     private const val whiteTextureTilingFactor = 1f
     fun drawQuad(position: Vec3, size: Vec2 = Vec2(1f), radians: Float = 0f, color: Vec4) = stack {
         if (quadVertexBufferData.position() >= maxVertices * sizeOfQuadVertex) {
-            flushAndReset()
+            nextBatch()
         }
 
         quadVertexBufferData.put(position.x); quadVertexBufferData.put(position.y); quadVertexBufferData.put(position.z)
@@ -188,7 +193,7 @@ object Renderer2D {
         quadVertexBufferData.put(whiteTextureID)
         quadVertexBufferData.put(whiteTextureTilingFactor)
 
-        quadCount++
+        batchQuadCount++
     }
 
     fun drawQuad(position: Vec2 = Vec2(), size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f) =
@@ -196,7 +201,7 @@ object Renderer2D {
 
     fun drawQuad(position: Vec3, size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f) = stack {
         if (quadVertexBufferData.position() >= maxQuads) {
-            flushAndReset()
+            nextBatch()
         }
 
         var textureIndex = 0f
@@ -209,7 +214,7 @@ object Renderer2D {
 
         if (textureIndex == 0f) {
             if (textureSlotIndex >= maxTextureSlots) {
-                flushAndReset()
+                nextBatch()
             }
 
             textureIndex = textureSlotIndex.toFloat()
@@ -225,7 +230,7 @@ object Renderer2D {
         quadVertexBufferData.put(textureIndex)
         quadVertexBufferData.put(tilingFactor)
 
-        quadCount++
+        batchQuadCount++
     }
 
     fun drawQuad(position: Vec2 = Vec2(), size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f,
@@ -235,7 +240,7 @@ object Renderer2D {
     fun drawQuad(position: Vec3, size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f,
                  subTextureCoord: Vec2, subTextureSize: Vec2, subTextureTileSize: Vec2) = stack {
         if (quadVertexBufferData.position() >= maxQuads) {
-            flushAndReset()
+            nextBatch()
         }
 
         var textureIndex = 0f
@@ -248,7 +253,7 @@ object Renderer2D {
 
         if (textureIndex == 0f) {
             if (textureSlotIndex >= maxTextureSlots) {
-                flushAndReset()
+                nextBatch()
             }
 
             textureIndex = textureSlotIndex.toFloat()
@@ -271,6 +276,6 @@ object Renderer2D {
         quadVertexBufferData.put(textureIndex)
         quadVertexBufferData.put(tilingFactor)
 
-        quadCount++
+        batchQuadCount++
     }
 }

@@ -22,7 +22,6 @@ class ParticleSystem {
         }
 
     fun onUpdate(ts: Timestep) {
-        Renderer2D.flushAndReset()
         for (i in 0 until activeParticles) {
             val particle = particlePool[(i+poolIndex) % maxParticles]
             if (!particle.active)

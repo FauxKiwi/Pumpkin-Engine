@@ -72,7 +72,7 @@ class SceneHierarchyPanel(var context: Scene) {
             ImGui.checkbox("Primary Camera", camera::primary)
             ImGui.combo("Projection Type", camera.camera::projectionTypePtr, ProjectionType.projectionTypes)
             if (camera.camera.projectionType == ProjectionType.Orthographic) {
-                ImGui.dragFloat("Orthographic Size", camera.camera::othographicSize)
+                ImGui.dragFloat("Orthographic Size", camera.camera::orthographicSize)
                 ImGui.dragFloat("Near Clip", camera.camera::orthographicNear)
                 ImGui.dragFloat("Far Clip", camera.camera::orthographicFar)
             } else {
@@ -87,7 +87,7 @@ class SceneHierarchyPanel(var context: Scene) {
 
         if (
             registry.has<SpriteRendererComponent>(entity) &&
-            ImGui.collapsingHeader("Sprite Renderer", TreeNodeFlag.DefaultOpen.i)
+            ImGui.treeNodeEx("Sprite Renderer", TreeNodeFlag.DefaultOpen.i)
         ) {
             val spriteRenderer = registry.get<SpriteRendererComponent>(entity)
             val color = spriteRenderer.color
@@ -97,7 +97,7 @@ class SceneHierarchyPanel(var context: Scene) {
 
         if (
             registry.has<NativeScriptComponent>(entity) &&
-            ImGui.collapsingHeader("Native Script", TreeNodeFlag.DefaultOpen.i)
+            ImGui.treeNodeEx("Native Script", TreeNodeFlag.DefaultOpen.i)
         ) {
             val script = registry.get<NativeScriptComponent>(entity)
             ImGui.text(script.instance::class.qualifiedName ?: "")
