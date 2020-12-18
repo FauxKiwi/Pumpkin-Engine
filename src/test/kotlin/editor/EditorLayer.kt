@@ -1,15 +1,16 @@
 package editor
 
 import com.pumpkin.core.*
-import com.pumpkin.core.Debug
 import com.pumpkin.core.event.Event
+import com.pumpkin.core.event.EventDispatcher
+import com.pumpkin.core.event.KeyPressedEvent
 import com.pumpkin.core.imgui.ImGuiProfiler
 import com.pumpkin.core.input.*
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.panels.SceneHierarchyPanel
 import com.pumpkin.core.renderer.*
 import com.pumpkin.core.scene.*
-import glm_.glm
+import com.pumpkin.core.settings.Settings
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
@@ -125,73 +126,22 @@ class EditorLayer : Layer("Editor") {
         if (optFullscreen)
             popStyleVar(2)
 
+        MenuBar()
+
+        val style = ImGui.style
+        val minWinSizeX = style.windowMinSize.x
+        style.windowMinSize.x = 370
         if (io.configFlags and ConfigFlag.DockingEnable.i != 0) {
             val dockspaceID = getID("MyDockSpace")
             dockSpace(dockspaceID, Vec2(0f, 0f), dockspaceFlags)
         }
-
-
-        if (beginMenuBar()) {
-            if (beginMenu("File")) {
-                if (menuItem("New", "Ctrl+N")) {}
-                if (menuItem("Open", "Ctrl+O")) {}
-                if (menuItem("Open Recent")) {}
-                if (menuItem("Close Project", "Ctrl+W")) {}
-                separator()
-                if (menuItem("Settings", "Ctrl+Alt+S")) {}
-                if (menuItem("Build Settings", "Ctrl+Alt+B")) {}
-                separator()
-                if (menuItem("Save Scene", "Ctrl+S")) {}
-                if (menuItem("Save All", "Ctrl+Shift+S"))
-                if (menuItem("Reload")) {}
-                separator()
-                if (menuItem("Exit")) { Application.get().close() }
-                endMenu()
-            }
-
-            if (beginMenu("Edit")) {
-                if (menuItem("Undo", "Ctrl+Z")) {}
-                if (menuItem("Redo", "Ctrl+Y")) {}
-                separator()
-                if (menuItem("Cut", "Ctrl+X")) {}
-                if (menuItem("Copy", "Ctrl+C")) {}
-                if (menuItem("Paste", "Ctrl+V")) {}
-                if (menuItem("Delete", "Del")) {}
-                separator()
-                if (menuItem("Find", "Ctrl+F")) {}
-                endMenu()
-            }
-
-            if (beginMenu("View")) {
-                if (menuItem("Windows")) {}
-                if (menuItem("Appearance")) {}
-                endMenu()
-            }
-
-            if (beginMenu("Build & Run")) {
-                if (menuItem("Run")) {}
-                if (menuItem("Build")) {}
-                endMenu()
-            }
-
-            if (beginMenu("Tools")) {
-                if (menuItem("Tasks")) {}
-                separator()
-                //Plugins
-                endMenu()
-            }
-
-            if (beginMenu("Help")) {
-                if (menuItem("Help")) {}
-                endMenu()
-            }
-
-            endMenuBar()
-        }
+        style.windowMinSize.x = minWinSizeX
 
         ImGuiProfiler.onImGuiRender()
 
         sceneHierarchyPanel.onImGuiRender()
+
+        Settings.onImGuiRender()
 
         pushStyleVar(StyleVar.WindowPadding, Vec2())
         begin("Viewport")
@@ -212,9 +162,82 @@ class EditorLayer : Layer("Editor") {
     }
 
     override fun onEvent(event: Event) {
-        cameraController.onEvent(event)
+        val dispatcher = EventDispatcher(event)
+        dispatcher.dispatch<KeyPressedEvent> { Keybinds(this); false }
     }
 }
+
+object MenuBar { operator fun invoke() {
+    if (ImGui.beginMenuBar()) {
+        if (ImGui.beginMenu("File")) {
+            if (ImGui.menuItem("New", "Ctrl+N")) {}
+            if (ImGui.menuItem("Open", "Ctrl+O")) {}
+            if (ImGui.menuItem("Open Recent")) {}
+            if (ImGui.menuItem("Close Project", "Ctrl+W")) {}
+            ImGui.separator()
+            if (ImGui.menuItem("Settings", "Ctrl+Alt+S")) { Settings.open() }
+            if (ImGui.menuItem("Build Settings", "Ctrl+Alt+B")) {}
+            ImGui.separator()
+            if (ImGui.menuItem("Save Scene", "Ctrl+S")) {}
+            if (ImGui.menuItem("Save All", "Ctrl+Shift+S"))
+                if (ImGui.menuItem("Reload")) {}
+            ImGui.separator()
+            if (ImGui.menuItem("Exit")) { Application.get().close() }
+            ImGui.endMenu()
+        }
+
+        if (ImGui.beginMenu("Edit")) {
+            if (ImGui.menuItem("Undo", "Ctrl+Z")) {}
+            if (ImGui.menuItem("Redo", "Ctrl+Y")) {}
+            ImGui.separator()
+            if (ImGui.menuItem("Cut", "Ctrl+X")) {}
+            if (ImGui.menuItem("Copy", "Ctrl+C")) {}
+            if (ImGui.menuItem("Paste", "Ctrl+V")) {}
+            if (ImGui.menuItem("Delete", "Del")) {}
+            ImGui.separator()
+            if (ImGui.menuItem("Find", "Ctrl+F")) {}
+            ImGui.endMenu()
+        }
+
+        if (ImGui.beginMenu("View")) {
+            if (ImGui.menuItem("Windows")) {}
+            if (ImGui.menuItem("Appearance")) {}
+            ImGui.endMenu()
+        }
+
+        if (ImGui.beginMenu("Build & Run")) {
+            if (ImGui.menuItem("Run")) {}
+            if (ImGui.menuItem("Build")) {}
+            ImGui.endMenu()
+        }
+
+        if (ImGui.beginMenu("Tools")) {
+            if (ImGui.menuItem("Tasks")) {}
+            ImGui.separator()
+            //Plugins
+            ImGui.endMenu()
+        }
+
+        if (ImGui.beginMenu("Help")) {
+            if (ImGui.menuItem("Help")) {}
+            ImGui.endMenu()
+        }
+
+        ImGui.endMenuBar()
+    }
+}}
+
+object Keybinds { operator fun invoke(event: KeyPressedEvent) {
+    if (event.repeatCount > 0) return
+
+    val ctrl = Input.isKeyPressed(KeyCode.LEFT_CONTROL) || Input.isKeyPressed(KeyCode.RIGHT_CONTROL)
+    val shift = Input.isKeyPressed(KeyCode.LEFT_SHIFT) || Input.isKeyPressed(KeyCode.RIGHT_SHIFT)
+    val alt = Input.isKeyPressed(KeyCode.LEFT_ALT) || Input.isKeyPressed(KeyCode.RIGHT_ALT)
+
+    if (event.keyCode == KeyCode.S && alt) {
+        Settings.open()
+    }
+}}
 
 class CameraController : ScriptableEntity() {
     private val speed = 5f

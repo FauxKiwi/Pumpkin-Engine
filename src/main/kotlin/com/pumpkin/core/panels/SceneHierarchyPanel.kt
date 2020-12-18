@@ -4,12 +4,12 @@ import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
 import com.pumpkin.ecs.Entity
 import com.pumpkin.ecs.Registry
-import glm_.glm
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec3.swizzle.xy
 import glm_.vec4.Vec4
 import imgui.*
+import kotlin.reflect.KClass
 
 class SceneHierarchyPanel(var context: Scene) {
     private val registry: Registry get() = context.registry
@@ -27,21 +27,7 @@ class SceneHierarchyPanel(var context: Scene) {
 
         ImGui.begin("Inspector")
         if (selectionContext != null) {
-            drawProperties(selectionContext!!)
-            if (ImGui.button("Add Component"))
-                ImGui.openPopup("AddComponent")
-
-            if (ImGui.beginPopup("AddComponent")) {
-                if (ImGui.menuItem("Camera")) {
-                    registry.emplace<CameraComponent>(selectionContext!!, SceneCamera())
-                    ImGui.closeCurrentPopup()
-                }
-                if (ImGui.menuItem("Sprite Renderer")) {
-                    registry.emplace<SpriteRendererComponent>(selectionContext!!, floatArrayOf(1f, 1f, 1f, 1f))
-                    ImGui.closeCurrentPopup()
-                }
-                ImGui.endPopup()
-            }
+            drawComponents(selectionContext!!)
         }
         ImGui.end()
 
@@ -51,7 +37,9 @@ class SceneHierarchyPanel(var context: Scene) {
     private fun drawEntityNode(entity: Entity) {
         val tag = registry.get<TagComponent>(entity).tag
         val flags: TreeNodeFlags =
-            (if (selectionContext == entity) TreeNodeFlag.Selected.i else 0) or TreeNodeFlag.OpenOnArrow.i
+            (if (selectionContext == entity) TreeNodeFlag.Selected.i else 0) or
+            TreeNodeFlag.OpenOnArrow.i or
+            TreeNodeFlag.SpanAvailWidth
         val opened = ImGui.treeNodeEx(tag, flags)
         if (ImGui.isItemClicked())
             selectionContext = entity
@@ -74,20 +62,70 @@ class SceneHierarchyPanel(var context: Scene) {
         }
     }
 
-    private fun drawProperties(entity: Entity) {
+    inline fun <reified T : Any> drawComponent(name: String, entity: Entity, noinline uiFunction: (T) -> Unit) =
+        drawComponent(T::class, name, entity, uiFunction)
+
+    fun <T : Any> drawComponent(clazz: KClass<T>, name: String, entity: Entity, uiFunction: (T) -> Unit) {
+            val treeNodeFlags = TreeNodeFlag.DefaultOpen or TreeNodeFlag.Framed or TreeNodeFlag.SpanAvailWidth or TreeNodeFlag.AllowItemOverlap or TreeNodeFlag.FramePadding;
+            if (registry.has(clazz, entity)) {
+                val component = registry.get(clazz, entity)
+                val contentRegionAvailable = ImGui.contentRegionAvail
+
+                ImGui.pushStyleVar(StyleVar.FramePadding, Vec2(4, 4))
+                val lineHeight = ImGui.font.fontSize + ImGui.style.framePadding.y * 2.0f
+                ImGui.separator()
+                //ImGui.treeNodeEx(name, treeNodeFlags)
+                val open = ImGui.treeNodeEx(name, treeNodeFlags)
+                ImGui.popStyleVar()
+                ImGui.sameLine(contentRegionAvailable.x - lineHeight * 0.5f)
+                if (ImGui.button("+", Vec2(lineHeight, lineHeight))) {
+                    ImGui.openPopup("ComponentSettings")
+                }
+
+                var removeComponent = false
+                if (ImGui.beginPopup("ComponentSettings")) {
+                    if (ImGui.menuItem("Remove component"))
+                        removeComponent = true
+
+                    ImGui.endPopup()
+                }
+
+                if (open) {
+                    uiFunction(component)
+                    ImGui.treePop()
+                }
+
+                if (removeComponent)
+                    registry.remove(clazz, entity)
+            }
+        }
+
+    private fun drawComponents(entity: Entity) {
         if (
             registry.has<TagComponent>(entity)
         ) {
             val tag = registry.get<TagComponent>(entity)
-            ImGui.inputText("Name", tag.byteArray)
+            ImGui.inputText("##Tag", tag.byteArray)
         }
+        ImGui.sameLine()
+        ImGui.pushItemWidth(-1)
+        if (ImGui.button("Add Component"))
+            ImGui.openPopup("AddComponent")
 
-        val treeNodeFlags = TreeNodeFlag.DefaultOpen or TreeNodeFlag.AllowItemOverlap
-        if (
-            registry.has<TransformComponent>(entity) &&
-            ImGui.treeNodeEx("Transform", treeNodeFlags)
-        ) {
-            val transform = registry.get<TransformComponent>(entity)
+        if (ImGui.beginPopup("AddComponent")) {
+            if (ImGui.menuItem("Camera")) {
+                registry.emplace<CameraComponent>(selectionContext!!, SceneCamera())
+                ImGui.closeCurrentPopup()
+            }
+            if (ImGui.menuItem("Sprite Renderer")) {
+                registry.emplace<SpriteRendererComponent>(selectionContext!!, floatArrayOf(1f, 1f, 1f, 1f))
+                ImGui.closeCurrentPopup()
+            }
+            ImGui.endPopup()
+        }
+        ImGui.popItemWidth()
+
+        drawComponent<TransformComponent>("Transform", entity) { transform ->
             val position = transform.position
             drawVec3Control("Position", position)
             transform.position = position
@@ -97,14 +135,9 @@ class SceneHierarchyPanel(var context: Scene) {
             val rotation = Vec3(0f, 0f, transform.rotation)
             drawVec3Control("Rotation", rotation)
             transform.rotation = rotation.z
-            ImGui.treePop()
         }
 
-        if (
-            registry.has<CameraComponent>(entity) &&
-            ImGui.treeNodeEx("Camera", treeNodeFlags)
-        ) {
-            val camera = registry.get<CameraComponent>(entity)
+        drawComponent<CameraComponent>("Camera", entity) { camera ->
             ImGui.checkbox("Primary Camera", camera::primary)
             ImGui.combo("Projection Type", camera.camera::projectionTypePtr, ProjectionType.projectionTypes)
             if (camera.camera.projectionType == ProjectionType.Orthographic) {
@@ -118,49 +151,22 @@ class SceneHierarchyPanel(var context: Scene) {
             }
             ImGui.checkbox("Fixed Aspect Ratio", camera::fixedAspectRatio)
             ImGui.colorEdit3("Clear Color", camera.camera.clearColor)
-            ImGui.treePop()
         }
 
-        if (registry.has<SpriteRendererComponent>(entity)) {
-            ImGui.pushStyleVar(StyleVar.FramePadding, Vec2(4, 4))
-            val open = ImGui.treeNodeEx("Sprite Renderer", treeNodeFlags)
-            ImGui.sameLine(ImGui.windowWidth - 25.0f)
-            if (ImGui.button("+", Vec2(20, 20))) {
-                ImGui.openPopup("ComponentSettings")
-            }
-            ImGui.popStyleVar()
-
-            var removeComponent = false
-            if (ImGui.beginPopup("ComponentSettings")) {
-                if (ImGui.menuItem("Remove component"))
-                    removeComponent = true
-                ImGui.endPopup()
-            }
-
-            if (open) {
-                val spriteRenderer = registry.get<SpriteRendererComponent>(entity)
-                val color = spriteRenderer.color
-                ImGui.colorEdit4("Color", color)
-                spriteRenderer.color = color
-                ImGui.treePop()
-            }
-
-            if (removeComponent) {
-                registry.remove<SpriteRendererComponent>(entity)
-            }
+        drawComponent<SpriteRendererComponent>("Sprite Renderer", entity) { spriteRenderer ->
+            val color = spriteRenderer.color
+            ImGui.colorEdit4("Color", color)
+            spriteRenderer.color = color
         }
 
-        if (
-            registry.has<NativeScriptComponent>(entity) &&
-            ImGui.treeNodeEx("Native Script", treeNodeFlags)
-        ) {
-            val script = registry.get<NativeScriptComponent>(entity)
+        drawComponent<NativeScriptComponent>("Native Script", entity) { script ->
             ImGui.text(script.instance::class.qualifiedName ?: "")
-            ImGui.treePop()
         }
     }
 
     private fun drawVec3Control(label: String, values: Vec3, resetValue: Float = 0f, columnWidth: Float = 100f) {
+        val font = ImGui.io.fonts.fonts[0]
+
         ImGui.pushID(label)
 
         ImGui.columns(2)
@@ -177,8 +183,10 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.pushStyleColor(Col.Button, Vec4(0.8f, 0.1f, 0.15f, 1f))
         ImGui.pushStyleColor(Col.ButtonHovered, Vec4(0.9f, 0.2f, 0.2f, 1f))
         ImGui.pushStyleColor(Col.ButtonActive, Vec4(0.8f, 0.1f, 0.15f, 1f))
+        ImGui.pushFont(font)
         if (ImGui.button("X", buttonSize))
             values.x = resetValue
+        ImGui.popFont()
         ImGui.popStyleColor(3)
 
         ImGui.sameLine()
@@ -189,8 +197,10 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.pushStyleColor(Col.Button, Vec4(0.2f, 0.7f, 0.2f, 1f))
         ImGui.pushStyleColor(Col.ButtonHovered, Vec4(0.3f, 0.8f, 0.3f, 1f))
         ImGui.pushStyleColor(Col.ButtonActive, Vec4(0.2f, 0.7f, 0.2f, 1f))
+        ImGui.pushFont(font)
         if (ImGui.button("Y", buttonSize))
             values.y = resetValue
+        ImGui.popFont()
         ImGui.popStyleColor(3)
 
         ImGui.sameLine()
@@ -201,8 +211,10 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.pushStyleColor(Col.Button, Vec4(0.1f, 0.25f, 0.8f, 1f))
         ImGui.pushStyleColor(Col.ButtonHovered, Vec4(0.2f, 0.35f, 0.9f, 1f))
         ImGui.pushStyleColor(Col.ButtonActive, Vec4(0.1f, 0.25f, 0.8f, 1f))
+        ImGui.pushFont(font)
         if (ImGui.button("Z", buttonSize))
             values.y = resetValue
+        ImGui.popFont()
         ImGui.popStyleColor(3)
 
         ImGui.sameLine()
