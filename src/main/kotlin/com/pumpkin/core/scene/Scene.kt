@@ -7,6 +7,7 @@ import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.renderer.RendererCommand
 import com.pumpkin.ecs.Registry
 import glm_.mat4x4.Mat4
+import glm_.vec4.Vec4
 
 class Scene : Referencable() {
     val registry: Registry = Registry()
@@ -42,12 +43,12 @@ class Scene : Referencable() {
             val (transform, camera) = cameraGroup.get(entity)
             if (camera.primary) {
                 RendererCommand.setClearColor(camera.camera.clearColor)
-                RendererCommand.clear()
                 mainCamera = camera.camera
                 cameraTransform = transform.t
                 break
             }
         }
+        RendererCommand.clear()
         if (mainCamera != null) {
             Renderer2D.beginScene(mainCamera, cameraTransform!!)
             val renderingGroup = registry.group<TransformComponent, SpriteRendererComponent>()
@@ -56,6 +57,8 @@ class Scene : Referencable() {
                 Renderer2D.drawQuad(transform.position, transform.scale, transform.rotation, sprite.color)
             }
             Renderer2D.endScene()
+        } else {
+            RendererCommand.setClearColor(Vec4())
         }
     }
 

@@ -6,6 +6,7 @@ import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
 import imgui.toByteArray
+import kotlin.math.cos
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
@@ -16,7 +17,7 @@ class TagComponent(str: String) {
         set(value) { byteArray = value.toByteArray(64) }
 }
 
-inline class TransformComponent(@ComponentSize(6) val t: FloatArray) {
+inline class TransformComponent(@ComponentSize(8) val t: FloatArray) {
     var position: Vec3
         get() = Vec3(t[0], t[1], t[2])
         set(value) { t[0] = value[0]; t[1] = value[1]; t[2] = value[2] }
@@ -27,7 +28,10 @@ inline class TransformComponent(@ComponentSize(6) val t: FloatArray) {
         get() = glm.degrees(t[5])
         set(value) { t[5] = glm.radians(value) }
     val transform: Mat4
-        get() = glm.translate(glm.rotate(glm.scale(Mat4.identity, Vec3(scale, 1f)), rotation, Vec3(0, 0, 1)), position)
+        get() = glm.translate(glm.rotate(glm.scale(Mat4.identity,
+            Vec3(scale, 1f)),
+            rotation, Vec3(0, 0, 1)),
+            position)
 }
 
 class CameraComponent(@ComponentSize(2) val camera: SceneCamera) {

@@ -8,6 +8,7 @@ import glm_.vec3.Vec3
 import glm_.vec4.Vec4
 import java.nio.ByteBuffer
 import java.nio.FloatBuffer
+import kotlin.math.cos
 
 // QuadVertex data class: Just for layout purposes
 /* data class QuadVertex(
