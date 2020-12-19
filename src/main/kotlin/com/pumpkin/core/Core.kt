@@ -39,9 +39,7 @@ data class Ref<out T : AutoCloseable>(private val value: T) : Referencable() {
 
 typealias Timestep = Float
 
-inline fun stack(block: (memoryStack: MemoryStack) -> Unit) {
-    MemoryStack.stackPush().apply { use (block) }
-}
+inline fun <R> stack(block: (memoryStack: MemoryStack) -> R): R = MemoryStack.stackPush().use(block)
 
 fun lifetimeScope(vararg scoped: AutoCloseable, block: () -> Unit) = stack {
     block().also {

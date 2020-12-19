@@ -46,7 +46,7 @@ object Settings {
             "None" -> ImGui.text("Open a context menu on the left to edit settings")
             "Appearance" -> ImGui.text("Appearance")
             "Theme" -> {
-                if (ImGui.combo("Theme", Theme::current, "Dark"))
+                if (ImGui.combo("Theme", Theme::current, "Dark\u0000Light"))
                     ImGui.currentContext?.style = Theme[Theme.current].style
             }
         }
@@ -66,7 +66,7 @@ object Settings {
 }
 
 object Theme {
-    private val themes = mutableListOf<EditorStyle>(DarkTheme)
+    private val themes = mutableListOf<EditorStyle>(DarkTheme, LightTheme)
     private var currentTheme: EditorStyle = DarkTheme
     var current: Int = 0
         set(value) { field = value; currentTheme = themes[value] }
@@ -132,5 +132,63 @@ object DarkTheme : EditorStyle {
         style.colors[Col.NavHighlight] = Vec4(0.26f, 0.59f, 0.98f, 1.00f)
         style.colors[Col.ModalWindowDimBg] = Vec4(0.80f, 0.80f, 0.80f, 0.35f)
         style.colors[Col.PopupBg] = Vec4(0.07f, 0.07f, 0.07f, 1.00f)
+    }
+}
+
+object LightTheme : EditorStyle {
+    override val name: String = "Dark"
+    override val style = Style()
+
+    init {
+        style.windowRounding = 0f
+        style.frameRounding = 0f
+        style.frameBorderSize = 1f
+        style.tabBorderSize = 1f
+
+        style.colors[Col.Text] = Vec4(0f, 0f, 0f, 1.00f)
+        style.colors[Col.TextDisabled] = Vec4(0.50f, 0.50f, 0.50f, 1.00f)
+        style.colors[Col.WindowBg] = Vec4(0.90f, 0.90f, 0.90f, 1.00f)
+        style.colors[Col.ChildBg] = Vec4(0.90f, 0.90f, 0.90f, 0.00f)
+        style.colors[Col.PopupBg] = Vec4(0.92f, 0.92f, 0.92f, 0.94f)
+        style.colors[Col.Border] = Vec4(0.1f, 0.1f, 0.1f, 0.25f)
+        style.colors[Col.FrameBg] = Vec4(0.86f, 0.86f, 0.86f, 0.54f)
+        style.colors[Col.FrameBgHovered] = Vec4(0.75f, 0.75f, 0.75f, 0.40f)
+        style.colors[Col.FrameBgActive] = Vec4(0.75f, 0.75f, 0.75f, 0.67f)
+        style.colors[Col.TitleBg] = Vec4(0.95f, 0.95f, 0.95f, 1.00f)
+        style.colors[Col.TitleBgActive] = Vec4(0.98f, 0.45f, 0.29f, 1.00f)
+        style.colors[Col.TitleBgCollapsed] = Vec4(1f, 1f, 1f, 0.51f)
+        style.colors[Col.MenuBarBg] = Vec4(0.84f, 0.84f, 0.84f, 1.00f)
+        style.colors[Col.ScrollbarBg] = Vec4(0.98f, 0.98f, 0.98f, 0.53f)
+        style.colors[Col.ScrollbarGrab] = Vec4(0.65f, 0.65f, 0.65f, 1.00f)
+        style.colors[Col.ScrollbarGrabHovered] = Vec4(0.51f, 0.51f, 0.51f, 1.00f)
+        style.colors[Col.ScrollbarGrabActive] = Vec4(0.61f, 0.61f, 0.61f, 1.00f)
+        style.colors[Col.CheckMark] = Vec4(0.98f, 0.43f, 0.26f, 1.00f)
+        style.colors[Col.SliderGrab] = Vec4(0.88f, 0.39f, 0.24f, 1.00f)
+        style.colors[Col.SliderGrabActive] = Vec4(0.98f, 0.43f, 0.26f, 1.00f)
+        style.colors[Col.Button] = Vec4(0.59f, 0.59f, 0.59f, 0.40f)
+        style.colors[Col.ButtonHovered] = Vec4(0.59f, 0.59f, 0.59f, 1.00f)
+        style.colors[Col.ButtonActive] = Vec4(0.69f, 0.69f, 0.69f, 1.00f)
+        style.colors[Col.Header] = Vec4(0.85f, 0.85f, 0.85f, 0.80f)
+        style.colors[Col.HeaderHovered] = Vec4(0.85f, 0.85f, 0.85f, 0.80f)
+        style.colors[Col.HeaderActive] = Vec4(0.85f, 0.85f, 0.85f, 1.00f)
+        style.colors[Col.Separator] = Vec4(0.80f, 0.76f, 0.73f, 0.50f)
+        style.colors[Col.SeparatorHovered] = Vec4(0.85f, 0.35f, 0.20f, 0.78f)
+        style.colors[Col.SeparatorActive] = Vec4(0.85f, 0.35f, 0.20f, 1.00f)
+        style.colors[Col.ResizeGrip] = Vec4(1f, 1f, 1f, 0.00f)
+        style.colors[Col.ResizeGripHovered] = Vec4(0.1f, 0.1f, 0.1f, 0.67f)
+        style.colors[Col.ResizeGripActive] = Vec4(0.1f, 0.1f, 0.1f, 0.95f)
+        style.colors[Col.Tab] = Vec4(0.86f, 0.86f, 0.86f, 0.86f)
+        style.colors[Col.TabHovered] = Vec4(0.98f, 0.43f, 0.26f, 0.80f)
+        style.colors[Col.TabActive] = Vec4(0.78f, 0.41f, 0.30f, 1.00f)
+        style.colors[Col.TabUnfocused] = Vec4(0.85f, 0.80f, 0.77f, 0.97f)
+        style.colors[Col.TabUnfocusedActive] = Vec4(0.62f, 0.42f, 0.34f, 1.00f)
+        style.colors[Col.DockingPreview] = Vec4(0.98f, 0.43f, 0.26f, 0.70f)
+        style.colors[Col.DockingEmptyBg] = Vec4(0.00f, 0.00f, 0.00f, 1.00f)
+        style.colors[Col.PlotLines] = Vec4(0.71f, 0.71f, 0.71f, 1.00f)
+        style.colors[Col.PlotLinesHovered] = Vec4(1.00f, 0.43f, 0.35f, 1.00f)
+        style.colors[Col.TextSelectedBg] = Vec4(0.26f, 0.59f, 0.98f, 0.35f)
+        style.colors[Col.NavHighlight] = Vec4(0.26f, 0.59f, 0.98f, 1.00f)
+        style.colors[Col.ModalWindowDimBg] = Vec4(0.30f, 0.30f, 0.30f, 0.35f)
+        style.colors[Col.PopupBg] = Vec4(0.87f, 0.87f, 0.87f, 1.00f)
     }
 }

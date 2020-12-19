@@ -17,17 +17,6 @@ import glm_.vec4.Vec4
 import imgui.*
 
 class EditorLayer : Layer("Editor") {
-    private val cameraController = OrthographicCameraController(16f / 9f, true)
-    private lateinit var cameraEntity: Entity
-    private lateinit var sceneHierarchyPanel: SceneHierarchyPanel
-
-    private var texture by Reference<Ref<Texture2D>>()
-    private val particleSystem = ParticleSystem()
-    private val particleProps = ParticleProps(
-        Vec2(), Vec2(0f, 1f), Vec2(0.7f, 0.7f),
-        Vec4(1f, 0.8f, 0f, 1f), Vec4(0.8f, 0f, 0f, 0.5f), 0.1f, 0.001f, 0.05f, 0.1f
-    )
-
     private var dockspaceOpen = true
     private var optFullscreenPersistent = true
     private var dockspaceFlags: DockNodeFlags = DockNodeFlag.None.i
@@ -38,34 +27,13 @@ class EditorLayer : Layer("Editor") {
     private var viewportHovered = false
 
     private var activeScene by Reference<Scene>()
+    private lateinit var sceneHierarchyPanel: SceneHierarchyPanel
     private lateinit var sceneSerializer: SceneSerializer
 
-    private lateinit var squareEntity: Entity
-    private lateinit var entity2: Entity
-    private lateinit var secondCamera: Entity
-    private var primary = true
-
     override fun onAttach() {
-        texture = Texture2D.create("textures/Checkerboard.png")
         activeScene = Scene()
-        sceneSerializer = SceneSerializer(activeScene)
-
-        cameraEntity = activeScene.createEntity("Camera Entity")
-        cameraEntity.addComponent<CameraComponent>(SceneCamera())
-        cameraEntity.addComponent<NativeScriptComponent>().bind<CameraController>()
-
         sceneHierarchyPanel = SceneHierarchyPanel(activeScene)
-
-        secondCamera = activeScene.createEntity("Clip-Space Entity")
-        val cc = secondCamera.addComponent<CameraComponent>(SceneCamera())
-        cc.primary = false
-
-        squareEntity = activeScene.createEntity("Square")
-        squareEntity.addComponent<SpriteRendererComponent>(floatArrayOf(0f, 1f, 0f, 1f))
-
-        entity2 = activeScene.createEntity("2")
-        entity2.addComponent<SpriteRendererComponent>(floatArrayOf(1f, 0f, 0f, 1f))
-        entity2.getComponent<TransformComponent>().position = Vec3(0.5f, 0.5f, 0.5f)
+        sceneSerializer = SceneSerializer(activeScene)
 
         ImGuiProfiler.onAttach()
     }
@@ -80,27 +48,13 @@ class EditorLayer : Layer("Editor") {
             (framebuffer.specification.width != viewportSize.x.toInt() || framebuffer.specification.height != viewportSize.y.toInt())
         ) {
             framebuffer.resize(viewportSize.x.toInt(), viewportSize.y.toInt())
-            cameraController.onResize(viewportSize.x, viewportSize.y)
             activeScene.onViewportResize(viewportSize.x.toInt(), viewportSize.y.toInt())
         }
 
         framebuffer.bind()
 
-        if (viewportFocused) {
-            cameraController.onUpdate(ts)
-        }
-        /*val x = (2 * Input.getMouseX() / Window.getWindow().width - 1) * cameraController.zoomLevel * cameraController.aspectRatio + cameraController.cameraPosition.x
-        val y = (-2 * Input.getMouseY() / Window.getWindow().height + 1) * cameraController.zoomLevel + cameraController.cameraPosition.y
-        particleProps.position = Vec2(x, y)
-        particleSystem.emit(particleProps)*/
-
-        //Renderer2D.beginScene(cameraController.camera)
-
-        //Renderer2D.drawQuad(texture = texture())
-        //particleSystem.onUpdate(ts)
         activeScene.onUpdate(ts)
 
-        //Renderer2D.endScene()
         framebuffer.unbind()
     }
 
@@ -174,15 +128,15 @@ fun menuBar() {
     if (ImGui.beginMenuBar()) {
         if (ImGui.beginMenu("File")) {
             if (ImGui.menuItem("New", "Ctrl+N")) { newScene() }
-            if (ImGui.menuItem("Open...", "Ctrl+O")) { sceneSerializer.deserialize("./scenes/scene.pumpkin") }
+            if (ImGui.menuItem("Open...", "Ctrl+O")) { openScene() }
             if (ImGui.menuItem("Open Recent")) {}
             if (ImGui.menuItem("Close Project", "Ctrl+W")) {}
             ImGui.separator()
             if (ImGui.menuItem("Settings", "Ctrl+Alt+S")) { Settings.open() }
             if (ImGui.menuItem("Build Settings", "Ctrl+Alt+B")) {}
             ImGui.separator()
-            if (ImGui.menuItem("Save Scene", "Ctrl+S")) { sceneSerializer.serialize("./scenes/scene.pumpkin") }
-            if (ImGui.menuItem("Save As...", "Ctrl+Shift+S")) {}
+            if (ImGui.menuItem("Save Scene", "Ctrl+S")) { saveSceneAs() }
+            if (ImGui.menuItem("Save As...", "Ctrl+Shift+S")) { saveSceneAs() }
             if (ImGui.menuItem("Reload")) {}
             ImGui.separator()
             if (ImGui.menuItem("Exit")) { Application.get().close() }
@@ -243,9 +197,9 @@ fun keybinds(event: KeyPressedEvent) {
             if (alt)
                 Settings.open()
             else
-                sceneSerializer.serialize("./scenes/scene.pumpkin")
+                saveSceneAs()
         KeyCode.O ->
-            sceneSerializer.deserialize("./scenes/scene.pumpkin")
+            openScene()
         KeyCode.N ->
             newScene()
     }
@@ -257,7 +211,22 @@ fun keybinds(event: KeyPressedEvent) {
         sceneSerializer.scene = activeScene
         activeScene.onViewportResize(viewportSize.x.toInt(), viewportSize.y.toInt())
     }
+
+    fun openScene() {
+        FileDialog.open("Open Scene", fileSelectorFilter)?.let {
+            newScene()
+            sceneSerializer.deserialize(it)
+        }
+    }
+
+    fun saveSceneAs() {
+        FileDialog.save("Save Scene", fileSelectorFilter)?.let {
+            val name = if (!it.endsWith(".pumpkin")) "$it.pumpkin" else it
+            sceneSerializer.serialize(name)
+        }
+    }
 }
+private val fileSelectorFilter = FileDialog.FileFilter("Scene (*.pumpkin)", "pumpkin")
 
 class CameraController : ScriptableEntity() {
     var speed = 5f

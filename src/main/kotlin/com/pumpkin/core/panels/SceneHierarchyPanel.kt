@@ -186,11 +186,12 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.pushStyleColor(Col.Button, Vec4(0.8f, 0.1f, 0.15f, 1f))
         ImGui.pushStyleColor(Col.ButtonHovered, Vec4(0.9f, 0.2f, 0.2f, 1f))
         ImGui.pushStyleColor(Col.ButtonActive, Vec4(0.8f, 0.1f, 0.15f, 1f))
+        ImGui.pushStyleColor(Col.Text, Vec4(1f, 1f, 1f, 1f))
         ImGui.pushFont(font)
         if (ImGui.button("X", buttonSize))
             values.x = resetValue
         ImGui.popFont()
-        ImGui.popStyleColor(3)
+        ImGui.popStyleColor(4)
 
         ImGui.sameLine()
         ImGui.dragFloat("##X", values::x, 0.1f, 0.0f, 0.0f, "%.2f")
@@ -200,11 +201,12 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.pushStyleColor(Col.Button, Vec4(0.2f, 0.7f, 0.2f, 1f))
         ImGui.pushStyleColor(Col.ButtonHovered, Vec4(0.3f, 0.8f, 0.3f, 1f))
         ImGui.pushStyleColor(Col.ButtonActive, Vec4(0.2f, 0.7f, 0.2f, 1f))
+        ImGui.pushStyleColor(Col.Text, Vec4(1f, 1f, 1f, 1f))
         ImGui.pushFont(font)
         if (ImGui.button("Y", buttonSize))
             values.y = resetValue
         ImGui.popFont()
-        ImGui.popStyleColor(3)
+        ImGui.popStyleColor(4)
 
         ImGui.sameLine()
         ImGui.dragFloat("##Y", values::y, 0.1f, 0.0f, 0.0f, "%.2f")
@@ -214,11 +216,12 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.pushStyleColor(Col.Button, Vec4(0.1f, 0.25f, 0.8f, 1f))
         ImGui.pushStyleColor(Col.ButtonHovered, Vec4(0.2f, 0.35f, 0.9f, 1f))
         ImGui.pushStyleColor(Col.ButtonActive, Vec4(0.1f, 0.25f, 0.8f, 1f))
+        ImGui.pushStyleColor(Col.Text, Vec4(1f, 1f, 1f, 1f))
         ImGui.pushFont(font)
         if (ImGui.button("Z", buttonSize))
             values.y = resetValue
         ImGui.popFont()
-        ImGui.popStyleColor(3)
+        ImGui.popStyleColor(4)
 
         ImGui.sameLine()
         ImGui.dragFloat("##Z", values::z, 0.1f, 0.0f, 0.0f, "%.2f")
