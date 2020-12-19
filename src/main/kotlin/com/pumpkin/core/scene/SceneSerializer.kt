@@ -1,5 +1,6 @@
 package com.pumpkin.core.scene
 
+import com.pumpkin.core.jsonFormat
 import com.pumpkin.core.renderer.ProjectionType
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*
@@ -7,8 +8,6 @@ import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 import com.pumpkin.ecs.Entity as EnTT
-
-private val jsonFormat = Json { prettyPrint = true }
 
 class SceneSerializer(var scene: Scene) {
 

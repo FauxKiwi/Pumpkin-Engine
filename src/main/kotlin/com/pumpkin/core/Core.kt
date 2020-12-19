@@ -1,5 +1,6 @@
 package com.pumpkin.core
 
+import kotlinx.serialization.json.Json
 import org.lwjgl.system.MemoryStack
 
 data class Scope<out T : AutoCloseable>(private val value: T) : Referencable() {
@@ -36,6 +37,8 @@ data class Ref<out T : AutoCloseable>(private val value: T) : Referencable() {
         }
     }
 }
+
+val jsonFormat = Json { prettyPrint = true }
 
 typealias Timestep = Float
 

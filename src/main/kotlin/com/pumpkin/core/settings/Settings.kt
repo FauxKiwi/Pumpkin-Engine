@@ -13,6 +13,7 @@ object Settings {
     fun open() {
         open = true
         first = true
+        if (!SettingsSerializer.load()) SettingsSerializer.save()
     }
 
     fun onImGuiRender() {
@@ -29,7 +30,7 @@ object Settings {
 
         ImGui.beginColumns("SettingsColumns", 2, OldColumnsFlag.NoResize.i)
         ImGui.setColumnWidth(-1, 250f)
-        ImGui.beginChild("SettingsTree", Vec2(ImGui.getColumnWidth(-1) - 15f, 0f), flags = childFlags)
+        ImGui.beginChild("SettingsTree", Vec2(ImGui.getColumnWidth(-1) - 15f, ImGui.windowHeight - 77), flags = childFlags)
 
         var currentSettings = "None"
         if (ImGui.treeNodeEx("Appearance")) {
@@ -40,7 +41,7 @@ object Settings {
 
         ImGui.endChild()
         ImGui.nextColumn()
-        ImGui.beginChild("SettingsDisplay", flags = childFlags)
+        ImGui.beginChild("SettingsDisplay", Vec2(0, ImGui.windowHeight - 77), flags = childFlags)
 
         when (currentSettings) {
             "None" -> ImGui.text("Open a context menu on the left to edit settings")
@@ -54,6 +55,13 @@ object Settings {
         ImGui.endChild()
         ImGui.endColumns()
 
+        ImGui.spacing()
+        if (ImGui.button("OK", Vec2(100, 30))) { SettingsSerializer.save(); open = false }
+        ImGui.sameLine()
+        if (ImGui.button("Cancel", Vec2(100, 30))) { open = false; SettingsSerializer.load() }
+        ImGui.sameLine()
+        if (ImGui.button("Apply", Vec2(100, 30))) SettingsSerializer.save()
+
         ImGui.end()
     }
 
@@ -66,7 +74,7 @@ object Settings {
 }
 
 object Theme {
-    private val themes = mutableListOf<EditorStyle>(DarkTheme, LightTheme)
+    private val themes = mutableListOf(DarkTheme, LightTheme)
     private var currentTheme: EditorStyle = DarkTheme
     var current: Int = 0
         set(value) { field = value; currentTheme = themes[value] }
