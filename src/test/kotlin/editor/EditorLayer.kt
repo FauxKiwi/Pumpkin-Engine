@@ -38,6 +38,8 @@ class EditorLayer : Layer("Editor") {
     private var viewportHovered = false
 
     private var activeScene by Reference<Scene>()
+    private lateinit var sceneSerializer: SceneSerializer
+
     private lateinit var squareEntity: Entity
     private lateinit var entity2: Entity
     private lateinit var secondCamera: Entity
@@ -46,6 +48,7 @@ class EditorLayer : Layer("Editor") {
     override fun onAttach() {
         texture = Texture2D.create("textures/Checkerboard.png")
         activeScene = Scene()
+        sceneSerializer = SceneSerializer(activeScene)
 
         cameraEntity = activeScene.createEntity("Camera Entity")
         cameraEntity.addComponent<CameraComponent>(SceneCamera())
@@ -65,8 +68,6 @@ class EditorLayer : Layer("Editor") {
         entity2.getComponent<TransformComponent>().position = Vec3(0.5f, 0.5f, 0.5f)
 
         ImGuiProfiler.onAttach()
-
-        SceneSerializer(activeScene).serialize("Hi")
     }
 
     override fun onDetach() {
@@ -115,7 +116,8 @@ class EditorLayer : Layer("Editor") {
             setNextWindowViewport(viewport.id)
             pushStyleVar(StyleVar.WindowRounding, 0f)
             pushStyleVar(StyleVar.WindowBorderSize, 0f)
-            windowFlags = windowFlags or WindowFlag.NoTitleBar.i or WindowFlag.NoCollapse.i or WindowFlag.NoResize.i or WindowFlag.NoMove.i
+            windowFlags =
+                windowFlags or WindowFlag.NoTitleBar.i or WindowFlag.NoCollapse.i or WindowFlag.NoResize.i or WindowFlag.NoMove.i
             windowFlags = windowFlags or WindowFlag.NoBringToFrontOnFocus.i or WindowFlag.NoNavFocus.i
         }
         if (dockspaceFlags and DockNodeFlag.PassthruCentralNode.i != 0)
@@ -128,7 +130,7 @@ class EditorLayer : Layer("Editor") {
         if (optFullscreen)
             popStyleVar(2)
 
-        MenuBar()
+        menuBar()
 
         val style = ImGui.style
         val minWinSizeX = style.windowMinSize.x
@@ -149,10 +151,10 @@ class EditorLayer : Layer("Editor") {
         begin("Viewport")
         viewportFocused = isWindowFocused()
         viewportHovered = isWindowHovered()
-        Application.get().getImGuiLayer().blockEvents = !viewportHovered || !viewportFocused
+        Application.get().getImGuiLayer().blockEvents = false //!viewportHovered || !viewportFocused
         //if (viewportSize != contentRegionAvail) {
         //    framebuffer.resize(contentRegionAvail.x.toInt(), contentRegionAvail.y.toInt())
-            viewportSize = Vec2(contentRegionAvail.x, contentRegionAvail.y)
+        viewportSize = Vec2(contentRegionAvail.x, contentRegionAvail.y)
         //    cameraController.onResize(contentRegionAvail.x, contentRegionAvail.y)
         //}
         image(framebuffer.colorAttachmentID, viewportSize, Vec2(0, 1), Vec2(1, 0))
@@ -165,24 +167,23 @@ class EditorLayer : Layer("Editor") {
 
     override fun onEvent(event: Event) {
         if (event is KeyPressedEvent)
-            Keybinds(event)
+            keybinds(event)
     }
-}
 
-object MenuBar { operator fun invoke() {
+fun menuBar() {
     if (ImGui.beginMenuBar()) {
         if (ImGui.beginMenu("File")) {
-            if (ImGui.menuItem("New", "Ctrl+N")) {}
-            if (ImGui.menuItem("Open", "Ctrl+O")) {}
+            if (ImGui.menuItem("New", "Ctrl+N")) { newScene() }
+            if (ImGui.menuItem("Open...", "Ctrl+O")) { sceneSerializer.deserialize("./scenes/scene.pumpkin") }
             if (ImGui.menuItem("Open Recent")) {}
             if (ImGui.menuItem("Close Project", "Ctrl+W")) {}
             ImGui.separator()
             if (ImGui.menuItem("Settings", "Ctrl+Alt+S")) { Settings.open() }
             if (ImGui.menuItem("Build Settings", "Ctrl+Alt+B")) {}
             ImGui.separator()
-            if (ImGui.menuItem("Save Scene", "Ctrl+S")) {}
-            if (ImGui.menuItem("Save All", "Ctrl+Shift+S"))
-                if (ImGui.menuItem("Reload")) {}
+            if (ImGui.menuItem("Save Scene", "Ctrl+S")) { sceneSerializer.serialize("./scenes/scene.pumpkin") }
+            if (ImGui.menuItem("Save As...", "Ctrl+Shift+S")) {}
+            if (ImGui.menuItem("Reload")) {}
             ImGui.separator()
             if (ImGui.menuItem("Exit")) { Application.get().close() }
             ImGui.endMenu()
@@ -227,19 +228,36 @@ object MenuBar { operator fun invoke() {
 
         ImGui.endMenuBar()
     }
-}}
+}
 
-object Keybinds { operator fun invoke(event: KeyPressedEvent) {
+fun keybinds(event: KeyPressedEvent) {
     if (event.repeatCount > 0) return
 
     val ctrl = Input.isKeyPressed(KeyCode.LEFT_CONTROL) || Input.isKeyPressed(KeyCode.RIGHT_CONTROL)
     val shift = Input.isKeyPressed(KeyCode.LEFT_SHIFT) || Input.isKeyPressed(KeyCode.RIGHT_SHIFT)
     val alt = Input.isKeyPressed(KeyCode.LEFT_ALT) || Input.isKeyPressed(KeyCode.RIGHT_ALT)
 
-    if (event.keyCode == KeyCode.S && alt) {
-        Settings.open()
+    if (!ctrl) return
+    when (event.keyCode) {
+        KeyCode.S ->
+            if (alt)
+                Settings.open()
+            else
+                sceneSerializer.serialize("./scenes/scene.pumpkin")
+        KeyCode.O ->
+            sceneSerializer.deserialize("./scenes/scene.pumpkin")
+        KeyCode.N ->
+            newScene()
     }
-}}
+}
+
+    fun newScene() {
+        activeScene = Scene()
+        sceneHierarchyPanel.context = activeScene
+        sceneSerializer.scene = activeScene
+        activeScene.onViewportResize(viewportSize.x.toInt(), viewportSize.y.toInt())
+    }
+}
 
 class CameraController : ScriptableEntity() {
     var speed = 5f

@@ -12,6 +12,8 @@ class Entity(val entityHandle: EntityHandle, val scene: Scene) {
 
     inline fun <reified T : Any> getComponent(): T = scene.registry.get(entityHandle)
 
+    inline fun <reified T : Any> getOrAddComponent(): T = if (hasComponent<T>()) getComponent() else addComponent()
+
     inline fun <reified T : Any> removeComponent() = scene.registry.remove(T::class, entityHandle)
 
     override fun equals(other: Any?): Boolean {

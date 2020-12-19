@@ -55,7 +55,7 @@ class Registry {
     }
 
     inline fun <reified T : Any> has(entity: Entity): Boolean = has(T::class, entity)
-    fun has(clazz: KClass<*>, entity: Entity): Boolean = classes[entity.id].contains(clazz)
+    fun has(clazz: KClass<*>, entity: Entity): Boolean = if (classes.size > entity.id) classes[entity.id].contains(clazz) else false
 
     inline fun <reified T : Any> get(entity: Entity): T = components[entity.id][T::class] as T
     fun <T : Any> get(clazz: KClass<T>, entity: Entity): T = clazz.cast(components[entity.id][clazz])
@@ -70,7 +70,7 @@ class Registry {
     inline fun <reified T : Any> view(): RegistryView<T> = view(T::class)
     fun <T : Any> view(clazz: KClass<T>): RegistryView<T> {
         val components = hashMapOf<Entity, T>()
-        val entities = classEntities[clazz]!!
+        val entities = classEntities[clazz] ?: return RegistryView(hashMapOf())
         entities.forEach {
             components[it] = get(clazz, it)
         }
@@ -81,8 +81,9 @@ class Registry {
     fun <A : Any, B : Any> group(clazzA: KClass<A>, clazzB: KClass<B>): RegistryGroup<A, B> {
         val entities: List<Entity>
         val components = hashMapOf<Entity, Pair<A, B>>()
-        val aEntities = classEntities[clazzA]!!
-        val bEntities = classEntities[clazzB]!!.filter { aEntities.contains(it) }
+        val aEntities = classEntities[clazzA] ?: return RegistryGroup(hashMapOf())
+        val bEntities = classEntities[clazzB] ?: return RegistryGroup(hashMapOf())
+        bEntities.filter { aEntities.contains(it) }
         entities = aEntities.filter { bEntities.contains(it) }
         entities.forEach {
             components[it] = Pair(get(clazzA, it), get(clazzB, it))
