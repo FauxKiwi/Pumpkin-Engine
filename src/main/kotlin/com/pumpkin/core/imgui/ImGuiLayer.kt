@@ -77,6 +77,7 @@ class ImGuiLayer : Layer("ImGui") {
         implGL3.newFrame()
         implGlfw.newFrame()
         ImGui.newFrame()
+        ImGuizmo.newFrame()
     }
 
     fun end() {

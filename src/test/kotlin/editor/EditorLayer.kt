@@ -2,6 +2,7 @@ package editor
 
 import com.pumpkin.core.*
 import com.pumpkin.core.event.Event
+import com.pumpkin.core.event.EventDispatcher
 import com.pumpkin.core.event.KeyPressedEvent
 import com.pumpkin.core.imgui.ImGuiProfiler
 import com.pumpkin.core.imgui.ImGuizmo
@@ -132,9 +133,8 @@ class EditorLayer : Layer("Editor") {
         image(framebuffer.colorAttachmentID, viewportSize, Vec2(0, 1), Vec2(1, 0))
 
         // GIZMOS
-        /*val selectedEntity = sceneHierarchyPanel.selectionContext
-        if (selectedEntity != null && gizmoType != -1)
-        {
+        val selectedEntity = sceneHierarchyPanel.selectionContext
+        if (selectedEntity != null && gizmoType != -1) {
             ImGuizmo.setOrthographic(false)
             ImGuizmo.setDrawlist()
 
@@ -160,8 +160,8 @@ class EditorLayer : Layer("Editor") {
             )
 
             if (ImGuizmo.isUsing()) {
-                val translation = Vec3();
-                val rotation = Vec3();
+                val translation = Vec3()
+                val rotation = Vec3()
                 val scale = Vec3()
                 ImGuizmo.decomposeFromMatrix(transform, translation, rotation, scale)
 
@@ -170,10 +170,20 @@ class EditorLayer : Layer("Editor") {
                 tc.rotation = tc.rotation + deltaRotation
                 tc.scale = scale
             }
-        }*/
-
+        }
         end()
         popStyleVar()
+
+        /*begin("DrawList")
+        text("Gradients")
+        run {
+            for (i in 0..100) {
+                windowDrawList.addCircleFilled(Vec2((i % 10) * 100f, (i / 10) * 100f), 20f, -1)
+            }
+        }
+        end()*/
+
+        //ImGui.showDemoWindow(booleanArrayOf(true))
 
         end()
 
@@ -181,8 +191,15 @@ class EditorLayer : Layer("Editor") {
 
     override fun onEvent(event: Event) {
         editorCamera.onEvent(event)
-        if (event is KeyPressedEvent)
+        if (event is KeyPressedEvent) {
             keybinds(event)
+            when (event.keyCode) {
+                KeyCode.Q -> gizmoType = -1
+                KeyCode.W -> gizmoType = ImGuizmo.OPERATION.TRANSLATE.ordinal
+                KeyCode.E -> gizmoType = ImGuizmo.OPERATION.ROTATE.ordinal
+                KeyCode.R -> gizmoType = ImGuizmo.OPERATION.SCALE.ordinal
+            }
+        }
     }
 
 fun menuBar() {
