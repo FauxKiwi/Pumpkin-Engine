@@ -7,6 +7,7 @@ import com.pumpkin.core.Timestep
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.KeyPressedEvent
 import com.pumpkin.core.imgui.ImGuiProfiler
+import com.pumpkin.core.imgui.ImGuizmo
 import com.pumpkin.core.input.Input
 import com.pumpkin.core.input.KeyCode
 import com.pumpkin.core.layer.Layer
@@ -18,7 +19,10 @@ import com.pumpkin.core.scene.SceneSerializer
 import com.pumpkin.core.scene.ScriptableEntity
 import com.pumpkin.core.scene.TransformComponent
 import com.pumpkin.core.settings.Settings
+import glm_.glm
+import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
+import glm_.vec3.Vec3
 import imgui.*
 
 class EditorLayer : Layer("Editor") {
@@ -34,6 +38,8 @@ class EditorLayer : Layer("Editor") {
     private var activeScene by Reference<Scene>()
     private lateinit var sceneHierarchyPanel: SceneHierarchyPanel
     private lateinit var sceneSerializer: SceneSerializer
+
+    private var gizmoType = -1
 
     override fun onAttach() {
         activeScene = Scene()
@@ -110,13 +116,62 @@ class EditorLayer : Layer("Editor") {
         begin("Viewport")
         viewportFocused = isWindowFocused()
         viewportHovered = isWindowHovered()
-        Application.get().getImGuiLayer().blockEvents = !viewportHovered || !viewportFocused
+        Application.get().getImGuiLayer().blockEvents = !viewportHovered && !viewportFocused
         //if (viewportSize != contentRegionAvail) {
         //    framebuffer.resize(contentRegionAvail.x.toInt(), contentRegionAvail.y.toInt())
         viewportSize = Vec2(contentRegionAvail.x, contentRegionAvail.y)
         //    cameraController.onResize(contentRegionAvail.x, contentRegionAvail.y)
         //}
         image(framebuffer.colorAttachmentID, viewportSize, Vec2(0, 1), Vec2(1, 0))
+
+        // GIZMOS
+        val selectedEntity = sceneHierarchyPanel.selectionContext
+        if (selectedEntity != null && gizmoType != -1)
+        {
+            ImGuizmo.setOrthographic(false)
+            ImGuizmo.setDrawlist()
+
+            ImGuizmo.setRect(ImGui.windowPos.x, ImGui.windowPos.y, ImGui.windowWidth, ImGui.windowHeight)
+
+            // Camera
+            val camera = activeScene.primaryCamera
+            if (camera != null) {
+                val cameraProjection = camera.projection
+                val cameraView = glm.inverse(Mat4(activeScene.cameraTransform!!))
+
+                // Entity transform
+                val tc = activeScene.registry.get<TransformComponent>(selectedEntity)
+                val transform = tc.transform
+
+                // Snapping
+                val snap = Input.isKeyPressed(KeyCode.LEFT_CONTROL)
+                var snapValue = 0.5f // Snap to 0.5m for translation/scale
+                // Snap to 45 degrees for rotation
+                if (gizmoType == ImGuizmo.OPERATION.ROTATE.ordinal)
+                    snapValue = 45.0f
+
+                val snapValues = floatArrayOf(snapValue, snapValue, snapValue)
+
+                ImGuizmo.manipulate(
+                    cameraView, cameraProjection,
+                    ImGuizmo.OPERATION.values()[gizmoType], ImGuizmo.MODE.LOCAL, transform,
+                    null, if (snap) snapValues else null
+                )
+
+                if (ImGuizmo.isUsing()) {
+                    val translation = Vec3();
+                    val rotation = Vec3();
+                    val scale = Vec3()
+                    ImGuizmo.decomposeFromMatrix(transform, translation, rotation, scale)
+
+                    val deltaRotation = rotation - tc.rotation
+                    tc.position = translation
+                    tc.rotation = tc.rotation + deltaRotation
+                    tc.scale = scale
+                }
+            }
+        }
+
         end()
         popStyleVar()
 

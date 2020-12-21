@@ -16,6 +16,11 @@ class Scene : Referencable() {
     var viewportWidth: Int = 0
     var viewportHeight: Int = 0
 
+    private var _primaryCamera: Camera? = null
+    val primaryCamera: Camera? get() = _primaryCamera
+    private var _cameraTransform: FloatArray? = null
+    val cameraTransform: FloatArray? get() = _cameraTransform
+
     init {
         registry.onConstruct<CameraComponent>().connect { r, e ->
             r.get<CameraComponent>(e).camera.setViewportSize(viewportWidth, viewportHeight)
@@ -71,6 +76,8 @@ class Scene : Referencable() {
         } else {
             RendererCommand.setClearColor(Vec4())
         }
+        _primaryCamera = mainCamera
+        _cameraTransform = cameraTransform
     }
 
     fun onViewportResize(width: Int, height: Int) {

@@ -118,10 +118,10 @@ object Renderer2D {
     }
 
     fun beginScene(camera: Camera, transform: FloatArray) {
-        val viewProj = camera.projection * glm.translate(glm.rotate(glm.scale(Mat4.identity,
-            Vec3(1f / transform[3], 1f / transform[4], 1f)),
-            -transform[5], Vec3(0, 0, 1)),
-            Vec3(-transform[0], -transform[1], -transform[2]))
+        val viewProj = camera.projection * glm.translate(glm.rotateXYZ(glm.scale(Mat4.identity,
+            /*scale*/1f / transform[6], 1f / transform[7], 1f / transform[8]),
+            /*rx, ry, rz*/-transform[3], -transform[4], -transform[5]),
+            /*position*/-transform[0], -transform[1], -transform[2])
 
         textureShader().apply {
             bind()

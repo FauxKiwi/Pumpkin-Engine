@@ -4,53 +4,15 @@
         {
             "Entity": 198932095031,
             "TagComponent": {
-                "Tag": "Camera Entity"
+                "Tag": "Camera"
             },
             "TransformComponent": {
                 "Transform": [
                     0.0,
                     0.0,
                     0.0,
-                    1.0,
-                    1.0,
-                    0.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            },
-            "CameraComponent": {
-                "Camera": {
-                    "ProjectionType": 0,
-                    "OrthographicSize": 10.0,
-                    "OrthographicNear": -1.0,
-                    "OrthographicFar": 1.0,
-                    "PerspectiveFov": 45.0,
-                    "PerspectiveNear": 0.01,
-                    "PerspectiveFar": 1000.0,
-                    "AspectRatio": 1.4412636,
-                    "ClearColor": [
-                        0.25,
-                        0.3,
-                        0.655
-                    ]
-                },
-                "Primary": true,
-                "FixedAspectRatio": false
-            }
-        },
-        {
-            "Entity": 198932095031,
-            "TagComponent": {
-                "Tag": "Clip-Space Entity"
-            },
-            "TransformComponent": {
-                "Transform": [
                     0.0,
                     0.0,
-                    0.0,
-                    1.0,
-                    1.0,
                     0.0,
                     1.0,
                     1.0,
@@ -74,6 +36,44 @@
                     ]
                 },
                 "Primary": false,
+                "FixedAspectRatio": false
+            }
+        },
+        {
+            "Entity": 198932095031,
+            "TagComponent": {
+                "Tag": "Perspective\u0000CCCCC"
+            },
+            "TransformComponent": {
+                "Transform": [
+                    0.0,
+                    0.0,
+                    10.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "CameraComponent": {
+                "Camera": {
+                    "ProjectionType": 1,
+                    "OrthographicSize": 10.0,
+                    "OrthographicNear": -1.0,
+                    "OrthographicFar": 1.0,
+                    "PerspectiveFov": 45.0,
+                    "PerspectiveNear": 0.01,
+                    "PerspectiveFar": 1000.0,
+                    "AspectRatio": 1.4412636,
+                    "ClearColor": [
+                        0.25,
+                        0.3,
+                        0.655
+                    ]
+                },
+                "Primary": true,
                 "FixedAspectRatio": false
             }
         },
@@ -113,7 +113,7 @@
                 "Transform": [
                     0.5,
                     0.5,
-                    0.5,
+                    3.4,
                     0.0,
                     0.0,
                     0.0,
