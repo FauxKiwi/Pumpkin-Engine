@@ -1,23 +1,35 @@
 package com.pumpkin.ecs
 
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 import kotlin.reflect.full.primaryConstructor
 
-inline class Entity(val id: Int) {
-
+inline class Entity(val fullID: Int) {
+    inline val id: Int get() = fullID and 0x00ffffff
+    inline val version: Byte get() = ((fullID shr 24) and 0xff).toByte()
 }
 
 class Registry {
-    @PublishedApi internal val entities = mutableListOf<Entity>()
-    private var entityID: Int = 0
-    private val classes = mutableListOf<MutableList<KClass<*>>>()
+    @PublishedApi internal val entities = mutableListOf<Entity?>()
+    private val freeSlots = Stack<Int>()
+    private var currentID: Int = 0
+    private val classes = mutableListOf<MutableList<KClass<*>>?>()
     private val classEntities = hashMapOf<KClass<*>, MutableList<Entity>>()
-    val components = mutableListOf<HashMap<KClass<*>, Any>>()
+    val components = mutableListOf<HashMap<KClass<*>, Any>?>()
     private val constructionHandlers = hashMapOf<KClass<*>, ConstructionHandler>()
 
     fun create(): Entity {
-        return Entity(entityID++).also {
+        if (!freeSlots.empty()) {
+            val fid = freeSlots.pop() + 0x01000000
+            return Entity(fid).also {
+                entities[it.id] = it
+                classes[it.id] = mutableListOf()
+                components[it.id] = hashMapOf()
+            }
+        }
+        return Entity(currentID++).also {
             entities.add(it.id, it)
             classes.add(it.id, mutableListOf())
             components.add(it.id, hashMapOf())
@@ -25,46 +37,47 @@ class Registry {
     }
 
     fun destroy(entity: Entity) {
-        entities.removeAt(entity.id)
-        for (clazz in classes[entity.id]) {
+        entities[entity.id] = null
+        freeSlots.push(entity.fullID)
+        for (clazz in classes[entity.id]!!) {
             classEntities[clazz]?.remove(entity)
         }
-        classes.removeAt(entity.id)
-        components.removeAt(entity.id)
+        classes[entity.id] = null
+        components[entity.id] = null
     }
 
     inline fun <reified T : Any> emplace(entity: Entity, vararg args: Any?): T = emplace(T::class, entity, args)
     fun <T : Any> emplace(clazz: KClass<T>, entity: Entity, args: Array<out Any?>): T {
-        classes[entity.id].add(clazz)
+        classes[entity.id]!!.add(clazz)
         if (!classEntities.containsKey(clazz))
             classEntities[clazz] = mutableListOf()
         classEntities[clazz]!!.add(entity)
-        val element = clazz.primaryConstructor!!.call(*args).also { components[entity.id][clazz] = it }
+        val element = clazz.primaryConstructor!!.call(*args).also { components[entity.id]!![clazz] = it }
         constructionHandlers[clazz]?.handles?.forEach { it(this, entity) }
         return element
     }
 
     fun <T : Any> insert(entity: Entity, element: T): T {
-        classes[entity.id].add(element::class)
+        classes[entity.id]!!.add(element::class)
         if (!classEntities.containsKey(element::class))
             classEntities[element::class] = mutableListOf()
         classEntities[element::class]!!.add(entity)
-        components[entity.id][element::class] = element
+        components[entity.id]!![element::class] = element
         constructionHandlers[element::class]?.handles?.forEach { it(this, entity) }
         return element
     }
 
     inline fun <reified T : Any> has(entity: Entity): Boolean = has(T::class, entity)
-    fun has(clazz: KClass<*>, entity: Entity): Boolean = if (classes.size > entity.id) classes[entity.id].contains(clazz) else false
+    fun has(clazz: KClass<*>, entity: Entity): Boolean = if (classes.size > entity.id) classes[entity.id]!!.contains(clazz) else false
 
-    inline fun <reified T : Any> get(entity: Entity): T = components[entity.id][T::class] as T
-    fun <T : Any> get(clazz: KClass<T>, entity: Entity): T = clazz.cast(components[entity.id][clazz])
+    inline fun <reified T : Any> get(entity: Entity): T = components[entity.id]!![T::class] as T
+    fun <T : Any> get(clazz: KClass<T>, entity: Entity): T = clazz.cast(components[entity.id]!![clazz])
 
     inline fun <reified T : Any> remove(entity: Entity) = remove(T::class, entity)
     fun remove(clazz: KClass<*>, entity: Entity) {
-        classes[entity.id].remove(clazz)
+        classes[entity.id]!!.remove(clazz)
         classEntities[clazz]?.remove(entity)
-        components[entity.id].remove(clazz)
+        components[entity.id]!!.remove(clazz)
     }
 
     inline fun <reified T : Any> view(): RegistryView<T> = view(T::class)
@@ -91,7 +104,7 @@ class Registry {
         return RegistryGroup(components)
     }
 
-    inline fun each(operation: (Entity) -> Unit) = entities.forEach(operation)
+    inline fun each(operation: (Entity) -> Unit) = entities.forEach { it?.let(operation) }
 
 
     inline fun <reified T : Any> onConstruct(): ConstructionHandler = onConstruct(T::class)

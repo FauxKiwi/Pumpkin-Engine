@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
 
 class SceneHierarchyPanel(var context: Scene) {
     private val registry: Registry get() = context.registry
-    private var selectionContext: Entity? = null
+    var selectionContext: Entity? = null
 
     fun onImGuiRender() {
         ImGui.begin("Hierarchy")
@@ -26,6 +26,7 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.end()
 
         ImGui.begin("Inspector")
+        ImGui.text("Selection context: $selectionContext")
         if (selectionContext != null) {
             drawComponents(selectionContext!!)
         }
@@ -109,7 +110,7 @@ class SceneHierarchyPanel(var context: Scene) {
         }
         ImGui.sameLine()
         ImGui.pushItemWidth(-1)
-        if (selectionContext != null && ImGui.button("Add Component"))
+        if (ImGui.button("Add Component"))
             ImGui.openPopup("AddComponent")
 
         if (ImGui.beginPopup("AddComponent")) {

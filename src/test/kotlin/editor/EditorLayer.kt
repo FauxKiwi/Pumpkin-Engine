@@ -213,6 +213,7 @@ fun keybinds(event: KeyPressedEvent) {
     fun newScene() {
         activeScene = Scene()
         sceneHierarchyPanel.context = activeScene
+        sceneHierarchyPanel.selectionContext = null
         sceneSerializer.scene = activeScene
         activeScene.onViewportResize(viewportSize.x.toInt(), viewportSize.y.toInt())
     }

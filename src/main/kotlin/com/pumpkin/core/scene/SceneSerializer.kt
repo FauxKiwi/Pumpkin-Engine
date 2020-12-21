@@ -71,7 +71,7 @@ class SceneSerializer(var scene: Scene) {
             put("Scene", JsonPrimitive("Untitled"))
             putJsonArray("Entities") {
                 for (entity in scene.registry.entities) {
-                    add(serializeEntity(entity))
+                    entity?.let { add(serializeEntity(it)) }
                 }
             }
         }
