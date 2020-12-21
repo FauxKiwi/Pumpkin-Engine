@@ -2,6 +2,8 @@ package com.pumpkin.core.imgui
 
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.EventCategory
+import com.pumpkin.core.event.KeyPressedEvent
+import com.pumpkin.core.input.KeyCode
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.settings.DarkTheme
 import com.pumpkin.core.settings.Settings
@@ -66,9 +68,10 @@ class ImGuiLayer : Layer("ImGui") {
     }
 
     override fun onEvent(event: Event) {
+        if (event is KeyPressedEvent && (event.keyCode == KeyCode.LEFT_CONTROL || event.keyCode == KeyCode.RIGHT_CONTROL))
         if (blockEvents) {
-            event.handled = event.handled or event.isInCategory(EventCategory.Mouse) and ImGui.io.wantCaptureMouse
-            event.handled = event.handled or event.isInCategory(EventCategory.Keyboard) and ImGui.io.wantCaptureKeyboard
+            event.handled = event.handled or (event.isInCategory(EventCategory.Mouse) and ImGui.io.wantCaptureMouse)
+            event.handled = event.handled or (event.isInCategory(EventCategory.Keyboard) and ImGui.io.wantCaptureKeyboard)
         }
     }
 

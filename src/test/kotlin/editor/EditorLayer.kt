@@ -110,7 +110,7 @@ class EditorLayer : Layer("Editor") {
         begin("Viewport")
         viewportFocused = isWindowFocused()
         viewportHovered = isWindowHovered()
-        Application.get().getImGuiLayer().blockEvents = false //!viewportHovered || !viewportFocused
+        Application.get().getImGuiLayer().blockEvents = !viewportHovered || !viewportFocused
         //if (viewportSize != contentRegionAvail) {
         //    framebuffer.resize(contentRegionAvail.x.toInt(), contentRegionAvail.y.toInt())
         viewportSize = Vec2(contentRegionAvail.x, contentRegionAvail.y)

@@ -26,7 +26,6 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.end()
 
         ImGui.begin("Inspector")
-        ImGui.text("Selection context: $selectionContext")
         if (selectionContext != null) {
             drawComponents(selectionContext!!)
         }
