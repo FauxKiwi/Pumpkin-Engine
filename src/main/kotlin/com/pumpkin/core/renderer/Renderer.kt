@@ -1,6 +1,5 @@
 package com.pumpkin.core.renderer
 
-import com.pumpkin.core.stack
 import glm_.mat4x4.Mat4
 
 object Renderer {
@@ -15,14 +14,13 @@ object Renderer {
     fun endScene() = Unit
 
     fun submit(shader: Shader, vertexArray: VertexArray, transform: Mat4 = Mat4.identity) {
-        stack {
-            shader.bind()
-            shader.setMat4("u_ViewProjection", sceneData.viewProjectionMatrix)
-            shader.setMat4("u_Transform", transform)
 
-            vertexArray.bind()
-            RendererCommand.drawIndexed(vertexArray)
-        }
+        shader.bind()
+        shader.setMat4("u_ViewProjection", sceneData.viewProjectionMatrix)
+        shader.setMat4("u_Transform", transform)
+
+        vertexArray.bind()
+        RendererCommand.drawIndexed(vertexArray)
     }
 
     inline fun getAPI() = RendererCommand.rendererAPI.api

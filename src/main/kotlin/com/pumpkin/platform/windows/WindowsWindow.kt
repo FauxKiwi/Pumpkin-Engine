@@ -1,18 +1,18 @@
 package com.pumpkin.platform.windows
 
-import com.pumpkin.core.*
+import com.pumpkin.core.Application
+import com.pumpkin.core.Debug
 import com.pumpkin.core.event.*
 import com.pumpkin.core.renderer.GraphicsContext
-import com.pumpkin.platform.opengl.OpenGLContext
 import com.pumpkin.core.window.EventCallbackFunction
 import com.pumpkin.core.window.Window
 import com.pumpkin.core.window.WindowProps
+import com.pumpkin.platform.opengl.OpenGLContext
 import gli_.gli
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2d
 import glm_.vec2.Vec2i
 import gln.glViewport
-import imgui.DEBUG
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL
@@ -39,47 +39,47 @@ class WindowsWindow : Window {
         }
 
     override fun init(windowProps: WindowProps) {
-        stack {
-            data = WindowData(windowProps.title, windowProps.width, windowProps.height, true, null)
+        data = WindowData(windowProps.title, windowProps.width, windowProps.height, true, null)
 
-            glfw.init()
-            glfw.errorCallback = this::errorCallback
+        glfw.init()
+        glfw.errorCallback = this::errorCallback
 
-            window = GlfwWindow(data.width, data.height, data.title)
-            window.maximize()
-            context = OpenGLContext(window)
-            context.init()
+        window = GlfwWindow(data.width, data.height, data.title)
+        window.maximize()
+        context = OpenGLContext(window)
+        context.init()
 
-            val icon = gli.load("./src/test/resources/textures/PumpkinLogo.png")
-            val iconImage = GLFWImage.malloc();
-            val iconImageBuffer = GLFWImage.malloc(1)
-            iconImage.set(icon.extent()[0], icon.extent()[1], icon.data())
-            iconImageBuffer.put(0, iconImage)
-            window.setIcon(iconImageBuffer)
+        val icon = gli.load("./src/test/resources/textures/PumpkinLogo.png")
+        val iconImage = GLFWImage.malloc()
+        val iconImageBuffer = GLFWImage.malloc(1)
+        iconImage.set(icon.extent()[0], icon.extent()[1], icon.data())
+        iconImageBuffer.put(0, iconImage)
+        window.setIcon(iconImageBuffer)
+        iconImage.free()
+        iconImageBuffer.free()
 
-            Debug.logInfoCore("Created Window \"${data.title}\" (${data.width} x ${data.height})")
+        Debug.logInfoCore("Created Window \"${data.title}\" (${data.width} x ${data.height})")
 
-            vSync = data.vSync
+        vSync = data.vSync
 
-            GL.createCapabilities()
+        GL.createCapabilities()
 
-            window.windowSizeCB = this::windowSizeCallback
-            window.windowCloseCB = this::windowCloseCallback
+        window.windowSizeCB = this::windowSizeCallback
+        window.windowCloseCB = this::windowCloseCallback
 
-            window.keyCB = { key, _, action, _ ->
-                keyCallback(key, action)
-            }
-
-            window.mouseButtonCB = { button, action, _ ->
-                mouseButtonCallback(button, action)
-            }
-            window.scrollCB = this::scrollCallback
-            window.cursorPosCB = this::cursorPosCallback
-
-            Debug.logInfoCore("Installed Callbacks for Window \"${data.title}\"")
-
-            DEBUG = false
+        window.keyCB = { key, _, action, _ ->
+            keyCallback(key, action)
         }
+
+        window.mouseButtonCB = { button, action, _ ->
+            mouseButtonCallback(button, action)
+        }
+        window.scrollCB = this::scrollCallback
+        window.cursorPosCB = this::cursorPosCallback
+
+        Debug.logInfoCore("Installed Callbacks for Window \"${data.title}\"")
+
+        imgui.DEBUG = false
     }
 
     override fun run() = Application.get().runI().also { Application.get().shutdownI() }

@@ -44,10 +44,9 @@ typealias Timestep = Float
 
 inline fun <R> stack(block: (memoryStack: MemoryStack) -> R): R = MemoryStack.stackPush().use(block)
 
-fun lifetimeScope(vararg scoped: AutoCloseable, block: () -> Unit) = stack {
+fun lifetimeScope(vararg scoped: AutoCloseable, block: () -> Unit) =
     block().also {
         scoped.forEach {
             it.close()
         }
     }
-}

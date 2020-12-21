@@ -2,7 +2,6 @@ package com.pumpkin.platform.opengl
 
 import com.pumpkin.core.Debug
 import com.pumpkin.core.renderer.Texture2D
-import com.pumpkin.core.stack
 import gli_.gli
 import gln.TextureTarget
 import gln.gl
@@ -11,7 +10,7 @@ import org.lwjgl.opengl.GL45C
 import java.nio.ByteBuffer
 
 class OpenGLTexture2D : Texture2D {
-    lateinit var format: Pair<Int, Int>
+    var format: Pair<Int, Int>
 
     override var width = 0
     override var height = 0
@@ -21,39 +20,35 @@ class OpenGLTexture2D : Texture2D {
     private val _rendererID: GlTexture = gl.createTextures(TextureTarget._2D)
 
     constructor(path: String) {
-        stack {
-            val data = gli.load(ClassLoader.getSystemResource(path).toURI(), true)
-            width = data.extent()[0]
-            height = data.extent()[1]
+        val data = gli.load(ClassLoader.getSystemResource(path).toURI(), true)
+        width = data.extent()[0]
+        height = data.extent()[1]
 
-            format = when (data.format.blockSize) {
-                3 -> Pair(GL45C.GL_RGB8, GL45C.GL_RGB)
-                4 -> Pair(GL45C.GL_RGBA8, GL45C.GL_RGBA)
-                else -> Debug.exception("Impossible number of channels")
-            }
-
-            GL45C.glTextureStorage2D(_rendererID.name, 1, format.first, width, height)
-
-            setFilter(Texture2D.Filter.Linear, Texture2D.Filter.Nearest)
-            setWrap(Texture2D.WrapMode.Repeat)
-
-            GL45C.glTextureSubImage2D(_rendererID.name, 0, 0, 0, width, height, format.second, GL45C.GL_UNSIGNED_BYTE, data.data())
+        format = when (data.format.blockSize) {
+            3 -> Pair(GL45C.GL_RGB8, GL45C.GL_RGB)
+            4 -> Pair(GL45C.GL_RGBA8, GL45C.GL_RGBA)
+            else -> Debug.exception("Impossible number of channels")
         }
+
+        GL45C.glTextureStorage2D(_rendererID.name, 1, format.first, width, height)
+
+        setFilter(Texture2D.Filter.Linear, Texture2D.Filter.Nearest)
+        setWrap(Texture2D.WrapMode.Repeat)
+
+        GL45C.glTextureSubImage2D(_rendererID.name, 0, 0, 0, width, height, format.second, GL45C.GL_UNSIGNED_BYTE, data.data())
     }
 
     constructor(width: Int, height: Int) {
         this.width = width
         this.height = height
-        stack {
-            format = Pair(GL45C.GL_RGBA8, GL45C.GL_RGBA)
-            GL45C.glTextureStorage2D(_rendererID.name, 1, format.first, width, height)
+        format = Pair(GL45C.GL_RGBA8, GL45C.GL_RGBA)
+        GL45C.glTextureStorage2D(_rendererID.name, 1, format.first, width, height)
 
-            setFilter(Texture2D.Filter.Linear, Texture2D.Filter.Nearest)
-            setWrap(Texture2D.WrapMode.Repeat)
-        }
+        setFilter(Texture2D.Filter.Linear, Texture2D.Filter.Nearest)
+        setWrap(Texture2D.WrapMode.Repeat)
     }
 
-    override fun setData(data: ByteBuffer, size: Int) = stack {
+    override fun setData(data: ByteBuffer) {
         GL45C.glTextureSubImage2D(_rendererID.name, 0, 0, 0, width, height, format.second, GL45C.GL_UNSIGNED_BYTE, data)
     }
 

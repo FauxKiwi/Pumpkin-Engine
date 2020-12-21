@@ -2,7 +2,6 @@ package com.pumpkin.platform.opengl
 
 import com.pumpkin.core.Debug
 import com.pumpkin.core.renderer.GraphicsContext
-import com.pumpkin.core.stack
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11C
 import uno.glfw.GlfwWindow
@@ -10,10 +9,9 @@ import uno.glfw.GlfwWindow
 class OpenGLContext(private val windowHandle: GlfwWindow) : GraphicsContext {
 
     override fun init() {
-        stack {
-            windowHandle.makeContextCurrent()
-            GL.createCapabilities()
-        }
+        windowHandle.makeContextCurrent()
+        GL.createCapabilities()
+
 
         Debug.logInfoCore("OpenGL Info:")
         Debug.logInfoCore("  Vendor: ${getVendor()}")

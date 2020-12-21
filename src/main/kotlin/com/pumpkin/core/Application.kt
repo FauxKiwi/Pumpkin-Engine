@@ -85,26 +85,24 @@ open class Application {
 
     internal fun runI() {
         while (running) {
-            stack {
-                val time: Float = glfw.time.toFloat()
-                val timestep: Timestep = time - lastFrameTime
-                lastFrameTime = time
+            val time: Float = glfw.time.toFloat()
+            val timestep: Timestep = time - lastFrameTime
+            lastFrameTime = time
 
-                run()
+            run()
 
-                if (!minimized)
-                    for (layer in layerStack.layers) {
-                        layer.onUpdate(timestep)
-                    }
-
-                imGuiLayer.begin()
+            if (!minimized)
                 for (layer in layerStack.layers) {
-                    layer.onImGuiRender()
+                    layer.onUpdate(timestep)
                 }
-                imGuiLayer.end()
 
-                window.onUpdate()
+            imGuiLayer.begin()
+            for (layer in layerStack.layers) {
+                layer.onImGuiRender()
             }
+            imGuiLayer.end()
+
+            window.onUpdate()
         }
     }
 

@@ -6,7 +6,6 @@ import com.pumpkin.core.renderer.BufferLayout
 import com.pumpkin.core.renderer.IndexBuffer
 import com.pumpkin.core.renderer.VertexArray
 import com.pumpkin.core.renderer.VertexBuffer
-import com.pumpkin.core.stack
 import gln.gl
 import gln.identifiers.GlVertexArray
 
@@ -18,10 +17,8 @@ class OpenGLVertexArray : VertexArray {
             if (value == null) {
                 Debug.exception("Index Buffer is null")
             }
-            stack {
-                gl.bindVertexArray(rendererID)
-                value().bind()
-            }
+            gl.bindVertexArray(rendererID)
+            value().bind()
             field = value
         }
 
@@ -47,22 +44,20 @@ class OpenGLVertexArray : VertexArray {
         if (vertexBuffer().layout == null) {
             Debug.exception("Vertex buffer has no layout")
         }
-        stack {
-            gl.bindVertexArray(rendererID)
-            vertexBuffer().bind()
-            val layout: BufferLayout = vertexBuffer().layout!!
-            for (bufferElement in layout) {
-                gl.enableVertexAttribArray(vertexBufferIndex)
-                gl.vertexAttribPointer(
-                    vertexBufferIndex,
-                    bufferElement.dataType.componentCount(),
-                    bufferElement.dataType.toVertexAttrType(),
-                    bufferElement.normalized,
-                    layout.getStride(),
-                    bufferElement.offset
-                )
-                vertexBufferIndex++
-            }
+        gl.bindVertexArray(rendererID)
+        vertexBuffer().bind()
+        val layout: BufferLayout = vertexBuffer().layout!!
+        for (bufferElement in layout) {
+            gl.enableVertexAttribArray(vertexBufferIndex)
+            gl.vertexAttribPointer(
+                vertexBufferIndex,
+                bufferElement.dataType.componentCount(),
+                bufferElement.dataType.toVertexAttrType(),
+                bufferElement.normalized,
+                layout.getStride(),
+                bufferElement.offset
+            )
+            vertexBufferIndex++
         }
         return vertexBuffers.add(vertexBuffer)
     }

@@ -32,7 +32,7 @@ interface Texture2D : Texture {
     }
     val rendererID: Int
 
-    fun setData(data: ByteBuffer, size: Int)
+    fun setData(data: ByteBuffer)
 
     fun setFilter(minFilter: Filter, magFilter: Filter)
 

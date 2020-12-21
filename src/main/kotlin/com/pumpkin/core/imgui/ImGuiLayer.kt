@@ -36,17 +36,15 @@ class ImGuiLayer : Layer("ImGui") {
     override fun onAttach() {
         context = Context()
 
-        stack {
-            ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableKeyboard     // Enable Keyboard Controls
-            ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableGamepad    // Enable Gamepad Controls
-            ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.DockingEnable         // Enable Docking
-            //ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.ViewportsEnable
+        ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableKeyboard     // Enable Keyboard Controls
+        ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.NavEnableGamepad    // Enable Gamepad Controls
+        ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.DockingEnable         // Enable Docking
+        //ImGui.io.configFlags = ImGui.io.configFlags or ConfigFlag.ViewportsEnable
 
-            if (lightMode) ImGui.styleColorsLight()
-            else ImGui.styleColorsDark()
+        if (lightMode) ImGui.styleColorsLight()
+        else ImGui.styleColorsDark()
 
-            Settings.setTheme(0)
-        }
+        Settings.setTheme(0)
 
         implGlfw = ImplGlfw.initForOpenGL(Window.getWindow().window, true)/*(Window.getWindow().window)*/
         implGL3 = ImplGL3()

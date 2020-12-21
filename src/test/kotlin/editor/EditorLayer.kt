@@ -193,20 +193,22 @@ fun keybinds(event: KeyPressedEvent) {
     if (event.repeatCount > 0) return
 
     val ctrl = Input.isKeyPressed(KeyCode.LEFT_CONTROL) || Input.isKeyPressed(KeyCode.RIGHT_CONTROL)
+    if (!ctrl) return
     val shift = Input.isKeyPressed(KeyCode.LEFT_SHIFT) || Input.isKeyPressed(KeyCode.RIGHT_SHIFT)
     val alt = Input.isKeyPressed(KeyCode.LEFT_ALT) || Input.isKeyPressed(KeyCode.RIGHT_ALT)
 
-    if (!ctrl) return
     when (event.keyCode) {
         KeyCode.S ->
-            if (alt)
-                Settings.open()
-            else
-                saveSceneAs()
+            if (!shift) {
+                if (alt)
+                    Settings.open()
+                else
+                    saveSceneAs()
+            } else saveSceneAs()
         KeyCode.O ->
-            openScene()
+            if (!shift && !alt) openScene()
         KeyCode.N ->
-            newScene()
+            if (!shift && !alt) newScene()
     }
 }
 

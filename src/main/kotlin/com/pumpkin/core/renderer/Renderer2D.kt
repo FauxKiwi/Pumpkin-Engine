@@ -6,9 +6,8 @@ import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
-import java.nio.ByteBuffer
+import org.lwjgl.system.MemoryUtil
 import java.nio.FloatBuffer
-import kotlin.math.cos
 
 // QuadVertex data class: Just for layout purposes
 /* data class QuadVertex(
@@ -33,7 +32,7 @@ object Renderer2D {
             field = value
             maxVertices = maxQuads
             maxIndices = maxQuads
-            quadVertexBufferData = FloatBuffer.allocate(maxVertices * sizeOfQuadVertex)
+            quadVertexBufferData = MemoryUtil.memAllocFloat(maxVertices * sizeOfQuadVertex)
         }
     private var maxVertices = maxQuads
     private var maxIndices = maxQuads
@@ -53,13 +52,15 @@ object Renderer2D {
     fun init() {
         textureSlots = arrayOfNulls(maxTextureSlots)
 
-        val whiteTextureData = ByteBuffer.allocateDirect(4).apply {
-            put(0, 0xff.toByte())
-            put(1, 0xff.toByte())
-            put(2, 0xff.toByte())
-            put(3, 0xff.toByte())
+        stack { stack ->
+            val whiteTextureData = stack.malloc(4).apply {
+                put(0, 0xff.toByte())
+                put(1, 0xff.toByte())
+                put(2, 0xff.toByte())
+                put(3, 0xff.toByte())
+            }
+            whiteTexture().setData(whiteTextureData)
         }
-        whiteTexture().setData(whiteTextureData, whiteTextureData.capacity())
 
         val samplers = IntArray(maxTextureSlots) { it }
 
@@ -181,7 +182,7 @@ object Renderer2D {
 
     private const val whiteTextureID = 0f
     private const val whiteTextureTilingFactor = 1f
-    fun drawQuad(position: Vec3, size: Vec2 = Vec2(1f), radians: Float = 0f, color: Vec4) = stack {
+    fun drawQuad(position: Vec3, size: Vec2 = Vec2(1f), radians: Float = 0f, color: Vec4) {
         if (quadVertexBufferData.position() >= maxVertices * sizeOfQuadVertex) {
             nextBatch()
         }
@@ -200,7 +201,7 @@ object Renderer2D {
     fun drawQuad(position: Vec2 = Vec2(), size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f) =
         drawQuad(Vec3(position, 0), size, radians, texture, color, tilingFactor)
 
-    fun drawQuad(position: Vec3, size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f) = stack {
+    fun drawQuad(position: Vec3, size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f) {
         if (quadVertexBufferData.position() >= maxQuads) {
             nextBatch()
         }
@@ -239,7 +240,7 @@ object Renderer2D {
         drawQuad(Vec3(position, 0f), size, radians, texture, color, tilingFactor, subTextureCoord, subTextureSize, subTextureTileSize)
 
     fun drawQuad(position: Vec3, size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f,
-                 subTextureCoord: Vec2, subTextureSize: Vec2, subTextureTileSize: Vec2) = stack {
+                 subTextureCoord: Vec2, subTextureSize: Vec2, subTextureTileSize: Vec2) {
         if (quadVertexBufferData.position() >= maxQuads) {
             nextBatch()
         }
