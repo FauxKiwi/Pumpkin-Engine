@@ -2,15 +2,15 @@
 #version 330 core
 
 layout (location = 0) in vec3 a_Position;
-layout (location = 1) in vec2 a_Size;
-layout (location = 2) in float a_Rotation;
+layout (location = 1) in vec3 a_Size;
+layout (location = 2) in vec3 a_Rotation;
 layout (location = 3) in vec4 a_Color;
 layout (location = 4) in vec4 a_TexCoord;
 layout (location = 5) in float a_TexIndex;
 layout (location = 6) in float a_TilingFactor;
 
-out vec2 g_Size;
-out float g_Rotation;
+out vec3 g_Size;
+out vec3 g_Rotation;
 out vec4 g_Color;
 out vec4 g_TexCoord;
 out float g_TexIndex;
@@ -34,8 +34,8 @@ void main() {
 layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
 
-in vec2 g_Size[];
-in float g_Rotation[];
+in vec3 g_Size[];
+in vec3 g_Rotation[];
 in vec4 g_TexCoord[];
 in vec4 g_Color[];
 in float g_TexIndex[];
@@ -54,20 +54,30 @@ void main() {
     f_TilingFactor = g_TilingFactor[0];
 
     vec4 position = gl_in[0].gl_Position;
-    vec2 size = g_Size[0];
-    float rotation = g_Rotation[0];
+    vec3 size = g_Size[0];
+    vec3 rotation = g_Rotation[0];
     vec4 texCoord = g_TexCoord[0];
 
     mat4 transform = u_ViewProjection *
     mat4(
-        cos(rotation), -sin(rotation), 0.0, 0.0,
-        sin(rotation), cos(rotation), 0.0, 0.0,
+        cos(rotation.z), -sin(rotation.z), 0.0, 0.0,
+        sin(rotation.z), cos(rotation.z), 0.0, 0.0,
         0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    ) * mat4(
+        cos(rotation.y), 0.0, -sin(rotation.y), 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        sin(rotation.y), 0.0, cos(rotation.y), 0.0,
+        0.0, 0.0, 0.0, 1.0
+    ) * mat4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, cos(rotation.x), -sin(rotation.x), 0.0,
+        0.0, sin(rotation.x), cos(rotation.x), 0.0,
         0.0, 0.0, 0.0, 1.0
     ) * mat4(
         size.x, 0.0, 0.0, 0.0,
         0.0, size.y, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, size.z, 0.0,
         0.0, 0.0, 0.0, 1.0
     );
 

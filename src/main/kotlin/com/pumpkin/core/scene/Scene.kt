@@ -28,7 +28,7 @@ class Scene : Referencable() {
 
     fun createEntity(name: String? = null): Entity {
         val entity = Entity(registry.create(), this)
-        entity.addComponent<TransformComponent>(floatArrayOf(0f, 0f, 0f, 1f, 1f, 0f))
+        entity.addComponent<TransformComponent>(floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 1f, 1f, 1f))
         entity.addComponent<TagComponent>(name ?: "Entity")
         return entity
     }

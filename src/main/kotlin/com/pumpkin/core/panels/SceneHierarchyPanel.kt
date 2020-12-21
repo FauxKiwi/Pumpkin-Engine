@@ -114,7 +114,7 @@ class SceneHierarchyPanel(var context: Scene) {
 
         if (ImGui.beginPopup("AddComponent")) {
             if (!registry.has<TransformComponent>(selectionContext!!) && ImGui.menuItem("Transform")) {
-                registry.emplace<TransformComponent>(selectionContext!!, floatArrayOf(0f, 0f, 0f, 1f, 1f, 0f))
+                registry.emplace<TransformComponent>(selectionContext!!, floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 1f, 1f, 1f))
                 ImGui.closeCurrentPopup()
             }
             if (!registry.has<CameraComponent>(selectionContext!!) && ImGui.menuItem("Camera")) {
@@ -133,12 +133,12 @@ class SceneHierarchyPanel(var context: Scene) {
             val position = transform.position
             drawVec3Control("Position", position)
             transform.position = position
-            val scale = Vec3(transform.scale, 1f)
+            val scale = transform.scale
             drawVec3Control("Scale", scale)
-            transform.scale = scale.xy
-            val rotation = Vec3(0f, 0f, transform.rotation)
+            transform.scale = scale
+            val rotation = transform.rotation
             drawVec3Control("Rotation", rotation)
-            transform.rotation = rotation.z
+            transform.rotation = rotation
         }
 
         drawComponent<CameraComponent>("Camera", entity) { camera ->

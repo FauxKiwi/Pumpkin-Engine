@@ -10,16 +10,16 @@ import org.lwjgl.system.MemoryUtil
 import java.nio.FloatBuffer
 
 // QuadVertex data class: Just for layout purposes
-/* data class QuadVertex(
+/* struct class QuadVertex(
     val position: Vec3,
-    val size: Vec2,
-    val rotation: Float,
+    val size: Vec3,
+    val rotation: Vec3t,
     val color: Vec4,
     val texCoord: Vec4,
     val texIndex: Float,
     val tilingFactor: Float
 )*/
-const val sizeOfQuadVertex = 3 + 2 + 1 + 4 + 4 + 1 + 1
+const val sizeOfQuadVertex = 3 + 3 + 3 + 4 + 4 + 1 + 1
 
 object Renderer2D {
     //private var quadIndexCount = 0
@@ -67,8 +67,8 @@ object Renderer2D {
         quadVertexBuffer().layout = BufferLayout(
             mutableListOf(
                 BufferElement(ShaderDataType.Float3, "a_Position"),
-                BufferElement(ShaderDataType.Float2, "a_Size"),
-                BufferElement(ShaderDataType.Float, "a_Rotation"),
+                BufferElement(ShaderDataType.Float3, "a_Size"),
+                BufferElement(ShaderDataType.Float3, "a_Rotation"),
                 BufferElement(ShaderDataType.Float4, "a_Color"),
                 BufferElement(ShaderDataType.Float4, "a_TexCoords"),
                 BufferElement(ShaderDataType.Float, "a_TexIndex"),
@@ -178,18 +178,23 @@ object Renderer2D {
     }
 
     fun drawQuad(position: Vec2 = Vec2(), size: Vec2 = Vec2(1f), radians: Float = 0f, color: Vec4) =
-        drawQuad(Vec3(position, 0), size, radians, color)
+        drawQuad(Vec3(position, 0f), Vec3(size, 1f), Vec3(radians, 0f, 0f), color)
+    fun drawQuad(position: Vec3, size: Vec2 = Vec2(1f), radians: Float = 0f, color: Vec4) =
+        drawQuad(position, Vec3(size, 1f), Vec3(radians, 0f, 0f), color)
+
+    fun drawQuad(position: Vec2 = Vec2(), size: Vec3 = Vec3(1f), radians: Vec3 = Vec3(), color: Vec4) =
+        drawQuad(Vec3(position, 0f), size, radians, color)
 
     private const val whiteTextureID = 0f
     private const val whiteTextureTilingFactor = 1f
-    fun drawQuad(position: Vec3, size: Vec2 = Vec2(1f), radians: Float = 0f, color: Vec4) {
+    fun drawQuad(position: Vec3, size: Vec3 = Vec3(1f), radians: Vec3 = Vec3(), color: Vec4) {
         if (quadVertexBufferData.position() >= maxVertices * sizeOfQuadVertex) {
             nextBatch()
         }
 
         quadVertexBufferData.put(position.x); quadVertexBufferData.put(position.y); quadVertexBufferData.put(position.z)
-        quadVertexBufferData.put(size.x); quadVertexBufferData.put(size.y)
-        quadVertexBufferData.put(radians)
+        quadVertexBufferData.put(size.x); quadVertexBufferData.put(size.y); quadVertexBufferData.put(size.z)
+        quadVertexBufferData.put(radians.x); quadVertexBufferData.put(radians.y); quadVertexBufferData.put(radians.z)
         quadVertexBufferData.put(color.x); quadVertexBufferData.put(color.y); quadVertexBufferData.put(color.z); quadVertexBufferData.put(color.w)
         quadVertexBufferData.put(0f); quadVertexBufferData.put(0f); quadVertexBufferData.put(1f); quadVertexBufferData.put(1f)
         quadVertexBufferData.put(whiteTextureID)
@@ -199,7 +204,7 @@ object Renderer2D {
     }
 
     fun drawQuad(position: Vec2 = Vec2(), size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f) =
-        drawQuad(Vec3(position, 0), size, radians, texture, color, tilingFactor)
+        drawQuad(Vec3(position, 0f), size, radians, texture, color, tilingFactor)
 
     fun drawQuad(position: Vec3, size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f) {
         if (quadVertexBufferData.position() >= maxQuads) {
