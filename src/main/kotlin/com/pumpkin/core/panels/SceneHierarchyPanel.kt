@@ -10,9 +10,6 @@ import glm_.vec3.swizzle.xy
 import glm_.vec4.Vec4
 import imgui.*
 import kotlin.reflect.KClass
-import kotlin.reflect.KMutableProperty
-import kotlin.reflect.KProperty
-import kotlin.reflect.KType
 
 class SceneHierarchyPanel(var context: Scene) {
     private val registry: Registry get() = context.registry
@@ -112,15 +109,19 @@ class SceneHierarchyPanel(var context: Scene) {
         }
         ImGui.sameLine()
         ImGui.pushItemWidth(-1)
-        if (ImGui.button("Add Component"))
+        if (selectionContext != null && ImGui.button("Add Component"))
             ImGui.openPopup("AddComponent")
 
         if (ImGui.beginPopup("AddComponent")) {
-            if (ImGui.menuItem("Camera")) {
+            if (!registry.has<TransformComponent>(selectionContext!!) && ImGui.menuItem("Transform")) {
+                registry.emplace<TransformComponent>(selectionContext!!, floatArrayOf(0f, 0f, 0f, 1f, 1f, 0f))
+                ImGui.closeCurrentPopup()
+            }
+            if (!registry.has<CameraComponent>(selectionContext!!) && ImGui.menuItem("Camera")) {
                 registry.emplace<CameraComponent>(selectionContext!!, SceneCamera())
                 ImGui.closeCurrentPopup()
             }
-            if (ImGui.menuItem("Sprite Renderer")) {
+            if (!registry.has<SpriteRendererComponent>(selectionContext!!) && ImGui.menuItem("Sprite Renderer")) {
                 registry.emplace<SpriteRendererComponent>(selectionContext!!, floatArrayOf(1f, 1f, 1f, 1f))
                 ImGui.closeCurrentPopup()
             }

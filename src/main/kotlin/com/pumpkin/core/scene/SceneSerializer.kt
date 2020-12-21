@@ -1,5 +1,6 @@
 package com.pumpkin.core.scene
 
+import com.pumpkin.core.Debug
 import com.pumpkin.core.jsonFormat
 import com.pumpkin.core.renderer.ProjectionType
 import kotlinx.serialization.encodeToString
@@ -7,6 +8,8 @@ import kotlinx.serialization.json.*
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
+import java.lang.Exception
+import kotlin.reflect.KClass
 import com.pumpkin.ecs.Entity as EnTT
 
 class SceneSerializer(var scene: Scene) {
@@ -55,6 +58,12 @@ class SceneSerializer(var scene: Scene) {
                 }
             }
         }
+        if (scene.registry.has<NativeScriptComponent>(entity)) {
+            val scriptComponent = scene.registry.get<NativeScriptComponent>(entity)
+            putJsonObject("NativeScriptComponent") {
+                put("ScriptClass", scriptComponent.instance::class.qualifiedName)
+            }
+        }
     }
 
     fun serialize(absoluteFilepath: String) {
@@ -75,6 +84,7 @@ class SceneSerializer(var scene: Scene) {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun deserializeEntity(entityObject: JsonObject) {
         val name = if (entityObject.containsKey("TagComponent"))
             entityObject["TagComponent"]!!.jsonObject["Tag"]!!.jsonPrimitive.content
@@ -117,6 +127,15 @@ class SceneSerializer(var scene: Scene) {
                 colorArray[2].jsonPrimitive.float,
                 colorArray[3].jsonPrimitive.float
             ))
+        }
+        if (entityObject.containsKey("NativeScriptComponent")) {
+            val className = entityObject["NativeScriptComponent"]!!.jsonObject["ScriptClass"]!!.jsonPrimitive.content
+            try {
+                val clazz = Class.forName(className).kotlin as KClass<ScriptableEntity>
+                entity.addComponent<NativeScriptComponent>().bind(clazz)
+            } catch (e: Exception) {
+                Debug.logErrorCore("(caught) Exception in scene deserialization", e)
+            }
         }
     }
 

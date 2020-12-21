@@ -1,19 +1,24 @@
 package editor
 
-import com.pumpkin.core.*
+import com.pumpkin.core.Application
+import com.pumpkin.core.FileDialog
+import com.pumpkin.core.Reference
+import com.pumpkin.core.Timestep
 import com.pumpkin.core.event.Event
-import com.pumpkin.core.event.EventDispatcher
 import com.pumpkin.core.event.KeyPressedEvent
 import com.pumpkin.core.imgui.ImGuiProfiler
-import com.pumpkin.core.input.*
+import com.pumpkin.core.input.Input
+import com.pumpkin.core.input.KeyCode
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.panels.SceneHierarchyPanel
-import com.pumpkin.core.renderer.*
-import com.pumpkin.core.scene.*
+import com.pumpkin.core.renderer.Framebuffer
+import com.pumpkin.core.renderer.FramebufferSpecification
+import com.pumpkin.core.scene.Scene
+import com.pumpkin.core.scene.SceneSerializer
+import com.pumpkin.core.scene.ScriptableEntity
+import com.pumpkin.core.scene.TransformComponent
 import com.pumpkin.core.settings.Settings
 import glm_.vec2.Vec2
-import glm_.vec3.Vec3
-import glm_.vec4.Vec4
 import imgui.*
 
 class EditorLayer : Layer("Editor") {
