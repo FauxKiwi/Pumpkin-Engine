@@ -16,15 +16,22 @@ class SceneHierarchyPanel(var context: Scene) {
     var selectionContext: Entity? = null
 
     fun onImGuiRender() {
+        /**/val avail = ImGui.contentRegionMax - Vec2(0f, 22f)
+        /**/ImGui.setNextWindowPos(Vec2() + Vec2(0f, 22f))
+        /**/ImGui.setNextWindowSize(avail * Vec2(0.2f, 0.25f))
+
         ImGui.begin("Hierarchy")
         registry.each(::drawEntityNode)
         if (ImGui.beginPopupContextWindow(popupFlags = PopupFlag.MouseButtonRight.i or PopupFlag.NoOpenOverItems.i)) {
-            if (ImGui.menuItem("Create Empty Entity"))
-                context.createEntity("Empty Entity")
+            if (ImGui.menuItem("Create Empty Entity")) {
+                selectionContext = context.createEntity("Empty Entity").entityHandle
+            }
             ImGui.endPopup()
         }
         ImGui.end()
 
+        /**/ImGui.setNextWindowPos(avail * Vec2(0f, 0.25f) + Vec2(0f, 22f))
+        /**/ImGui.setNextWindowSize(avail * Vec2(0.2f, 0.5f))
         ImGui.begin("Inspector")
         if (selectionContext != null) {
             drawComponents(selectionContext!!)
@@ -101,6 +108,7 @@ class SceneHierarchyPanel(var context: Scene) {
         }
 
     private fun drawComponents(entity: Entity) {
+        ImGui.text("Full ID: ${entity.fullID} -> ID: ${entity.id} | Version: ${entity.version}")
         if (
             registry.has<TagComponent>(entity)
         ) {

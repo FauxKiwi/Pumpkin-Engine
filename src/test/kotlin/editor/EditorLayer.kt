@@ -1,9 +1,6 @@
 package editor
 
-import com.pumpkin.core.Application
-import com.pumpkin.core.FileDialog
-import com.pumpkin.core.Reference
-import com.pumpkin.core.Timestep
+import com.pumpkin.core.*
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.KeyPressedEvent
 import com.pumpkin.core.imgui.ImGuiProfiler
@@ -14,15 +11,14 @@ import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.panels.SceneHierarchyPanel
 import com.pumpkin.core.renderer.Framebuffer
 import com.pumpkin.core.renderer.FramebufferSpecification
-import com.pumpkin.core.scene.Scene
-import com.pumpkin.core.scene.SceneSerializer
-import com.pumpkin.core.scene.ScriptableEntity
-import com.pumpkin.core.scene.TransformComponent
+import com.pumpkin.core.renderer.RendererCommand
+import com.pumpkin.core.scene.*
 import com.pumpkin.core.settings.Settings
 import glm_.glm
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
+import glm_.vec4.Vec4
 import imgui.*
 
 class EditorLayer : Layer("Editor") {
@@ -38,6 +34,7 @@ class EditorLayer : Layer("Editor") {
     private var activeScene by Reference<Scene>()
     private lateinit var sceneHierarchyPanel: SceneHierarchyPanel
     private lateinit var sceneSerializer: SceneSerializer
+    private val editorCamera = EditorCamera()
 
     private var gizmoType = -1
 
@@ -60,11 +57,14 @@ class EditorLayer : Layer("Editor") {
         ) {
             framebuffer.resize(viewportSize.x.toInt(), viewportSize.y.toInt())
             activeScene.onViewportResize(viewportSize.x.toInt(), viewportSize.y.toInt())
+            editorCamera.setViewportSize(viewportSize.x, viewportSize.y)
         }
+        editorCamera.onUpdate(ts)
 
         framebuffer.bind()
 
-        activeScene.onUpdate(ts)
+        activeScene.onUpdateEditor(ts, editorCamera)
+        //activeScene.onUpdateRuntime(ts)
 
         framebuffer.unbind()
     }
@@ -97,7 +97,6 @@ class EditorLayer : Layer("Editor") {
 
         menuBar()
 
-        val style = ImGui.style
         val minWinSizeX = style.windowMinSize.x
         style.windowMinSize.x = 370
         if (io.configFlags and ConfigFlag.DockingEnable.i != 0) {
@@ -106,14 +105,22 @@ class EditorLayer : Layer("Editor") {
         }
         style.windowMinSize.x = minWinSizeX
 
+        /**/val avail = contentRegionMax - Vec2(0f, 22f)
+        /**/setNextWindowPos(avail * Vec2(0f, 0.75f) + Vec2(0f, 21f))
+        /**/setNextWindowSize(avail * Vec2(0.2f, 0.25f))
+
         ImGuiProfiler.onImGuiRender()
 
         sceneHierarchyPanel.onImGuiRender()
 
         Settings.onImGuiRender()
+        if (Settings.uEditorCameraView) { editorCamera.fov = Settings.editorCameraFov; editorCamera.updateProjection(); Settings.uEditorCameraView = false; }
+
+        /**/setNextWindowPos(avail * Vec2(0.2f, 0f) + Vec2(0f, 22f))
+        /**/setNextWindowSize(avail * Vec2(0.8f, 1f))
 
         pushStyleVar(StyleVar.WindowPadding, Vec2())
-        begin("Viewport")
+        begin("Viewport", /**/null, WindowFlag.NoMove.i)
         viewportFocused = isWindowFocused()
         viewportHovered = isWindowHovered()
         Application.get().getImGuiLayer().blockEvents = !viewportHovered && !viewportFocused
@@ -125,7 +132,7 @@ class EditorLayer : Layer("Editor") {
         image(framebuffer.colorAttachmentID, viewportSize, Vec2(0, 1), Vec2(1, 0))
 
         // GIZMOS
-        val selectedEntity = sceneHierarchyPanel.selectionContext
+        /*val selectedEntity = sceneHierarchyPanel.selectionContext
         if (selectedEntity != null && gizmoType != -1)
         {
             ImGuizmo.setOrthographic(false)
@@ -133,44 +140,37 @@ class EditorLayer : Layer("Editor") {
 
             ImGuizmo.setRect(ImGui.windowPos.x, ImGui.windowPos.y, ImGui.windowWidth, ImGui.windowHeight)
 
-            // Camera
-            val camera = activeScene.primaryCamera
-            if (camera != null) {
-                val cameraProjection = camera.projection
-                val cameraView = glm.inverse(Mat4(activeScene.cameraTransform!!))
+            // Entity transform
+            val tc = activeScene.registry.get<TransformComponent>(selectedEntity)
+            val transform = tc.transform
 
-                // Entity transform
-                val tc = activeScene.registry.get<TransformComponent>(selectedEntity)
-                val transform = tc.transform
+            // Snapping
+            val snap = Input.isKeyPressed(KeyCode.LEFT_CONTROL)
+            var snapValue = 0.5f // Snap to 0.5m for translation/scale
+            // Snap to 45 degrees for rotation
+            if (gizmoType == ImGuizmo.OPERATION.ROTATE.ordinal)
+                snapValue = 45.0f
 
-                // Snapping
-                val snap = Input.isKeyPressed(KeyCode.LEFT_CONTROL)
-                var snapValue = 0.5f // Snap to 0.5m for translation/scale
-                // Snap to 45 degrees for rotation
-                if (gizmoType == ImGuizmo.OPERATION.ROTATE.ordinal)
-                    snapValue = 45.0f
+            val snapValues = floatArrayOf(snapValue, snapValue, snapValue)
 
-                val snapValues = floatArrayOf(snapValue, snapValue, snapValue)
+            ImGuizmo.manipulate(
+                editorCamera.view, editorCamera.projection,
+                ImGuizmo.OPERATION.values()[gizmoType], ImGuizmo.MODE.LOCAL, transform,
+                null, if (snap) snapValues else null
+            )
 
-                ImGuizmo.manipulate(
-                    cameraView, cameraProjection,
-                    ImGuizmo.OPERATION.values()[gizmoType], ImGuizmo.MODE.LOCAL, transform,
-                    null, if (snap) snapValues else null
-                )
+            if (ImGuizmo.isUsing()) {
+                val translation = Vec3();
+                val rotation = Vec3();
+                val scale = Vec3()
+                ImGuizmo.decomposeFromMatrix(transform, translation, rotation, scale)
 
-                if (ImGuizmo.isUsing()) {
-                    val translation = Vec3();
-                    val rotation = Vec3();
-                    val scale = Vec3()
-                    ImGuizmo.decomposeFromMatrix(transform, translation, rotation, scale)
-
-                    val deltaRotation = rotation - tc.rotation
-                    tc.position = translation
-                    tc.rotation = tc.rotation + deltaRotation
-                    tc.scale = scale
-                }
+                val deltaRotation = rotation - tc.rotation
+                tc.position = translation
+                tc.rotation = tc.rotation + deltaRotation
+                tc.scale = scale
             }
-        }
+        }*/
 
         end()
         popStyleVar()
@@ -180,6 +180,7 @@ class EditorLayer : Layer("Editor") {
     }
 
     override fun onEvent(event: Event) {
+        editorCamera.onEvent(event)
         if (event is KeyPressedEvent)
             keybinds(event)
     }

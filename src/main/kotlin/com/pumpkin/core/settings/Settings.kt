@@ -7,6 +7,9 @@ import imgui.classes.Style
 import imgui.internal.sections.OldColumnsFlag
 
 object Settings {
+    var editorCameraClearColor = Vec4(0.1f, 0.1f, 0.1f, 1f)
+    var editorCameraFov = 45f; var uEditorCameraView = false
+
     private var open = false
     private var first = true
 
@@ -35,7 +38,10 @@ object Settings {
         var currentSettings = "None"
         if (ImGui.treeNodeEx("Appearance")) {
             currentSettings = "Appearance"
-            if (ImGui.treeNodeEx("Theme", TreeNodeFlag.Bullet.i)) currentSettings = "Theme"
+            ImGui.treePop()
+        }
+        if (ImGui.treeNodeEx("Editor Camera")) {
+            currentSettings = "EditorCamera"
             ImGui.treePop()
         }
 
@@ -45,10 +51,13 @@ object Settings {
 
         when (currentSettings) {
             "None" -> ImGui.text("Open a context menu on the left to edit settings")
-            "Appearance" -> ImGui.text("Appearance")
-            "Theme" -> {
+            "Appearance" -> {
                 if (ImGui.combo("Theme", Theme::current, "Dark\u0000Light"))
                     ImGui.currentContext?.style = Theme[Theme.current].style
+            }
+            "EditorCamera" -> {
+                ImGui.colorEdit3("Clear Color", editorCameraClearColor)
+                uEditorCameraView = ImGui.dragFloat("Fov", ::editorCameraFov)
             }
         }
 

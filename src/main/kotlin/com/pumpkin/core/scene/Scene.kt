@@ -1,10 +1,12 @@
 package com.pumpkin.core.scene
 
+import com.pumpkin.core.EditorCamera
 import com.pumpkin.core.Referencable
 import com.pumpkin.core.Timestep
 import com.pumpkin.core.renderer.Camera
 import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.renderer.RendererCommand
+import com.pumpkin.core.settings.Settings
 import com.pumpkin.ecs.Registry
 import glm_.vec4.Vec4
 import kotlinx.serialization.Serializable
@@ -42,7 +44,19 @@ class Scene : Referencable() {
         registry.destroy(entity.entityHandle)
     }
 
-    fun onUpdate(ts: Timestep) {
+    fun onUpdateEditor(ts: Timestep, camera: EditorCamera) {
+        RendererCommand.setClearColor(Settings.editorCameraClearColor)
+        RendererCommand.clear()
+        Renderer2D.beginScene(camera)
+        val group = registry.group<TransformComponent, SpriteRendererComponent>()
+        for (entity in group) {
+            val (transform, sprite) = group.get(entity)
+            Renderer2D.drawQuad(transform.position, transform.scale, transform.rotation, sprite.color)
+        }
+        Renderer2D.endScene()
+    }
+
+    fun onUpdateRuntime(ts: Timestep) {
         run {
             registry.view<NativeScriptComponent>().each { (entity, nsc) ->
                 if (nsc.i == null) {

@@ -1,5 +1,14 @@
 {
     "Appearance": {
         "Theme": 0
+    },
+    "EditorCamera": {
+        "ClearColor": [
+            0.09282702,
+            0.09282609,
+            0.09282609,
+            1.0
+        ],
+        "Fov": 45.0
     }
 }

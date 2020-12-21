@@ -1,5 +1,6 @@
 package com.pumpkin.core.renderer
 
+import com.pumpkin.core.EditorCamera
 import com.pumpkin.core.stack
 import glm_.glm
 import glm_.mat4x4.Mat4
@@ -27,7 +28,7 @@ object Renderer2D {
     private lateinit var textureSlots: Array<Texture2D?>
     private var textureSlotIndex = 1
 
-    var maxQuads = 1200
+    var maxQuads = 1000
         set(value) {
             field = value
             maxVertices = maxQuads
@@ -59,7 +60,7 @@ object Renderer2D {
                 put(2, 0xff.toByte())
                 put(3, 0xff.toByte())
             }
-            whiteTexture().setData(whiteTextureData)
+            whiteTexture.invoke().setData(whiteTextureData)
         }
 
         val samplers = IntArray(maxTextureSlots) { it }
@@ -111,6 +112,16 @@ object Renderer2D {
         textureShader().run {
             bind()
             setMat4("u_ViewProjection", camera.viewProjectionMatrix)
+        }
+
+        drawCalls = 0
+        startBatch()
+    }
+
+    fun beginScene(camera: EditorCamera) {
+        textureShader().apply {
+            bind()
+            setMat4("u_ViewProjection", camera.viewProjection)
         }
 
         drawCalls = 0
