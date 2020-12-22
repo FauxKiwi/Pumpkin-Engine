@@ -142,7 +142,6 @@ class EditorLayer : Layer("Editor") {
 
             // Entity transform
             val tc = activeScene.registry.get<TransformComponent>(selectedEntity)
-            val transform = tc.transform
 
             // Snapping
             val snap = Input.isKeyPressed(KeyCode.LEFT_CONTROL)
@@ -155,11 +154,11 @@ class EditorLayer : Layer("Editor") {
 
             ImGuizmo.manipulate(
                 editorCamera.view, editorCamera.projection,
-                ImGuizmo.OPERATION.values()[gizmoType], ImGuizmo.MODE.LOCAL, transform,
+                ImGuizmo.OPERATION.values()[gizmoType], ImGuizmo.MODE.LOCAL, tc,
                 null, if (snap) snapValues else null
             )
 
-            if (ImGuizmo.isUsing()) {
+           /* if (ImGuizmo.isUsing()) {
                 val translation = Vec3()
                 val rotation = Vec3()
                 val scale = Vec3()
@@ -169,21 +168,10 @@ class EditorLayer : Layer("Editor") {
                 tc.position = translation
                 tc.rotation = tc.rotation + deltaRotation
                 tc.scale = scale
-            }
+            }*/
         }
         end()
         popStyleVar()
-
-        /*begin("DrawList")
-        text("Gradients")
-        run {
-            for (i in 0..100) {
-                windowDrawList.addCircleFilled(Vec2((i % 10) * 100f, (i / 10) * 100f), 20f, -1)
-            }
-        }
-        end()*/
-
-        //ImGui.showDemoWindow(booleanArrayOf(true))
 
         end()
 
