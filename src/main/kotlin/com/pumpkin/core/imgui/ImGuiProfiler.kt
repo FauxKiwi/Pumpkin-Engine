@@ -40,7 +40,7 @@ object ImGuiProfiler {
             graphSize = Vec2(0f, 80f)
         )
         ImGui.checkbox("VSync", Window.getWindow()::vSync)
-        ImGui.text("Drawing ${Renderer2D.quadCount} quads")
+        ImGui.text("Drawing ${Renderer2D.quadCount} quads (${Renderer2D.quadCount * 4} vertices, ${Renderer2D.quadCount * 6} indices)")
         ImGui.text("Draw calls: ${Renderer2D.drawCalls}")
         ImGui.end()
     }

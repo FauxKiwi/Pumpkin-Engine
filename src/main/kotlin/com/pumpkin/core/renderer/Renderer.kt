@@ -5,7 +5,10 @@ import glm_.mat4x4.Mat4
 object Renderer {
 
     @ExperimentalUnsignedTypes
-    inline fun init() = RendererCommand.init().also { Renderer2D.init() }
+    fun init() {
+        RendererCommand.init()
+        Renderer2D.init()
+    }
 
     fun beginScene(camera: OrthographicCamera) {
         sceneData.viewProjectionMatrix = camera.viewProjectionMatrix

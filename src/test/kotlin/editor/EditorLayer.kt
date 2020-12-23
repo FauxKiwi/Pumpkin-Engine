@@ -12,6 +12,7 @@ import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.panels.SceneHierarchyPanel
 import com.pumpkin.core.renderer.Framebuffer
 import com.pumpkin.core.renderer.FramebufferSpecification
+import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.renderer.RendererCommand
 import com.pumpkin.core.scene.*
 import com.pumpkin.core.settings.Settings
@@ -36,6 +37,7 @@ class EditorLayer : Layer("Editor") {
     private lateinit var sceneHierarchyPanel: SceneHierarchyPanel
     private lateinit var sceneSerializer: SceneSerializer
     private val editorCamera = EditorCamera()
+    private lateinit var runtimeCamera: Entity
 
     private var gizmoType = -1
 
@@ -43,6 +45,11 @@ class EditorLayer : Layer("Editor") {
         activeScene = Scene()
         sceneHierarchyPanel = SceneHierarchyPanel(activeScene)
         sceneSerializer = SceneSerializer(activeScene)
+
+        /*runtimeCamera = activeScene.createEntity("Runtime Camera")
+        runtimeCamera.addComponent<CameraComponent>(SceneCamera())
+        runtimeCamera.getComponent<CameraComponent>().camera.projectionType = ProjectionType.Perspective
+        runtimeCamera.getComponent<TransformComponent>().position = Vec3(0f, 0f, 10f)*/
 
         ImGuiProfiler.onAttach()
     }
@@ -153,7 +160,7 @@ class EditorLayer : Layer("Editor") {
             val snapValues = floatArrayOf(snapValue, snapValue, snapValue)
 
             ImGuizmo.manipulate(
-                editorCamera.view, editorCamera.projection,
+                /*runtimeCamera.getComponent<TransformComponent>().transform, runtimeCamera.getComponent<CameraComponent>().camera.projection,*/editorCamera.view, editorCamera.projection,
                 ImGuizmo.OPERATION.values()[gizmoType], ImGuizmo.MODE.LOCAL, tc,
                 null, if (snap) snapValues else null
             )

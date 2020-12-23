@@ -71,9 +71,9 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
 
         Renderer2D.drawQuad(Vec2(0.25f), Vec2(1.25f, 0.75f), color = color)
         Renderer2D.drawQuad(Vec2(-1f, 0f), Vec2(0.8f), color = Vec4(0.8f, 0.2f, 0.3f, 1f))
-        Renderer2D.drawQuad(checkerboardPosition, checkerboardScale, glm.radians(checkerboardRotation.toFloat()), texture = checkerboardTexture(), color = checkerboardColor, tilingFactor = checkerboardTiling)
-        Renderer2D.drawQuad(Vec3(0f, 0f, 0.2f), size = Vec2(2f, 2f), radians = glm.radians(45f), texture = pumpkinLogoTexture(), tilingFactor = 10f)
-        Renderer2D.drawQuad(position = Vec3(0f, 0f, 0.4f), texture = checkerboardTexture(), subTextureCoord = Vec2(1, 1), subTextureSize = Vec2(2, 6), subTextureTileSize = Vec2(4, 4))
+        //Renderer2D.drawQuad(checkerboardPosition, checkerboardScale, glm.radians(checkerboardRotation.toFloat()), texture = checkerboardTexture(), color = checkerboardColor, tilingFactor = checkerboardTiling)
+        //Renderer2D.drawQuad(Vec3(0f, 0f, 0.2f), size = Vec2(2f, 2f), radians = glm.radians(45f), texture = pumpkinLogoTexture(), tilingFactor = 10f)
+        //Renderer2D.drawQuad(position = Vec3(0f, 0f, 0.4f), texture = checkerboardTexture(), subTextureCoord = Vec2(1, 1), subTextureSize = Vec2(2, 6), subTextureTileSize = Vec2(4, 4))
 
         //Renderer2D.drawQuad(p.position, Vec2(p.sizeBegin, p.sizeBegin), p.rotation, p.colorBegin)
         //Renderer2D.drawQuad(position = Vec3(0f, 0f, -0.1f), color = Vec4(1f))

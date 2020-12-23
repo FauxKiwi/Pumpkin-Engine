@@ -30,7 +30,7 @@ class StresstestLayer : Layer("Stresstest") {
         Renderer2D.beginScene(cameraController.camera)
 
         for (x in 0 until sqrt) for (y in 0 until sqrt) {
-            Renderer2D.drawQuad(Vec2(x / 10f, y / 10f), Vec2(0.08f), color = Vec4(0.8f))
+            Renderer2D.drawQuad(Vec2(x * 0.1f, y * 0.1f), Vec2(0.09f), color = Vec4(0.8f))
         }
 
         Renderer2D.endScene()

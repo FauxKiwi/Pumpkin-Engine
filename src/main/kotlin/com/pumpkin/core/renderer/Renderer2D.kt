@@ -1,9 +1,12 @@
 package com.pumpkin.core.renderer
 
 import com.pumpkin.core.EditorCamera
+import com.pumpkin.core.math.inverseTransform
+import com.pumpkin.core.math.transform
 import com.pumpkin.core.stack
 import glm_.glm
 import glm_.mat4x4.Mat4
+import glm_.quat.Quat
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
@@ -13,30 +16,28 @@ import java.nio.FloatBuffer
 // QuadVertex data class: Just for layout purposes
 /* struct class QuadVertex(
     val position: Vec3,
-    val size: Vec3,
-    val rotation: Vec3t,
     val color: Vec4,
-    val texCoord: Vec4,
+    val texCoord: Vec2,
     val texIndex: Float,
     val tilingFactor: Float
 )*/
-const val sizeOfQuadVertex = 3 + 3 + 3 + 4 + 4 + 1 + 1
+const val sizeOfQuadVertex = 11 //3 + 4 + 2 + 1 + 1
 
 object Renderer2D {
-    //private var quadIndexCount = 0
+    private var quadIndexCount = 0
     private lateinit var quadVertexBufferData: FloatBuffer
     private lateinit var textureSlots: Array<Texture2D?>
     private var textureSlotIndex = 1
 
-    var maxQuads = 1000
+    var maxQuads = 300
         set(value) {
             field = value
-            maxVertices = maxQuads
-            maxIndices = maxQuads
+            maxVertices = maxQuads * 4
+            maxIndices = maxQuads * 6
             quadVertexBufferData = MemoryUtil.memAllocFloat(maxVertices * sizeOfQuadVertex)
         }
-    private var maxVertices = maxQuads
-    private var maxIndices = maxQuads
+    private var maxVertices = maxQuads * 4
+    private var maxIndices = maxQuads * 6
     var maxTextureSlots = 32
 
     private var quadVertexArray = VertexArray.create()
@@ -44,7 +45,12 @@ object Renderer2D {
     private var textureShader = Shader.create("shaders/Texture.glsl")
     private var whiteTexture = Texture2D.create(1, 1)
 
-    //private lateinit var quadVertexPositions: Array<Vec4>
+    private val quadVertexPositions = arrayOf(
+        Vec4(-0.5f, -0.5f, 0.0f, 1.0f),
+        Vec4( 0.5f, -0.5f, 0.0f, 1.0f),
+        Vec4( 0.5f,  0.5f, 0.0f, 1.0f),
+        Vec4(-0.5f,  0.5f, 0.0f, 1.0f),
+    )
 
     private var batchQuadCount = 0
     val quadCount get() = (drawCalls - 1) * maxQuads + batchQuadCount
@@ -60,7 +66,7 @@ object Renderer2D {
                 put(2, 0xff.toByte())
                 put(3, 0xff.toByte())
             }
-            whiteTexture.invoke().setData(whiteTextureData)
+            whiteTexture().setData(whiteTextureData)
         }
 
         val samplers = IntArray(maxTextureSlots) { it }
@@ -68,38 +74,32 @@ object Renderer2D {
         quadVertexBuffer().layout = BufferLayout(
             mutableListOf(
                 BufferElement(ShaderDataType.Float3, "a_Position"),
-                BufferElement(ShaderDataType.Float3, "a_Size"),
-                BufferElement(ShaderDataType.Float3, "a_Rotation"),
                 BufferElement(ShaderDataType.Float4, "a_Color"),
-                BufferElement(ShaderDataType.Float4, "a_TexCoords"),
+                BufferElement(ShaderDataType.Float2, "a_TexCoord"),
                 BufferElement(ShaderDataType.Float, "a_TexIndex"),
                 BufferElement(ShaderDataType.Float, "a_TilingFactor"),
             )
         )
         quadVertexArray().addVertexBuffer(quadVertexBuffer.take())
 
-        quadVertexBufferData = FloatBuffer.allocate(maxVertices * sizeOfQuadVertex)
+        quadVertexBufferData = MemoryUtil.memAllocFloat(maxVertices * sizeOfQuadVertex)
 
-        /*quadVertexPositions = arrayOf(
-            Vec4(-0.5f, -0.5f, 0.0f, 1.0f),
-            Vec4( 0.5f, -0.5f, 0.0f, 1.0f),
-            Vec4( 0.5f,  0.5f, 0.0f, 1.0f),
-            Vec4(-0.5f,  0.5f, 0.0f, 1.0f),
-        )*/
+        val quadIndices = UIntArray(maxIndices) {
+            ((it / 6) * 4).toUInt() + (
+            if (it % 6 > 2) ((it + 1) % 3).toUInt().let { u -> if (u > 0u) u + 1u else u }
+            else (it % 6).toUInt())
+        } // 0, 1, 2, 2, 3, 0, ...
 
-        //val quadIndices = UIntArray(maxIndices) { it.toUInt() }
+        val quadIB = IndexBuffer.create(quadIndices)
+        quadVertexArray().indexBuffer = quadIB.take()
 
-        //val quadIB = IndexBuffer.create(quadIndices)
-        //quadVertexArray().indexBuffer = quadIB.take()
-
-        //textureShader().setInt("u_Texture", 0)
         textureShader().bind()
         textureShader().setIntArray("u_Textures", samplers)
 
         textureSlots[0] = whiteTexture()
 
         quadVertexBuffer.release()
-        //quadIB.release()
+        quadIB.release()
     }
 
     fun shutdown() {
@@ -129,10 +129,7 @@ object Renderer2D {
     }
 
     fun beginScene(camera: Camera, transform: FloatArray) {
-        val viewProj = camera.projection * glm.translate(glm.rotateXYZ(glm.scale(Mat4.identity,
-            /*scale*/1f / transform[6], 1f / transform[7], 1f / transform[8]),
-            /*rx, ry, rz*/-transform[3], -transform[4], -transform[5]),
-            /*position*/-transform[0], -transform[1], -transform[2])
+        val viewProj = camera.projection * inverseTransform(transform)
 
         textureShader().apply {
             bind()
@@ -160,10 +157,9 @@ object Renderer2D {
     }
 
     private fun startBatch() {
-        quadVertexBufferData.position(0)
-
         textureSlotIndex = 1
 
+        quadIndexCount = 0
         batchQuadCount = 0
 
         drawCalls++
@@ -179,13 +175,13 @@ object Renderer2D {
 
         val array = FloatArray(quadVertexBufferData.position())
         quadVertexBufferData.position(0)
-        quadVertexBufferData[array, 0, array.size]
+        quadVertexBufferData.get(array, 0, array.size)
         quadVertexBufferData.position(0)
         quadVertexBuffer().setData(array)
 
         for (i in 0 until textureSlotIndex) textureSlots[i]!!.bind(i)
 
-        RendererCommand.drawIndexed(quadVertexArray(), batchQuadCount)
+        RendererCommand.drawIndexed(quadVertexArray(), quadIndexCount)
     }
 
     fun drawQuad(position: Vec2 = Vec2(), size: Vec2 = Vec2(1f), radians: Float = 0f, color: Vec4) =
@@ -195,26 +191,51 @@ object Renderer2D {
 
     fun drawQuad(position: Vec2 = Vec2(), size: Vec3 = Vec3(1f), radians: Vec3 = Vec3(), color: Vec4) =
         drawQuad(Vec3(position, 0f), size, radians, color)
+    fun drawQuad(position: Vec3, size: Vec3 = Vec3(1f), radians: Vec3 = Vec3(), color: Vec4) =
+        //drawQuad(glm.translate(glm.rotateXYZ(glm.scale(Mat4.identity, size), radians.x, radians.y, radians.z), position), color)
+        drawQuad(transform(position, radians, size), color)
 
+    //private val textureIndices = arrayOf(0f, 0f, 1f, 0f, 1f, 1f, 0f, 1f)
     private const val whiteTextureID = 0f
     private const val whiteTextureTilingFactor = 1f
-    fun drawQuad(position: Vec3, size: Vec3 = Vec3(1f), radians: Vec3 = Vec3(), color: Vec4) {
-        if (quadVertexBufferData.position() >= maxVertices * sizeOfQuadVertex) {
+    fun drawQuad(transform: Mat4, color: Vec4) {
+        if (quadIndexCount >= maxIndices) {
             nextBatch()
         }
 
-        quadVertexBufferData.put(position.x); quadVertexBufferData.put(position.y); quadVertexBufferData.put(position.z)
-        quadVertexBufferData.put(size.x); quadVertexBufferData.put(size.y); quadVertexBufferData.put(size.z)
-        quadVertexBufferData.put(radians.x); quadVertexBufferData.put(radians.y); quadVertexBufferData.put(radians.z)
-        quadVertexBufferData.put(color.x); quadVertexBufferData.put(color.y); quadVertexBufferData.put(color.z); quadVertexBufferData.put(color.w)
-        quadVertexBufferData.put(0f); quadVertexBufferData.put(0f); quadVertexBufferData.put(1f); quadVertexBufferData.put(1f)
-        quadVertexBufferData.put(whiteTextureID)
-        quadVertexBufferData.put(whiteTextureTilingFactor)
+        quadVertexBufferData.put(transform * quadVertexPositions[0], color, 0f, 0f)
+        quadVertexBufferData.put(transform * quadVertexPositions[1], color, 1f, 0f)
+        quadVertexBufferData.put(transform * quadVertexPositions[2], color, 1f, 1f)
+        quadVertexBufferData.put(transform * quadVertexPositions[3], color, 0f, 1f)
 
+        quadIndexCount += 6
         batchQuadCount++
     }
 
-    fun drawQuad(position: Vec2 = Vec2(), size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f) =
+    @Suppress("NOTHING_TO_INLINE")
+    private inline fun FloatBuffer.put(
+        transformedPos: Vec4,
+        color: Vec4,
+        texX: Float, texY: Float,
+    ) {
+        put(transformedPos.x)
+        put(transformedPos.y)
+        put(transformedPos.z)
+
+        put(color.x)
+        put(color.y)
+        put(color.z)
+        put(color.w)
+
+        put(texX)
+        put(texY)
+
+        put(whiteTextureID)
+
+        put(whiteTextureTilingFactor)
+    }
+
+    /*fun drawQuad(position: Vec2 = Vec2(), size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f) =
         drawQuad(Vec3(position, 0f), size, radians, texture, color, tilingFactor)
 
     fun drawQuad(position: Vec3, size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f) {
@@ -248,7 +269,7 @@ object Renderer2D {
         quadVertexBufferData.put(textureIndex)
         quadVertexBufferData.put(tilingFactor)
 
-        batchQuadCount++
+        batchIndexCount++
     }
 
     fun drawQuad(position: Vec2 = Vec2(), size: Vec2 = Vec2(1f), radians: Float = 0f, texture: Texture2D, color: Vec4 = Vec4(1f), tilingFactor: Float = 1f,
@@ -294,6 +315,6 @@ object Renderer2D {
         quadVertexBufferData.put(textureIndex)
         quadVertexBufferData.put(tilingFactor)
 
-        batchQuadCount++
-    }
+        batchIndexCount++
+    }*/
 }

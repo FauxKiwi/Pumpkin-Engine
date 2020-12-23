@@ -51,7 +51,7 @@ class Scene : Referencable() {
         val group = registry.group<TransformComponent, SpriteRendererComponent>()
         for (entity in group) {
             val (transform, sprite) = group.get(entity)
-            Renderer2D.drawQuad(transform.position, transform.scale, transform.rotation, sprite.color)
+            Renderer2D.drawQuad(transform.transform, sprite.color)
         }
         Renderer2D.endScene()
     }
@@ -84,7 +84,7 @@ class Scene : Referencable() {
             val renderingGroup = registry.group<TransformComponent, SpriteRendererComponent>()
             for (entity in renderingGroup) {
                 val (transform, sprite) = renderingGroup.get(entity)
-                Renderer2D.drawQuad(transform.position, transform.scale, transform.rotation, sprite.color)
+                Renderer2D.drawQuad(transform.transform, sprite.color)
             }
             Renderer2D.endScene()
         } else {

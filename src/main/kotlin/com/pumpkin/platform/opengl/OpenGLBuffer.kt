@@ -42,8 +42,8 @@ class OpenGLIndexBuffer @ExperimentalUnsignedTypes constructor(indices: UIntArra
     private val rendererID = gl.createBuffers()
 
     init {
-        gl.bindBuffer(BufferTarget.ELEMENT_ARRAY, rendererID)
-        GL15C.glBufferData(GL15C.GL_ELEMENT_ARRAY_BUFFER, indices.toIntArray(), GL15C.GL_STATIC_DRAW)
+        gl.bindBuffer(BufferTarget.ARRAY, rendererID)
+        GL15C.glBufferData(GL15C.GL_ARRAY_BUFFER, indices.toIntArray(), GL15C.GL_STATIC_DRAW)
     }
 
     override fun close() = gl.deleteBuffers(rendererID)

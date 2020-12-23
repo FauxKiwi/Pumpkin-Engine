@@ -51,7 +51,6 @@ object Debug {
 }
 
 class Logger(private val name: String) {
-
     private fun color(level: LogLevel): String {
         return when (level) {
             LogLevel.DEBUG -> "\u001B[0;36m"
@@ -63,35 +62,37 @@ class Logger(private val name: String) {
         }
     }
 
+    val minLevel = LogLevel.DEBUG
+
     private val resetColor = "\u001B[0m"
 
     fun log(level: LogLevel, message: String) {
         println("${color(level)}[${level.name}] $name: $message$resetColor")
     }
 
-    fun trace(message: String) {
+    fun trace(message: String) { if (minLevel <= LogLevel.TRACE) {
         log(LogLevel.TRACE, message)
-    }
+    }}
 
-    fun debug(message: String) {
+    fun debug(message: String) { if (minLevel <= LogLevel.DEBUG) {
         log(LogLevel.DEBUG, message)
-    }
+    }}
 
-    fun info(message: String) {
+    fun info(message: String) { if (minLevel <= LogLevel.INFO) {
         log(LogLevel.INFO, message)
-    }
+    }}
 
-    fun warn(message: String) {
+    fun warn(message: String) { if (minLevel <= LogLevel.WARN) {
         log(LogLevel.WARN, message)
-    }
+    }}
 
-    fun error(message: String) {
+    fun error(message: String) { if (minLevel <= LogLevel.ERROR) {
         log(LogLevel.ERROR, message)
-    }
+    }}
 
-    fun fatal(message: String) {
+    fun fatal(message: String) { if (minLevel <= LogLevel.FATAL) {
         log(LogLevel.FATAL, message)
-    }
+    }}
 }
 
 enum class LogLevel {

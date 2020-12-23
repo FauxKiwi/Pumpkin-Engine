@@ -1,5 +1,6 @@
 package com.pumpkin.core.scene
 
+import com.pumpkin.core.math.inverseTransform
 import glm_.glm
 import glm_.mat4x4.Mat4
 import glm_.quat.Quat
@@ -26,17 +27,19 @@ inline class TransformComponent(@ComponentSize(9) val t: FloatArray) {
     var rotation: Vec3
         get() = Vec3(t[3], t[4], t[5])
         set(value) { t[3] = value[0]; t[4] = value[1]; t[5] = value[2] }
-    var rx get() = t[3]; set(x) { t[3] = x }
-    var ry get() = t[4]; set(y) { t[4] = y }
-    var rz get() = t[5]; set(z) { t[5] = z }
+    inline var rx get() = t[3]; set(x) { t[3] = x }
+    inline var ry get() = t[4]; set(y) { t[4] = y }
+    inline var rz get() = t[5]; set(z) { t[5] = z }
     var scale: Vec3
         get() = Vec3(t[6], t[7], t[8])
         set(value) { t[6] = value[0]; t[7] = value[1]; t[8] = value[2] }
+    val scaleInv: Vec3
+        get() = Vec3(1f / t[6], 1f / t[7], 1f / t[8])
+
     val transform: Mat4
-        get() = glm.translate(glm.rotateXYZ(glm.scale(Mat4.identity,
-            scale),
-            rx, ry, rz),
-            position)
+        get() = com.pumpkin.core.math.transform(t)
+    val inverse: Mat4
+        get() = inverseTransform(t)
 }
 
 class CameraComponent(@ComponentSize(2) val camera: SceneCamera) {

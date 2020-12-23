@@ -15,7 +15,7 @@ interface RendererAPI {
 
     fun clear()
 
-    fun drawIndexed(vertexArray: VertexArray, count: Int)
+    fun drawIndexed(vertexArray: VertexArray, count: Int = 0)
 
     fun setViewport(x: Int, y: Int, width: Int, height: Int)
 }
