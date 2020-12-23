@@ -59,15 +59,14 @@ class EditorCamera(
 
     var viewportWidth = 1280f
     var viewportHeight = 720f
-    fun setViewportSize(width: Float, height: Float) { viewportHeight = width; viewportHeight = height; updateProjection() }
+    fun setViewportSize(width: Float, height: Float) { viewportWidth = width; viewportHeight = height; updateProjection() }
 
     init {
         projection = glm.perspective(glm.radians(fov), aspectRatio, nearClip, farClip)
         updateView()
     }
 
-    fun updateProjection()
-    {
+    fun updateProjection() {
         aspectRatio = viewportWidth / viewportHeight
         projection = glm.perspective(glm.radians(fov), aspectRatio, nearClip, farClip)
     }

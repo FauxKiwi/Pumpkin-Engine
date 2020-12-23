@@ -2,7 +2,6 @@ package editor
 
 import com.pumpkin.core.*
 import com.pumpkin.core.event.Event
-import com.pumpkin.core.event.EventDispatcher
 import com.pumpkin.core.event.KeyPressedEvent
 import com.pumpkin.core.imgui.ImGuiProfiler
 import com.pumpkin.core.imgui.ImGuizmo
@@ -12,15 +11,9 @@ import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.panels.SceneHierarchyPanel
 import com.pumpkin.core.renderer.Framebuffer
 import com.pumpkin.core.renderer.FramebufferSpecification
-import com.pumpkin.core.renderer.ProjectionType
-import com.pumpkin.core.renderer.RendererCommand
 import com.pumpkin.core.scene.*
 import com.pumpkin.core.settings.Settings
-import glm_.glm
-import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
-import glm_.vec3.Vec3
-import glm_.vec4.Vec4
 import imgui.*
 
 class EditorLayer : Layer("Editor") {
@@ -113,9 +106,9 @@ class EditorLayer : Layer("Editor") {
         }
         style.windowMinSize.x = minWinSizeX
 
-        /**/val avail = contentRegionMax - Vec2(0f, 22f)
-        /**/setNextWindowPos(avail * Vec2(0f, 0.75f) + Vec2(0f, 21f))
-        /**/setNextWindowSize(avail * Vec2(0.2f, 0.25f))
+        /**/val cr = contentRegionMax - Vec2(0f, 22f)
+        /**/setNextWindowPos(cr * Vec2(0f, 0.75f) + Vec2(0f, 21f))
+        /**/setNextWindowSize(cr * Vec2(0.2f, 0.25f))
 
         ImGuiProfiler.onImGuiRender()
 
@@ -124,19 +117,15 @@ class EditorLayer : Layer("Editor") {
         Settings.onImGuiRender()
         if (Settings.uEditorCameraView) { editorCamera.fov = Settings.editorCameraFov; editorCamera.updateProjection(); Settings.uEditorCameraView = false; }
 
-        /**/setNextWindowPos(avail * Vec2(0.2f, 0f) + Vec2(0f, 22f))
-        /**/setNextWindowSize(avail * Vec2(0.8f, 1f))
+        /**/setNextWindowPos(cr * Vec2(0.2f, 0f) + Vec2(0f, 22f), Cond.Once)
+        /**/setNextWindowSize(cr * Vec2(0.8f, 1f), Cond.Once)
 
         pushStyleVar(StyleVar.WindowPadding, Vec2())
-        begin("Viewport", /**/null, WindowFlag.NoMove.i)
+        begin("Viewport", /**/null, WindowFlag.NoMove.i or WindowFlag.NoTitleBar.i)
+        viewportSize = Vec2(contentRegionAvail.x, contentRegionAvail.y)
         viewportFocused = isWindowFocused()
         viewportHovered = isWindowHovered()
         Application.get().getImGuiLayer().blockEvents = !viewportHovered && !viewportFocused
-        //if (viewportSize != contentRegionAvail) {
-        //    framebuffer.resize(contentRegionAvail.x.toInt(), contentRegionAvail.y.toInt())
-        viewportSize = Vec2(contentRegionAvail.x, contentRegionAvail.y)
-        //    cameraController.onResize(contentRegionAvail.x, contentRegionAvail.y)
-        //}
         image(framebuffer.colorAttachmentID, viewportSize, Vec2(0, 1), Vec2(1, 0))
 
         // GIZMOS
@@ -145,7 +134,7 @@ class EditorLayer : Layer("Editor") {
             ImGuizmo.setOrthographic(false)
             ImGuizmo.setDrawlist()
 
-            ImGuizmo.setRect(ImGui.windowPos.x, ImGui.windowPos.y, ImGui.windowWidth, ImGui.windowHeight)
+            ImGuizmo.setRect(windowPos.x, windowPos.y, windowWidth, windowHeight)
 
             // Entity transform
             val tc = activeScene.registry.get<TransformComponent>(selectedEntity)
