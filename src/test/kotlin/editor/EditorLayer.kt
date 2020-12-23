@@ -11,9 +11,11 @@ import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.panels.SceneHierarchyPanel
 import com.pumpkin.core.renderer.Framebuffer
 import com.pumpkin.core.renderer.FramebufferSpecification
+import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
 import com.pumpkin.core.settings.Settings
 import glm_.vec2.Vec2
+import glm_.vec4.Vec4
 import imgui.*
 
 class EditorLayer : Layer("Editor") {
@@ -117,11 +119,16 @@ class EditorLayer : Layer("Editor") {
         Settings.onImGuiRender()
         if (Settings.uEditorCameraView) { editorCamera.fov = Settings.editorCameraFov; editorCamera.updateProjection(); Settings.uEditorCameraView = false; }
 
-        /**/setNextWindowPos(cr * Vec2(0.2f, 0f) + Vec2(0f, 22f), Cond.Once)
-        /**/setNextWindowSize(cr * Vec2(0.8f, 1f), Cond.Once)
+        /**/setNextWindowPos(cr * Vec2(0.2f, 0f) + Vec2(0f, 22f))
+        /**/setNextWindowSize(cr * Vec2(0.8f, 1f))
 
         pushStyleVar(StyleVar.WindowPadding, Vec2())
-        begin("Viewport", /**/null, WindowFlag.NoMove.i or WindowFlag.NoTitleBar.i)
+        ImGui.pushStyleColor(Col.MenuBarBg, Vec4(0.3f, 0.3f, 0.3f, 1f))
+        begin("Viewport", /**/null, WindowFlag.NoMove.i or WindowFlag.NoTitleBar.i or WindowFlag.MenuBar.i or WindowFlag.NoCollapse.i)
+        ImGui.popStyleColor()
+
+        viewportMenuBar();
+
         viewportSize = Vec2(contentRegionAvail.x, contentRegionAvail.y)
         viewportFocused = isWindowFocused()
         viewportHovered = isWindowHovered()
@@ -129,7 +136,7 @@ class EditorLayer : Layer("Editor") {
         image(framebuffer.colorAttachmentID, viewportSize, Vec2(0, 1), Vec2(1, 0))
 
         // GIZMOS
-        val selectedEntity = sceneHierarchyPanel.selectionContext
+        /*val selectedEntity = sceneHierarchyPanel.selectionContext
         if (selectedEntity != null && gizmoType != -1) {
             ImGuizmo.setOrthographic(false)
             ImGuizmo.setDrawlist()
@@ -149,23 +156,11 @@ class EditorLayer : Layer("Editor") {
             val snapValues = floatArrayOf(snapValue, snapValue, snapValue)
 
             ImGuizmo.manipulate(
-                /*runtimeCamera.getComponent<TransformComponent>().transform, runtimeCamera.getComponent<CameraComponent>().camera.projection,*/editorCamera.view, editorCamera.projection,
+                editorCamera.viewProjection,
                 ImGuizmo.OPERATION.values()[gizmoType], ImGuizmo.MODE.LOCAL, tc,
                 null, if (snap) snapValues else null
             )
-
-           /* if (ImGuizmo.isUsing()) {
-                val translation = Vec3()
-                val rotation = Vec3()
-                val scale = Vec3()
-                ImGuizmo.decomposeFromMatrix(transform, translation, rotation, scale)
-
-                val deltaRotation = rotation - tc.rotation
-                tc.position = translation
-                tc.rotation = tc.rotation + deltaRotation
-                tc.scale = scale
-            }*/
-        }
+        }*/
         end()
         popStyleVar()
 
@@ -186,8 +181,8 @@ class EditorLayer : Layer("Editor") {
         }
     }
 
-fun menuBar() {
-    if (ImGui.beginMenuBar()) {
+private fun menuBar() {
+    if (ImGui.beginMainMenuBar()) {
         if (ImGui.beginMenu("File")) {
             if (ImGui.menuItem("New", "Ctrl+N")) { newScene() }
             if (ImGui.menuItem("Open...", "Ctrl+O")) { openScene() }
@@ -242,11 +237,33 @@ fun menuBar() {
             ImGui.endMenu()
         }
 
-        ImGui.endMenuBar()
+        ImGui.endMainMenuBar()
     }
 }
 
-fun keybinds(event: KeyPressedEvent) {
+    private fun viewportMenuBar() {
+        ImGui.pushStyleVar(StyleVar.WindowPadding, Vec2(4f, 4f))
+        ImGui.pushStyleVar(StyleVar.ItemSpacing, Vec2(4f, 8f))
+        ImGui.beginMenuBar()
+
+        if (ImGui.beginMenu("${editorCamera.sceneProjection}D")) {
+            if (ImGui.menuItem("2D")) editorCamera.sceneProjection = 2
+            if (ImGui.menuItem("3D")) editorCamera.sceneProjection = 3
+            ImGui.endMenu()
+        }
+
+        if (ImGui.beginMenu(ProjectionType.projectionTypes[editorCamera.projectionType.ordinal])) {
+            for (pt in ProjectionType.values()) {
+                if (ImGui.menuItem(ProjectionType.projectionTypes[pt.ordinal])) editorCamera.projectionType = pt
+            }
+            ImGui.endMenu()
+        }
+
+        ImGui.endMenuBar()
+        ImGui.popStyleVar(2)
+    }
+
+private fun keybinds(event: KeyPressedEvent) {
     if (event.repeatCount > 0) return
 
     val ctrl = Input.isKeyPressed(KeyCode.LEFT_CONTROL) || Input.isKeyPressed(KeyCode.RIGHT_CONTROL)

@@ -36,12 +36,8 @@ object Settings {
         ImGui.beginChild("SettingsTree", Vec2(ImGui.getColumnWidth(-1) - 15f, ImGui.windowHeight - 77), flags = childFlags)
 
         var currentSettings = "None"
-        if (ImGui.treeNodeEx("Appearance")) {
+        if (ImGui.treeNodeEx("Appearance", TreeNodeFlag.Leaf.i)) {
             currentSettings = "Appearance"
-            ImGui.treePop()
-        }
-        if (ImGui.treeNodeEx("Editor Camera")) {
-            currentSettings = "EditorCamera"
             ImGui.treePop()
         }
 
@@ -54,10 +50,6 @@ object Settings {
             "Appearance" -> {
                 if (ImGui.combo("Theme", Theme::current, "Dark\u0000Light"))
                     ImGui.currentContext?.style = Theme[Theme.current].style
-            }
-            "EditorCamera" -> {
-                ImGui.colorEdit3("Clear Color", editorCameraClearColor)
-                uEditorCameraView = ImGui.dragFloat("Fov", ::editorCameraFov)
             }
         }
 

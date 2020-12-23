@@ -9,6 +9,7 @@ import com.pumpkin.core.settings.DarkTheme
 import com.pumpkin.core.settings.Settings
 import com.pumpkin.core.stack
 import com.pumpkin.core.window.Window
+import glm_.vec2.Vec2
 import glm_.vec4.Vec4
 import imgui.*
 import imgui.classes.Context
@@ -45,6 +46,7 @@ class ImGuiLayer : Layer("ImGui") {
         else ImGui.styleColorsDark()
 
         Settings.setTheme(0)
+        ImGui.style.windowTitleAlign = Vec2(0.02f, 0.5f)
 
         implGlfw = ImplGlfw.initForOpenGL(Window.getWindow().window, true)/*(Window.getWindow().window)*/
         implGL3 = ImplGL3()

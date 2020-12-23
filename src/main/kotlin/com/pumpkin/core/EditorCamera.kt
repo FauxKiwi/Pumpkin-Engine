@@ -7,6 +7,7 @@ import com.pumpkin.core.input.Input
 import com.pumpkin.core.input.KeyCode
 import com.pumpkin.core.input.MouseButton
 import com.pumpkin.core.renderer.Camera
+import com.pumpkin.core.renderer.ProjectionType
 import glm_.glm
 import glm_.mat4x4.Mat4
 import glm_.quat.Quat
@@ -19,6 +20,12 @@ class EditorCamera(
     private val nearClip: Float = 0.1f,
     private val farClip: Float = 1000.0f,
 ) : Camera() {
+    var projectionType = ProjectionType.Perspective
+        set(value) { field = value; updateProjection() }
+    var sceneProjection = 3
+
+    var orthoSize = 10f; set(value) { field = value; updateProjection() }
+
     private val rotationSpeed = 0.8f
     private val zoomSpeed get(): Float {
         var distance = distance * 0.2f
@@ -68,7 +75,10 @@ class EditorCamera(
 
     fun updateProjection() {
         aspectRatio = viewportWidth / viewportHeight
-        projection = glm.perspective(glm.radians(fov), aspectRatio, nearClip, farClip)
+        projection = if (projectionType == ProjectionType.Perspective)
+            glm.perspective(glm.radians(fov), aspectRatio, nearClip, farClip) else
+                glm.ortho(orthoSize * aspectRatio * -0.5f, orthoSize * aspectRatio * 0.5f,
+                    orthoSize * -0.5f, orthoSize * 0.5f, nearClip, farClip)
     }
 
     fun updateView() {

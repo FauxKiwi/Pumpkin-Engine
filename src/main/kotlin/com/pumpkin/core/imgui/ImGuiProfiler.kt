@@ -5,6 +5,7 @@ import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.window.Window
 import glm_.vec2.Vec2
 import imgui.ImGui
+import imgui.WindowFlag
 import imgui.max
 
 object ImGuiProfiler {
@@ -28,7 +29,7 @@ object ImGuiProfiler {
     }
 
     fun onImGuiRender() = with(ImGui) {
-        ImGui.begin("Profiler", ::showProfiler)
+        ImGui.begin("Profiler", ::showProfiler, WindowFlag.NoCollapse.i)
         ImGui.text("Your Framerate is: ${ImGui.io.framerate}")
         ImGui.text("Update time: ${1000 / ImGui.io.framerate}")
         val overlay = "min ${String.format("%.3f", values0.min())}   max ${String.format("%.3f", values0.max())}"

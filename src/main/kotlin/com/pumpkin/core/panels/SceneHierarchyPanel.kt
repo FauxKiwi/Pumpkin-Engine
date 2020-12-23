@@ -20,11 +20,24 @@ class SceneHierarchyPanel(var context: Scene) {
         /**/ImGui.setNextWindowPos(Vec2() + Vec2(0f, 22f))
         /**/ImGui.setNextWindowSize(avail * Vec2(0.2f, 0.25f))
 
-        ImGui.begin("Hierarchy")
+        ImGui.begin("Hierarchy", null, WindowFlag.NoCollapse.i)
         registry.each(::drawEntityNode)
         if (ImGui.beginPopupContextWindow(popupFlags = PopupFlag.MouseButtonRight.i or PopupFlag.NoOpenOverItems.i)) {
-            if (ImGui.menuItem("Create Empty Entity")) {
-                selectionContext = context.createEntity("Empty Entity").entityHandle
+            if (ImGui.beginMenu("Create")) {
+                if (ImGui.menuItem("Empty Entity")) {
+                    selectionContext = context.createEntity("Empty Entity").entityHandle
+                }
+                if (ImGui.menuItem("Camera")) {
+                    selectionContext = context.createEntity("Camera").also {
+                        it.addComponent<CameraComponent>(SceneCamera())
+                    }.entityHandle
+                }
+                if (ImGui.menuItem("2D Sprite")) {
+                    selectionContext = context.createEntity("Sprite").also {
+                        it.addComponent<SpriteRendererComponent>(floatArrayOf(1f, 1f, 1f, 1f))
+                    }.entityHandle
+                }
+                ImGui.endMenu()
             }
             ImGui.endPopup()
         }
@@ -32,7 +45,7 @@ class SceneHierarchyPanel(var context: Scene) {
 
         /**/ImGui.setNextWindowPos(avail * Vec2(0f, 0.25f) + Vec2(0f, 22f))
         /**/ImGui.setNextWindowSize(avail * Vec2(0.2f, 0.5f))
-        ImGui.begin("Inspector")
+        ImGui.begin("Inspector", null, WindowFlag.NoCollapse.i)
         if (selectionContext != null) {
             drawComponents(selectionContext!!)
         }

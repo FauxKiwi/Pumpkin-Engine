@@ -1,6 +1,7 @@
 package com.pumpkin.core.imgui
 
 import com.pumpkin.core.scene.TransformComponent
+import glm_.glm
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
@@ -42,7 +43,8 @@ object ImGuizmo {
     private var xmin = 0f; private var xmax = 0f; private var ymin = 0f; private var ymax = 0f
     private var halfDisplay = Vec2(); private var mid = Vec2()
 
-    private var mvp = Mat4()
+    private var viewProj = Mat4()
+    private var transformedPos0 = Vec4()
     private var gizmoPos = Vec2()
     private var vx = Vec2(); private var vy = Vec2(); private var vz = Vec2()
 
@@ -88,15 +90,15 @@ object ImGuizmo {
     }
 
     fun manipulate(
-        view: Mat4,
-        projection: Mat4,
+        viewProjection: Mat4,
         operation: OPERATION,
         mode: MODE,
         transform: TransformComponent,
         deltaMatrix: Mat4?,
         snap: FloatArray?
     ) {
-        mvp = projection * view * transform.transform
+        viewProj = viewProjection //projection * glm.inverse(view)
+        transformedPos0 = transform.transform * pos0
         calcGizmoPos()
         calcDirVecs()
         calcOver(operation)
@@ -111,13 +113,13 @@ object ImGuizmo {
     }
 
     fun calcGizmoPos() {
-        gizmoPos = (mvp * pos0).xy * halfDisplay + mid
+        gizmoPos = (viewProj * pos0).xy * halfDisplay + mid
     }
 
     fun calcDirVecs() {
-        vx = ((mvp * unaryDir[0]).normalizeAssign()).xy
-        vy = ((mvp * -unaryDir[1]).normalizeAssign()).xy
-        vz = ((mvp * unaryDir[2]).normalizeAssign()).xy
+        vx = ((viewProj * unaryDir[0]).normalizeAssign()).xy
+        vy = ((viewProj * -unaryDir[1]).normalizeAssign()).xy
+        vz = ((viewProj * unaryDir[2]).normalizeAssign()).xy
     }
 
     fun drawTranslationGizmo() {
