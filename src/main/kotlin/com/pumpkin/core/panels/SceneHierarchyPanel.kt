@@ -16,8 +16,8 @@ class SceneHierarchyPanel(var context: Scene) {
     var selectionContext: Entity? = null
 
     fun onImGuiRender() {
-        /**/val avail = ImGui.contentRegionMax - Vec2(0f, 22f)
-        /**/ImGui.setNextWindowPos(Vec2() + Vec2(0f, 22f))
+        /**/val avail = ImGui.contentRegionMax - Vec2(0f, 60f)
+        /**/ImGui.setNextWindowPos(Vec2() + Vec2(0f, 60f))
         /**/ImGui.setNextWindowSize(avail * Vec2(0.2f, 0.25f))
 
         ImGui.begin("Hierarchy", null, WindowFlag.NoCollapse.i)
@@ -43,7 +43,7 @@ class SceneHierarchyPanel(var context: Scene) {
         }
         ImGui.end()
 
-        /**/ImGui.setNextWindowPos(avail * Vec2(0f, 0.25f) + Vec2(0f, 22f))
+        /**/ImGui.setNextWindowPos(avail * Vec2(0f, 0.25f) + Vec2(0f, 60f))
         /**/ImGui.setNextWindowSize(avail * Vec2(0.2f, 0.5f))
         ImGui.begin("Inspector", null, WindowFlag.NoCollapse.i)
         if (selectionContext != null) {
@@ -155,7 +155,7 @@ class SceneHierarchyPanel(var context: Scene) {
             drawVec3Control("Position", position)
             transform.position = position
             val scale = transform.scale
-            drawVec3Control("Scale", scale)
+            drawVec3Control("Scale", scale, resetValue = 1f)
             transform.scale = scale
             val rotation = transform.rotation
             drawVec3Control("Rotation", rotation)
@@ -241,7 +241,7 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.pushStyleColor(Col.Text, Vec4(1f, 1f, 1f, 1f))
         ImGui.pushFont(font)
         if (ImGui.button("Z", buttonSize))
-            values.y = resetValue
+            values.z = resetValue
         ImGui.popFont()
         ImGui.popStyleColor(4)
 

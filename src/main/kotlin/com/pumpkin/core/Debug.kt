@@ -1,8 +1,15 @@
 package com.pumpkin.core
 
+import glm_.vec4.Vec4
+
 object Debug {
     private val coreLogger = Logger("Pumpkin")
     private val appLogger = Logger("Application")
+
+    fun subscribe(callback: (LogLevel, String) -> Unit) {
+        coreLogger.subscribers.add(callback)
+        appLogger.subscribers.add(callback)
+    }
 
     internal fun logCore(level: LogLevel, message: String) = coreLogger.log(level, message)
 
@@ -62,12 +69,15 @@ class Logger(private val name: String) {
         }
     }
 
+    internal val subscribers = mutableListOf<(LogLevel, String) -> Unit>()
+
     val minLevel = LogLevel.DEBUG
 
     private val resetColor = "\u001B[0m"
 
     fun log(level: LogLevel, message: String) {
         println("${color(level)}[${level.name}] $name: $message$resetColor")
+        subscribers.forEach { it(level, message) }
     }
 
     fun trace(message: String) { if (minLevel <= LogLevel.TRACE) {
@@ -101,5 +111,14 @@ enum class LogLevel {
     INFO,
     WARN,
     ERROR,
-    FATAL,
+    FATAL;
+
+    fun color() = when (this) {
+        TRACE -> Vec4(0.5f, 0.5f, 0.5f, 1f)
+        DEBUG -> Vec4(0f, 0f, 1f, 1f)
+        INFO -> Vec4(0f, 1f, 0f, 1f)
+        WARN -> Vec4(1f, 1f, 0f, 1f)
+        ERROR -> Vec4(1f, 0f, 0f, 1f)
+        FATAL -> Vec4(1f, 0f, 1f, 1f)
+    }
 }

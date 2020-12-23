@@ -1,6 +1,7 @@
 package editor
 
 import com.pumpkin.core.*
+import com.pumpkin.core.Debug
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.KeyPressedEvent
 import com.pumpkin.core.imgui.ImGuiProfiler
@@ -32,7 +33,6 @@ class EditorLayer : Layer("Editor") {
     private lateinit var sceneHierarchyPanel: SceneHierarchyPanel
     private lateinit var sceneSerializer: SceneSerializer
     private val editorCamera = EditorCamera()
-    private lateinit var runtimeCamera: Entity
 
     private var gizmoType = -1
 
@@ -40,11 +40,6 @@ class EditorLayer : Layer("Editor") {
         activeScene = Scene()
         sceneHierarchyPanel = SceneHierarchyPanel(activeScene)
         sceneSerializer = SceneSerializer(activeScene)
-
-        /*runtimeCamera = activeScene.createEntity("Runtime Camera")
-        runtimeCamera.addComponent<CameraComponent>(SceneCamera())
-        runtimeCamera.getComponent<CameraComponent>().camera.projectionType = ProjectionType.Perspective
-        runtimeCamera.getComponent<TransformComponent>().position = Vec3(0f, 0f, 10f)*/
 
         ImGuiProfiler.onAttach()
     }
@@ -108,10 +103,36 @@ class EditorLayer : Layer("Editor") {
         }
         style.windowMinSize.x = minWinSizeX
 
-        /**/val cr = contentRegionMax - Vec2(0f, 22f)
-        /**/setNextWindowPos(cr * Vec2(0f, 0.75f) + Vec2(0f, 21f))
-        /**/setNextWindowSize(cr * Vec2(0.2f, 0.25f))
+        /**/val cr = contentRegionMax - Vec2(0f, 60f)
 
+        /**/setNextWindowPos(Vec2(0f, 22f))
+        /**/setNextWindowSize(Vec2(cr.x, 38f))
+        begin("Toolbar", null, WindowFlag.NoCollapse or WindowFlag.NoTitleBar or WindowFlag.NoScrollbar
+                or WindowFlag.NoMove or WindowFlag.NoResize or WindowFlag.NoDocking or WindowFlag.NoSavedSettings)
+
+        pushMultiItemsWidths(3, calcItemWidth())
+        pushStyleVar(StyleVar.ItemSpacing, Vec2(0, 0))
+
+        val lineHeight = font.fontSize + style.framePadding.y * 2f
+        val buttonSize = Vec2(lineHeight + 3.0f, lineHeight)
+
+        val gizmoType0 = gizmoType
+        if (gizmoType0 == -1) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
+        if (button("Q", buttonSize)) gizmoType = -1; if (gizmoType0 == -1) popStyleColor()
+        if (gizmoType0 == 1) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
+        sameLine(); if (button("W", buttonSize)) gizmoType = 1; if (gizmoType0 == 1) popStyleColor()
+        if (gizmoType0 == 2) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
+        sameLine(); if (button("E", buttonSize)) gizmoType = 2; if (gizmoType0 == 2) popStyleColor()
+        if (gizmoType0 == 3) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
+        sameLine(); if (button("R", buttonSize)) gizmoType = 3; if (gizmoType0 == 3) popStyleColor()
+
+        popItemWidth()
+        popStyleVar()
+
+        end()
+
+        /**/setNextWindowPos(cr * Vec2(0f, 0.75f) + Vec2(0f, 59f))
+        /**/setNextWindowSize(cr * Vec2(0.2f, 0.25f))
         ImGuiProfiler.onImGuiRender()
 
         sceneHierarchyPanel.onImGuiRender()
@@ -119,15 +140,14 @@ class EditorLayer : Layer("Editor") {
         Settings.onImGuiRender()
         if (Settings.uEditorCameraView) { editorCamera.fov = Settings.editorCameraFov; editorCamera.updateProjection(); Settings.uEditorCameraView = false; }
 
-        /**/setNextWindowPos(cr * Vec2(0.2f, 0f) + Vec2(0f, 22f))
+        /**/setNextWindowPos(cr * Vec2(0.2f, 0f) + Vec2(0f, 60f))
         /**/setNextWindowSize(cr * Vec2(0.8f, 1f))
-
         pushStyleVar(StyleVar.WindowPadding, Vec2())
-        ImGui.pushStyleColor(Col.MenuBarBg, Vec4(0.3f, 0.3f, 0.3f, 1f))
+        pushStyleColor(Col.MenuBarBg, getStyleColorVec4(Col.TitleBg))
         begin("Viewport", /**/null, WindowFlag.NoMove.i or WindowFlag.NoTitleBar.i or WindowFlag.MenuBar.i or WindowFlag.NoCollapse.i)
-        ImGui.popStyleColor()
+        popStyleColor()
 
-        viewportMenuBar();
+        viewportMenuBar()
 
         viewportSize = Vec2(contentRegionAvail.x, contentRegionAvail.y)
         viewportFocused = isWindowFocused()
