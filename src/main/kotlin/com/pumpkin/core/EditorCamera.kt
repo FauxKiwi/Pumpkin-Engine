@@ -8,11 +8,10 @@ import com.pumpkin.core.input.KeyCode
 import com.pumpkin.core.input.MouseButton
 import com.pumpkin.core.renderer.Camera
 import com.pumpkin.core.renderer.ProjectionType
-import glm_.glm
-import glm_.mat4x4.Mat4
-import glm_.quat.Quat
-import glm_.vec2.Vec2
-import glm_.vec3.Vec3
+import glm.Mat4
+import glm.Quat
+import glm.Vec2
+import glm.Vec3
 
 class EditorCamera(
     var fov: Float = 45f,
@@ -107,7 +106,7 @@ class EditorCamera(
         _position = calculatePosition
 
         val orientation = orientation
-        viewMatrix = glm.translate(Mat4.identity, _position) * glm.toMat4(orientation)
+        viewMatrix = glm.translate(_position) * glm.toMat4(orientation)
         viewMatrix = glm.inverse(viewMatrix)
     }
 
@@ -142,7 +141,7 @@ class EditorCamera(
 
     private fun mousePan(delta: Vec2) {
         val (xSpeed, ySpeed) = panSpeed
-        focalPoint += -rightDirection * delta.x * xSpeed * distance
+        focalPoint -= rightDirection * delta.x * xSpeed * distance
         focalPoint += upDirection * delta.y * ySpeed * distance
     }
 

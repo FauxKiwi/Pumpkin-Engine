@@ -3,11 +3,7 @@ package com.pumpkin.platform.opengl
 import com.pumpkin.core.Debug
 import com.pumpkin.core.renderer.Shader
 import com.pumpkin.core.stack
-import glm_.mat3x3.Mat3
-import glm_.mat4x4.Mat4
-import glm_.vec2.Vec2
-import glm_.vec3.Vec3
-import glm_.vec4.Vec4
+import glm.*
 import org.lwjgl.opengl.GL20C.*
 import org.lwjgl.opengl.GL32C.GL_GEOMETRY_SHADER
 import org.lwjgl.opengl.GL43C.GL_COMPUTE_SHADER

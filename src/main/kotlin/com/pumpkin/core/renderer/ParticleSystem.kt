@@ -1,9 +1,9 @@
 package com.pumpkin.core.renderer
 
 import com.pumpkin.core.Timestep
-import glm_.vec2.Vec2
-import glm_.vec3.Vec3
-import glm_.vec4.Vec4
+import glm.Vec2
+import glm.Vec3
+import glm.Vec4
 import kotlin.math.PI
 
 class ParticleSystem {
@@ -46,7 +46,7 @@ class ParticleSystem {
             val size = Vec2(particle.sizeEnd + (particle.sizeBegin - particle.sizeEnd) * life)
 
             Renderer2D.drawQuad(
-                Vec3(particle.position, 0.5f + i * (0.1 / maxParticles)),
+                Vec3(particle.position, 0.5f + i * (0.1f / maxParticles)),
                 size,
                 particle.rotation,
                 color
@@ -95,10 +95,10 @@ data class ParticleProps(
 )
 
 data class Particle(
-    var position: Vec2 = Vec2(0),
-    var velocity: Vec2 = Vec2(0),
-    var colorBegin: Vec4 = Vec4(0),
-    var colorEnd: Vec4 = Vec4(0),
+    var position: Vec2 = Vec2(),
+    var velocity: Vec2 = Vec2(),
+    var colorBegin: Vec4 = Vec4(),
+    var colorEnd: Vec4 = Vec4(),
     var sizeBegin: Float = 0f,
     var sizeEnd: Float = 0f,
     var lifeTime: Float = 0f,

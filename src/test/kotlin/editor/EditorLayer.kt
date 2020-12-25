@@ -179,7 +179,7 @@ class EditorLayer : Layer("Editor") {
             val snapValues = floatArrayOf(snapValue, snapValue, snapValue)
 
             ImGuizmo.manipulate(
-                editorCamera.viewProjection,
+                glm_.mat4x4.Mat4(editorCamera.viewProjection.array),
                 ImGuizmo.OPERATION.values()[gizmoType], ImGuizmo.MODE.LOCAL, tc,
                 null, if (snap) snapValues else null
             )

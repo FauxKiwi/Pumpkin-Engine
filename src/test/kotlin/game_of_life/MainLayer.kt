@@ -7,9 +7,9 @@ import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.renderer.OrthographicCamera
 import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.window.Window
-import glm_.vec2.Vec2
-import glm_.vec3.Vec3
-import glm_.vec4.Vec4
+import glm.Vec2
+import glm.Vec3
+import glm.Vec4
 import imgui.ImGui
 import kotlin.math.max
 import kotlin.math.min

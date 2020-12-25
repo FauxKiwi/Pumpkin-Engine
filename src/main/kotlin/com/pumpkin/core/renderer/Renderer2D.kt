@@ -4,12 +4,10 @@ import com.pumpkin.core.EditorCamera
 import com.pumpkin.core.math.inverseTransform
 import com.pumpkin.core.math.transform
 import com.pumpkin.core.stack
-import glm_.glm
-import glm_.mat4x4.Mat4
-import glm_.quat.Quat
-import glm_.vec2.Vec2
-import glm_.vec3.Vec3
-import glm_.vec4.Vec4
+import glm.Mat4
+import glm.Vec2
+import glm.Vec3
+import glm.Vec4
 import org.lwjgl.system.MemoryUtil
 import java.nio.FloatBuffer
 

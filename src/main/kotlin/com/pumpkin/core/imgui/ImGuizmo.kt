@@ -1,8 +1,6 @@
 package com.pumpkin.core.imgui
 
-import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.scene.TransformComponent
-import glm_.glm
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
@@ -100,7 +98,7 @@ object ImGuizmo {
         snap: FloatArray?
     ) {
         viewProj = viewProjection //projection * glm.inverse(view)
-        transformedPos0 = transform.transform * pos0
+        transformedPos0 = Mat4(transform.transform.array) * pos0
         calcGizmoPos()
         calcDirVecs()
         calcOver(operation)
@@ -129,7 +127,7 @@ object ImGuizmo {
         val over = this.over && overOperation == OPERATION.TRANSLATE
         if (showTranslatePath) {
             drawList.addCircle(translatePos0, 5f, circleCol - 0x7f000000)
-            drawList.addLine(translatePos0 + glm.normalize(gizmoPos - translatePos0) * 5f, gizmoPos, circleCol - 0x7f000000, 2f)
+            drawList.addLine(translatePos0 + glm_.glm.normalize(gizmoPos - translatePos0) * 5f, gizmoPos, circleCol - 0x7f000000, 2f)
         }
         drawRect(gizmoPos, vy, vz, gizmoSize, dirCols[0] - 0x7f000000)
         drawRect(gizmoPos, vx, vz, gizmoSize, dirCols[1] - 0x7f000000)
@@ -182,17 +180,17 @@ object ImGuizmo {
             OPERATION.TRANSLATE -> {
                 when (overMovetype) {
                     MOVETYPE.X -> {
-                        transform.position = storedTransform.position + Vec3(
+                        transform.position = storedTransform.position + glm.Vec3(
                             4f * mouseDelta.abs(vx) / ymax,
                             0f, 0f)
                     }
                     MOVETYPE.Y -> {
-                        transform.position = storedTransform.position + Vec3(0f,
+                        transform.position = storedTransform.position + glm.Vec3(0f,
                             4f * mouseDelta.abs(vy) / ymax,
                             0f)
                     }
                     MOVETYPE.Z -> {
-                        transform.position = storedTransform.position + Vec3(0f, 0f,
+                        transform.position = storedTransform.position + glm.Vec3(0f, 0f,
                             4f * mouseDelta.abs(vz) / ymax)
                     }
                 }
@@ -205,21 +203,21 @@ object ImGuizmo {
                         }.also { scaleSizeM[0] = it; scaleSizeM[1] = it; scaleSizeM[2] = it;  }
                     }
                     MOVETYPE.X -> {
-                        transform.scale = storedTransform.scale * Vec3(
+                        transform.scale = storedTransform.scale * glm.Vec3(
                             (1f + 4f * (mouseDelta * vx).length() / ymax).let {
                                 if (mouseDelta.abs(vx) < 0) 1 / it else it
                             }.also { scaleSizeM[0] = it },
                             1f, 1f)
                     }
                     MOVETYPE.Y -> {
-                        transform.scale = storedTransform.scale * Vec3(1f,
+                        transform.scale = storedTransform.scale * glm.Vec3(1f,
                             (1f + 4f * (mouseDelta * vy).length() / ymax).let {
                                 if (mouseDelta.abs(vy) < 0) 1 / it else it
                             }.also { scaleSizeM[1] = it },
                             1f)
                     }
                     MOVETYPE.Z -> {
-                        transform.scale = storedTransform.scale * Vec3(1f, 1f,
+                        transform.scale = storedTransform.scale * glm.Vec3(1f, 1f,
                             (1f + 4f * (mouseDelta * vz).length() / ymax).let {
                                 if (mouseDelta.abs(vz) < 0) 1 / it else it
                             }.also { scaleSizeM[2] = it })
@@ -247,7 +245,7 @@ object ImGuizmo {
     private fun drawArrow(position: Vec2, dir: Vec2, length: Float, color: Int, thickness: Float) {
         drawList.addLine(position, position + dir * length, color, thickness)
         drawList.addTriangleFilled(
-            position + dir * length + glm.normalize(dir) * (4 * thickness),
+            position + dir * length + glm_.glm.normalize(dir) * (4 * thickness),
             position + dir * (length - thickness) + Vec2(-dir.y, dir.x).normalizeAssign() * thickness * 2,
             position + dir * (length - thickness) + Vec2(dir.y, -dir.x).normalizeAssign() * thickness * 2,
             color

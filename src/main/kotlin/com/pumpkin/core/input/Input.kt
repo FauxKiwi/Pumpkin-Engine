@@ -1,7 +1,7 @@
 package com.pumpkin.core.input
 
 import com.pumpkin.platform.windows.WindowsInput
-import glm_.vec2.Vec2
+import glm.Vec2
 
 object Input {
     fun isKeyPressed(keycode: Int): Boolean {

@@ -8,9 +8,9 @@ import com.pumpkin.core.stack
 import com.pumpkin.core.window.EventCallbackFunction
 import com.pumpkin.core.window.Window
 import com.pumpkin.core.window.WindowProps
-import glm_.vec2.Vec2
-import glm_.vec2.Vec2d
-import glm_.vec2.Vec2i
+import glm.Vec2
+import glm.Vec2d
+import glm.Vec2i
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL

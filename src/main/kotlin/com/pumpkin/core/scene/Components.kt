@@ -1,12 +1,9 @@
 package com.pumpkin.core.scene
 
 import com.pumpkin.core.math.inverseTransform
-import glm_.glm
-import glm_.mat4x4.Mat4
-import glm_.quat.Quat
-import glm_.vec2.Vec2
-import glm_.vec3.Vec3
-import glm_.vec4.Vec4
+import glm.Mat4
+import glm.Vec3
+import glm.Vec4
 import imgui.toByteArray
 import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor

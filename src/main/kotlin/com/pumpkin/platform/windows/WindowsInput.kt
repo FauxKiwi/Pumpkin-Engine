@@ -2,7 +2,7 @@ package com.pumpkin.platform.windows
 
 import com.pumpkin.core.stack
 import com.pumpkin.core.window.Window
-import glm_.vec2.Vec2
+import glm.Vec2
 import org.lwjgl.glfw.GLFW.*
 
 object WindowsInput {

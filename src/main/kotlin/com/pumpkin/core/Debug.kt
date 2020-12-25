@@ -1,6 +1,6 @@
 package com.pumpkin.core
 
-import glm_.vec4.Vec4
+import glm.Vec4
 
 object Debug {
     private val coreLogger = Logger("Pumpkin")

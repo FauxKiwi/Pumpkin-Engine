@@ -9,10 +9,9 @@ import com.pumpkin.core.input.MouseButton
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.renderer.*
 import com.pumpkin.core.window.Window
-import glm_.glm
-import glm_.vec2.Vec2
-import glm_.vec3.Vec3
-import glm_.vec4.Vec4
+import glm.Vec2
+import glm.Vec3
+import glm.Vec4
 import imgui.ImGui
 
 class Sandbox2DLayer : Layer("Sandbox2D") {
@@ -20,7 +19,7 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
     private val particleSystem = ParticleSystem()
 
     private var mouseClicked = false
-    private val particleProps = ParticleProps(Vec2(0), Vec2(0f), Vec2(0.4f, 0.4f),
+    private val particleProps = ParticleProps(Vec2(0f), Vec2(0f), Vec2(0.4f, 0.4f),
         Vec4(0.6f, 0f, 0.2f, 1f), Vec4(0f, 0f, 1f, 0.1f),
         0.1f, 0.001f, 0.05f, 1f
     )
@@ -85,15 +84,15 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
     override fun onImGuiRender() = with(ImGui) {
         ImGuiProfiler.onImGuiRender()
         begin("Square")
-        colorEdit4("Color", color)
+        //colorEdit4("Color", color)
         end()
         begin("Checkerboard")
         text("Transform")
-        dragVec3("Position", checkerboardPosition, 0.1f, format = "%.2f")
-        dragVec2("Scale", checkerboardScale, 0.1f, 0f, 100f, format = "%.2f")
-        dragInt("Rotation", ::checkerboardRotation, 1f, 0, 360)
+        //dragVec3("Position", checkerboardPosition, 0.1f, format = "%.2f")
+        //dragVec2("Scale", checkerboardScale, 0.1f, 0f, 100f, format = "%.2f")
+        //dragInt("Rotation", ::checkerboardRotation, 1f, 0, 360)
         text("Texture")
-        colorEdit4("Color", checkerboardColor)
+        //colorEdit4("Color", checkerboardColor)
         dragFloat("Tiling Factor", ::checkerboardTiling)
         text("Import Settings")
         combo("Filter Mode", ::checkerboardImportFilter, arrayOf("Linear", "Nearest"))
@@ -101,10 +100,10 @@ class Sandbox2DLayer : Layer("Sandbox2D") {
         end()
         begin("Particles")
         dragInt("Count per Frame", ::particleCountPerFrame)
-        dragVec2("Velocity", particleProps.velocity, 0.1f, format = "%.1f")
-        dragVec2("Velocity Variation", particleProps.velocityVariation, 0.1f, format = "%.1f")
-        colorEdit4("Color Begin", particleProps.colorBegin)
-        colorEdit4("Color End", particleProps.colorEnd)
+        //dragVec2("Velocity", particleProps.velocity, 0.1f, format = "%.1f")
+        //dragVec2("Velocity Variation", particleProps.velocityVariation, 0.1f, format = "%.1f")
+        //colorEdit4("Color Begin", particleProps.colorBegin)
+        //colorEdit4("Color End", particleProps.colorEnd)
         dragFloat("Size Begin", particleProps::sizeBegin, 0.1f, format = "%.1f")
         dragFloat("Size End", particleProps::sizeEnd, 0.001f, format = "%.3f")
         dragFloat("Size Variation", particleProps::sizeVariation, 0.01f, format = "%.2f")

@@ -6,11 +6,10 @@ import com.pumpkin.core.event.Event
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.renderer.*
 import com.pumpkin.core.window.Window
-import glm_.glm
-import glm_.mat4x4.Mat4
-import glm_.vec2.Vec2
-import glm_.vec3.Vec3
-import glm_.vec4.Vec4
+import glm.Mat4
+import glm.Vec2
+import glm.Vec3
+import glm.Vec4
 import imgui.ImGui
 
 class ExampleLayer : Layer() {
@@ -28,7 +27,7 @@ class ExampleLayer : Layer() {
 
     private val squareColor = Vec4(0.2f, 0.3f, 0.8f, 1.0f)
 
-    private val scale: Mat4 = glm.scale(Mat4.identity, Vec3(0.1f))
+    private val scale: Mat4 = glm.scale(Vec3(0.1f))
 
 
     private var sqrt = 20
@@ -183,16 +182,16 @@ class ExampleLayer : Layer() {
         for (y in 0..sqrt) {
             for (x in 0..sqrt) {
                 val pos = Vec3(x * 0.11f, y * 0.11f, 0f)
-                val transform: Mat4 = glm.translate(Mat4.identity, pos) * scale
+                val transform: Mat4 = glm.translate(pos) * scale
                 Renderer.submit(flatColorShader(), squareVA(), transform)
             }
         }
 
         val textureShader = shaderLibrary()["Texture"]
         texture().bind()
-        Renderer.submit(textureShader, squareVA(), glm.scale(Mat4.identity, Vec3(1.5f)))
+        Renderer.submit(textureShader, squareVA(), glm.scale(Vec3(1.5f)))
         logoTexture().bind()
-        Renderer.submit(textureShader, squareVA(), glm.scale(Mat4.identity, Vec3(1.5f)))
+        Renderer.submit(textureShader, squareVA(), glm.scale(Vec3(1.5f)))
 
         //Renderer.submit(shader, vertexArray)
 
@@ -201,13 +200,13 @@ class ExampleLayer : Layer() {
 
     override fun onImGuiRender() {
         ImGui.begin("Camera: Transform")
-        dragFloat3("Position", cameraController.cameraPosition, 0.01f)
+        //dragFloat3("Position", cameraController.cameraPosition, 0.01f)
         ImGui.dragFloat("Rotation", cameraController::cameraRotation, vMin = 0f, vMax = 360f)
         ImGui.dragFloat("Zoom", cameraController::zoomLevel, vMin = 0.25f, vMax = 100f, vSpeed = 0.05f, format = "%.2f")
         ImGui.end()
         ImGui.begin("Squares")
         ImGui.dragInt("Number", ::sqrt, vMin = 1, vMax = 1000)
-        ImGui.colorEdit3("Color", squareColor)
+        //ImGui.colorEdit3("Color", squareColor)
         ImGui.end()
     }
 
@@ -233,7 +232,7 @@ fun main() {
     Application.set(TestApplication())
 }
 
-fun dragFloat3(label: String, vec: Vec3, speed: Float = 1f, min: Float = 0f, max: Float = 0f, format: String = "%.3f") {
+/*fun dragFloat3(label: String, vec: Vec3, speed: Float = 1f, min: Float = 0f, max: Float = 0f, format: String = "%.3f") {
     val vecRef = vec.toFloatArray()
     ImGui.dragFloat3(label, vecRef, speed, min, max, format)
     vec[0] = vecRef[0]
@@ -246,4 +245,4 @@ fun dragFloat2(label: String, vec: Vec2, speed: Float = 1f, min: Float = 0f, max
     ImGui.dragFloat2(label, vecRef, speed, min, max, format)
     vec[0] = vecRef[0]
     vec[1] = vecRef[1]
-}
+}*/

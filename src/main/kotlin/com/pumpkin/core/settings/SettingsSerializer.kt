@@ -2,7 +2,7 @@ package com.pumpkin.core.settings
 
 import com.pumpkin.core.Debug
 import com.pumpkin.core.jsonFormat
-import glm_.vec4.Vec4
+import glm.Vec4
 import imgui.ImGui
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.*

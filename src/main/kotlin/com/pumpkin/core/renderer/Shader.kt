@@ -3,11 +3,11 @@ package com.pumpkin.core.renderer
 import com.pumpkin.core.Debug
 import com.pumpkin.core.Ref
 import com.pumpkin.platform.opengl.OpenGLShader
-import glm_.mat3x3.Mat3
-import glm_.mat4x4.Mat4
-import glm_.vec2.Vec2
-import glm_.vec3.Vec3
-import glm_.vec4.Vec4
+import glm.Mat3
+import glm.Mat4
+import glm.Vec2
+import glm.Vec3
+import glm.Vec4
 
 interface Shader : AutoCloseable {
     companion object {

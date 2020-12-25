@@ -2,8 +2,7 @@ package com.pumpkin.core.scene
 
 import com.pumpkin.core.renderer.Camera
 import com.pumpkin.core.renderer.ProjectionType
-import glm_.glm
-import glm_.vec4.Vec4
+import glm.Vec4
 
 class SceneCamera : Camera() {
     var projectionType = ProjectionType.Orthographic

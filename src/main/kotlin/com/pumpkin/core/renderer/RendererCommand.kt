@@ -1,7 +1,7 @@
 package com.pumpkin.core.renderer
 
 import com.pumpkin.platform.opengl.OpenGLRendererAPI
-import glm_.vec4.Vec4
+import glm.Vec4
 
 object RendererCommand {
     val rendererAPI = OpenGLRendererAPI()

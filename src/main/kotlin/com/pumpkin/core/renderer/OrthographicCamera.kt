@@ -1,12 +1,11 @@
 package com.pumpkin.core.renderer
 
-import glm_.glm
-import glm_.mat4x4.Mat4
-import glm_.vec3.Vec3
+import glm.Mat4
+import glm.Vec3
 
 class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
     private var projectionMatrix: Mat4 = glm.ortho(left, right, bottom, top, -1f, 1f)
-    private var viewMatrix: Mat4 = Mat4.identity
+    private var viewMatrix: Mat4 = Mat4()
     var viewProjectionMatrix: Mat4 = projectionMatrix * viewMatrix
     var position: Vec3 = Vec3()
         set(value) {
@@ -24,7 +23,7 @@ class OrthographicCamera(left: Float, right: Float, bottom: Float, top: Float) {
     }
 
     private fun recalculateViewMatrix() {
-        viewMatrix = glm.rotate(Mat4.identity, -glm.radians(rotation), Vec3(0, 0, 1)) * glm.translate(Mat4.identity, -position)
+        viewMatrix = glm.rotate(-glm.radians(rotation), Vec3(0f, 0f, 1f)) * glm.translate(-position)
         viewProjectionMatrix = projectionMatrix * viewMatrix
     }
 }

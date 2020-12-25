@@ -1,6 +1,6 @@
 package com.pumpkin.core.renderer
 
-import glm_.vec4.Vec4
+import glm.Vec4
 
 interface RendererAPI {
     enum class API {

@@ -7,7 +7,7 @@ import imgui.classes.Style
 import imgui.internal.sections.OldColumnsFlag
 
 object Settings {
-    var editorCameraClearColor = Vec4(0.1f, 0.1f, 0.1f, 1f)
+    var editorCameraClearColor = glm.Vec4(0.1f, 0.1f, 0.1f, 1f)
     var editorCameraFov = 45f; var uEditorCameraView = false
 
     private var open = false

@@ -3,8 +3,7 @@ package com.pumpkin.platform.opengl
 import com.pumpkin.core.Debug
 import com.pumpkin.core.renderer.RendererAPI
 import com.pumpkin.core.renderer.VertexArray
-import glm_.vec4.Vec4
-import gln.*
+import glm.Vec4
 import org.lwjgl.opengl.GL43C.*
 import org.lwjgl.system.MemoryUtil
 
@@ -34,9 +33,9 @@ class OpenGLRendererAPI : RendererAPI {
         glEnable(GL_DEPTH_TEST) //gl.enable(State.DEPTH_TEST)
     }
 
-    override fun setClearColor(color: Vec4) = gl.clearColor(color.r, color.g, color.b, color.a)
+    override fun setClearColor(color: Vec4) = glClearColor(color.r, color.g, color.b, color.a)
 
-    override fun clear() = gl.clear(ClearBufferMask.COLOR_BUFFER_BIT or ClearBufferMask.DEPTH_BUFFER_BIT)
+    override fun clear() = glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
     override fun drawIndexed(vertexArray: VertexArray, count: Int) {
         glDrawElements(GL_TRIANGLES, if (count == 0) vertexArray.indexBuffer!!().count else count, GL_UNSIGNED_INT, 0L)

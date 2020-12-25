@@ -8,9 +8,7 @@ import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.renderer.RendererCommand
 import com.pumpkin.core.settings.Settings
 import com.pumpkin.ecs.Registry
-import glm_.vec4.Vec4
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import glm.Vec4
 
 class Scene : Referencable() {
     var name = "Scene"

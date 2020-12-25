@@ -6,7 +6,7 @@ import com.pumpkin.core.event.MouseScrolledEvent
 import com.pumpkin.core.event.WindowResizeEvent
 import com.pumpkin.core.input.*
 import com.pumpkin.core.renderer.OrthographicCamera
-import glm_.vec3.Vec3
+import glm.Vec3
 import kotlin.math.max
 
 class OrthographicCameraController(aspectRatio: Float, var rotate: Boolean) {

@@ -5,8 +5,6 @@ import com.pumpkin.core.scene.*
 import com.pumpkin.ecs.Entity
 import com.pumpkin.ecs.Registry
 import glm_.vec2.Vec2
-import glm_.vec3.Vec3
-import glm_.vec3.swizzle.xy
 import glm_.vec4.Vec4
 import imgui.*
 import kotlin.reflect.KClass
@@ -189,7 +187,7 @@ class SceneHierarchyPanel(var context: Scene) {
         }
     }
 
-    private fun drawVec3Control(label: String, values: Vec3, resetValue: Float = 0f, columnWidth: Float = 100f) {
+    private fun drawVec3Control(label: String, values: glm.Vec3, resetValue: Float = 0f, columnWidth: Float = 100f) {
         val font = ImGui.io.fonts.fonts[0]
 
         ImGui.pushID(label)
@@ -254,5 +252,17 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.columns(1)
 
         ImGui.popID()
+    }
+
+    fun ImGui.colorEdit3(label: String, color: glm.Vec4) {
+        val fa = floatArrayOf(color.r, color.g, color.b)
+        colorEdit4(label, fa)
+        color.r = fa[0]; color.g = fa[1]; color.b = fa[2]
+    }
+
+    fun ImGui.colorEdit4(label: String, color: glm.Vec4) {
+        val fa = floatArrayOf(color.r, color.g, color.b, color.a)
+        colorEdit4(label, fa)
+        color.r = fa[0]; color.g = fa[1]; color.b = fa[2]; color.a = fa[3]
     }
 }
