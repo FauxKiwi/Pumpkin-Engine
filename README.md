@@ -3,12 +3,22 @@ This is the Pumpkin Game Engine. A powerful and capable Kotlin 2D game engine us
 Current version: 1.1
 ***
 ## Screenshots
-### A demo of texture rendering
+<!--### A demo of texture rendering
 ![Texture Rendering][textures]
 ### Conways Game Of Life implementation
 ![Game of Life][game_of_life]
 ### Renderer stress test: Drawing over 100,000 quads at over 90 FPS
-![Stress test][stresstest]
+![Stress test][stresstest]-->
+### The editor with a new scene
+![Empty scene][empty]
+### Scene serialization: Saving and loading scenes
+![File Dialog][file_dialog]
+### 2D and 3D scenes with an ECS and an editor camera
+![Pink Cube][pink_cube]
+### Transform gizmos
+![Gizmos][gizmos]
+### Themes for editor
+![Light Theme][light_theme]
 ***
 ## Roadmap
 ### Long term goals
@@ -17,7 +27,6 @@ Current version: 1.1
 - Beautiful 3D renderer with PBR
 - Audio engine
 - Level editor
-- Entity component system
 - Scripting in various languages
 - Recorded and skeletal animation
 - Multiplatform support
@@ -25,14 +34,16 @@ Current version: 1.1
 - Vulkan support
 - Builds and serialization
 ### Short term goals
-- Getting the 2D renderer optimized and ready
-- Batch rendering
-- Start working on the level editor
-- Library
+- Multiplatform library
+- Building
+- Textures
+- Asset library
+- Scripting
+- 3D
 ***
 ## Get it!
 You can use a dependency management system although at the moment it's safer to clone the project.
-### Gradle (Groovy DSL)
+<!--### Gradle (Groovy DSL)
 
     repositories {
       //...
@@ -44,7 +55,7 @@ You can use a dependency management system although at the moment it's safer to 
       implementation 'fauxkiwi:pumpkin-engine:-SNAPSHOT'
     }
 For other dependency management systems, please refer to the wiki.
-***
+***-->
 ## Use it!
 Before you start writing your first game, take a look at the Sandbox.kt test. <br>
 Since this is currently only using Kotlin JVM, you can also use Java.
@@ -105,7 +116,17 @@ Credits: kotlin-graphics for ImGui; TheCherno for inspiration
 
 Remember this work is licensed under Apache 2.0
 
-[view]: https://cdn.discordapp.com/attachments/581185346465824770/781936000196149258/unknown.png
+[empty]: https://raw.githubusercontent.com/FauxKiwi/Pumpkin-Engine/master/screenshots/empty.png
+
+[file_dialog]: https://raw.githubusercontent.com/FauxKiwi/Pumpkin-Engine/master/screenshots/file_dialog.png
+
+[gizmos]: https://raw.githubusercontent.com/FauxKiwi/Pumpkin-Engine/master/screenshots/gizmos.png
+
+[light_theme]: https://raw.githubusercontent.com/FauxKiwi/Pumpkin-Engine/master/screenshots/light_theme.png
+
+[pink_cube]: https://raw.githubusercontent.com/FauxKiwi/Pumpkin-Engine/master/screenshots/pink_cube.png
+
+<!--[view]: https://cdn.discordapp.com/attachments/581185346465824770/781936000196149258/unknown.png
 
 [view2]: https://cdn.discordapp.com/attachments/581185346465824770/783257581169672202/unknown.png
 
@@ -117,4 +138,4 @@ Remember this work is licensed under Apache 2.0
 
 [stresstest_]: https://cdn.discordapp.com/attachments/581185346465824770/786665995388452914/unknown.png
 
-[stresstest]: https://cdn.discordapp.com/attachments/581185346465824770/787288977237475328/unknown.png
+[stresstest]: https://cdn.discordapp.com/attachments/581185346465824770/787288977237475328/unknown.png-->
