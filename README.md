@@ -1,4 +1,10 @@
 # Pumpkin Engine
+![language](https://img.shields.io/github/languages/top/FauxKiwi/Pumpkin-Engine?color=ff7530)
+![version](https://img.shields.io/github/v/release/FauxKiwi/Pumpkin-Engine)
+![website](https://img.shields.io/website?up_message=github.io&url=https%3A%2F%2Fgithub.io%2Ffauxkiwi%2Fpumpkin-engine)
+![license](https://img.shields.io/github/license/FauxKiwi/Pumpkin-Engine)
+[![discord](https://img.shields.io/discord/792041384679964722)](https://discord.gg/HP8XkSREwV)
+
 This is the Pumpkin Game Engine. A powerful and capable Kotlin 2D game engine using LWJGL and therefore your GPU. If you like the project, please consider to give it a star and support it. Also, your help with contributing is always welcome.<br>
 Current version: 1.1
 ***
