@@ -2,9 +2,11 @@ package com.pumpkin.platform.opengl
 
 import com.pumpkin.core.Debug
 import com.pumpkin.core.renderer.Texture2D
-import gli_.gli
+import com.pumpkin.core.stack
 import org.lwjgl.opengl.GL45C.*
+import org.lwjgl.stb.STBImage.stbi_load
 import java.nio.ByteBuffer
+import java.nio.file.Path
 
 class OpenGLTexture2D : Texture2D {
     var format: Pair<Int, Int>
@@ -17,11 +19,26 @@ class OpenGLTexture2D : Texture2D {
     private val _rendererID: GlTexture Int*/ = glCreateTextures(GL_TEXTURE_2D) //gl.createTextures(TextureTarget._2D)
 
     constructor(path: String) {
-        val data = gli.load(ClassLoader.getSystemResource(path).toURI(), true) //TODO
+        /*val data = gli.load(ClassLoader.getSystemResource(path).toURI(), true)
         width = data.extent()[0]
-        height = data.extent()[1]
+        height = data.extent()[1]*/
+        var channels = 0
+        val data = stack { stack ->
+            val xBuffer = stack.mallocInt(1)
+            val yBuffer = stack.mallocInt(1)
+            val channelsBuffer = stack.mallocInt(1)
+            stbi_load(
+                Path.of(ClassLoader.getSystemResource(path).toURI()).toString(),
+                xBuffer, yBuffer, channelsBuffer, 0
+            ).also {
+                width = xBuffer.get(0)
+                height = yBuffer.get(0)
+                channels = channelsBuffer.get(0)
+            }
+        }
+        Debug.assert(data, "Could not load image (${path})")
 
-        format = when (data.format.blockSize) {
+        format = when (/*data.format.blockSize*/ channels) {
             3 -> Pair(GL_RGB8, GL_RGB)
             4 -> Pair(GL_RGBA8, GL_RGBA)
             else -> Debug.exception("Impossible number of channels")
@@ -32,7 +49,7 @@ class OpenGLTexture2D : Texture2D {
         setFilter(Texture2D.Filter.Linear, Texture2D.Filter.Nearest)
         setWrap(Texture2D.WrapMode.Repeat)
 
-        glTextureSubImage2D(rendererID, 0, 0, 0, width, height, format.second, GL_UNSIGNED_BYTE, data.data())
+        glTextureSubImage2D(rendererID, 0, 0, 0, width, height, format.second, GL_UNSIGNED_BYTE, data!! /*data.data()*/)
     }
 
     constructor(width: Int, height: Int) {

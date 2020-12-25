@@ -4,10 +4,10 @@ import com.pumpkin.core.Application
 import com.pumpkin.core.Debug
 import com.pumpkin.core.event.*
 import com.pumpkin.core.renderer.GraphicsContext
+import com.pumpkin.core.stack
 import com.pumpkin.core.window.EventCallbackFunction
 import com.pumpkin.core.window.Window
 import com.pumpkin.core.window.WindowProps
-import gli_.gli
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2d
 import glm_.vec2.Vec2i
@@ -15,7 +15,9 @@ import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11C.glViewport
+import org.lwjgl.stb.STBImage.stbi_load
 import org.lwjgl.system.MemoryUtil
+import java.nio.file.Path
 
 class WindowsWindow : Window {
     private lateinit var data: WindowData
@@ -51,14 +53,32 @@ class WindowsWindow : Window {
         context.init()*/
         glfwMakeContextCurrent(window)
 
-        val icon = gli.load("./src/test/resources/textures/PumpkinLogo.png") //TODO
+        stack { stack ->
+            val xBuffer = stack.mallocInt(1)
+            val yBuffer = stack.mallocInt(1)
+            val channelsBuffer = stack.mallocInt(1)
+            val icon = stbi_load(
+                Path.of(ClassLoader.getSystemResource("textures/PumpkinLogo.png").toURI()).toString(),
+                xBuffer, yBuffer, channelsBuffer, 0
+            )
+            if (icon != null) {
+                val iconImage = GLFWImage.malloc()
+                val iconImageBuffer = GLFWImage.malloc(1)
+                iconImage.set(xBuffer.get(0), yBuffer.get(0), icon)
+                iconImageBuffer.put(0, iconImage)
+                glfwSetWindowIcon(window, iconImageBuffer) //window.setIcon(iconImageBuffer)
+                iconImage.free()
+                iconImageBuffer.free()
+            } else Debug.logErrorCore("Could not load icon image")
+        }
+        /*val icon = gli.load("./src/test/resources/textures/PumpkinLogo.png")
         val iconImage = GLFWImage.malloc()
         val iconImageBuffer = GLFWImage.malloc(1)
         iconImage.set(icon.extent()[0], icon.extent()[1], icon.data())
         iconImageBuffer.put(0, iconImage)
         glfwSetWindowIcon(window, iconImageBuffer) //window.setIcon(iconImageBuffer)
         iconImage.free()
-        iconImageBuffer.free()
+        iconImageBuffer.free()*/
 
         Debug.logInfoCore("Created Window \"${data.title}\" (${data.width} x ${data.height})")
 

@@ -9,6 +9,7 @@ import com.pumpkin.core.renderer.VertexBuffer
 import gln.gl
 import gln.identifiers.GlVertexArray
 import gln.vertexArray.glVertexAttribPointer
+import org.lwjgl.opengl.GL20C
 import org.lwjgl.opengl.GL30C.*
 import org.lwjgl.opengl.GL45C.glCreateVertexArrays
 
@@ -52,14 +53,22 @@ class OpenGLVertexArray : VertexArray {
         val layout: BufferLayout = vertexBuffer().layout!!
         for (bufferElement in layout) {
             glEnableVertexAttribArray(vertexBufferIndex) //gl.enableVertexAttribArray(vertexBufferIndex)
-            glVertexAttribPointer( //gl.vertexAttribPointer(
+            /*glVertexAttribPointer(
                 vertexBufferIndex,
                 bufferElement.dataType.componentCount(),
                 bufferElement.dataType.toVertexAttrType(),
                 bufferElement.normalized,
                 layout.getStride(),
                 bufferElement.offset
-            ) //TODO
+            ) */
+            GL20C.glVertexAttribPointer(
+                vertexBufferIndex,
+                bufferElement.dataType.componentCount(),
+                bufferElement.dataType.toVertexAttrType(),
+                bufferElement.normalized,
+                layout.getStride(),
+                bufferElement.offset.toLong()
+            )
             vertexBufferIndex++
         }
         return vertexBuffers.add(vertexBuffer)

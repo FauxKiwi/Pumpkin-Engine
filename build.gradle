@@ -35,11 +35,11 @@ dependencies {
     compileOnly "com.github.kotlin-graphics:gln:0.5.2"
     compileOnly "com.github.kotlin-graphics:gli:0.8.3.0-build-15"
 
-    ["", "-jemalloc", "-glfw", "-opengl", "-tinyfd"].each {
+    ["", "-jemalloc", "-glfw", "-opengl", "-stb", "-tinyfd"].each {
         implementation "org.lwjgl:lwjgl$it:3.2.3"
     }
 
-    ["-remotery", "-stb", "-openal", "-opengles", "-jawt", "-vulkan"].each {
+    ["-remotery", "-openal", "-opengles", "-jawt", "-vulkan"].each {
         runtimeOnly "org.lwjgl:lwjgl$it:3.2.3"
     }
 
