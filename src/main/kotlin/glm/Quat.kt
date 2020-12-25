@@ -1,10 +1,13 @@
 package glm
 
-class Quat(var re: Float, var i: Float, var j: Float, var k: Float) { //TODO
+open class QuatT<T>(var re: T, var i: T, var j: T, var k: T) {
     inline var w get() = re; set(v) { re = v }
     inline var x get() = i; set(v) { i = v }
     inline var y get() = j; set(v) { j = v }
     inline var z get() = k; set(v) { k = v }
+}
+
+class Quat(re: Float, i: Float, j: Float, k: Float) : QuatT<Float>(re, i, j, k) { //TODO
 
     constructor() : this(1f, 0f, 0f, 0f)
     constructor(v: Vec3) : this() {

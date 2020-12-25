@@ -1,11 +1,18 @@
 package glm
 
-class Mat4(
+open class Mat4T<T>(
     var m0: Float, var m1: Float, var m2: Float, var m3: Float,
     var m4: Float, var m5: Float, var m6: Float, var m7: Float,
     var m8: Float, var m9: Float, var m10: Float, var m11: Float,
     var m12: Float, var m13: Float, var m14: Float, var m15: Float
-) {
+)
+
+class Mat4(
+    m0: Float, m1: Float, m2: Float, m3: Float,
+    m4: Float, m5: Float, m6: Float, m7: Float,
+    m8: Float, m9: Float, m10: Float, m11: Float,
+    m12: Float, m13: Float, m14: Float, m15: Float
+) : Mat4T<Float>(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15) {
     inline var right get() = Vec4(m0, m1, m2, m3); set(v) { m0 = v.x; m1 = v.y; m2 = v.z; m3 = v.w }
     inline var up get() = Vec4(m4, m5, m6, m7); set(v) { m4 = v.x; m5 = v.y; m6 = v.z; m7 = v.w }
     inline var dir get() = Vec4(m8, m9, m10, m11); set(v) { m8 = v.x; m9 = v.y; m10 = v.z; m11 = v.w }
