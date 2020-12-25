@@ -23,6 +23,13 @@ class EditorCamera(
     var projectionType = ProjectionType.Perspective
         set(value) { field = value; updateProjection() }
     var sceneProjection = 3
+        set(value) {
+            if (field != value) {
+                field = value
+                distance = 10f; _pitch = 0f; _yaw = 0f
+                updateView(); updateProjection()
+            }
+        }
 
     var orthoSize = 10f; set(value) { field = value; updateProjection() }
 

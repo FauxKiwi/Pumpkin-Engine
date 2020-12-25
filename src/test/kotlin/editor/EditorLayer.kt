@@ -68,13 +68,39 @@ class EditorLayer : Layer("Editor") {
     }
 
     override fun onImGuiRender() = with(ImGui) {
+        /**/setNextWindowPos(Vec2(0f, 22f))
+        /**/setNextWindowSize(Vec2(mainViewport.size.x, 38f))
+        begin("Toolbar", null, WindowFlag.NoCollapse or WindowFlag.NoTitleBar or WindowFlag.NoScrollbar
+                or WindowFlag.NoMove or WindowFlag.NoResize or WindowFlag.NoDocking or WindowFlag.NoSavedSettings)
+
+        pushMultiItemsWidths(3, calcItemWidth())
+        pushStyleVar(StyleVar.ItemSpacing, Vec2(0, 0))
+
+        val lineHeight = font.fontSize + style.framePadding.y * 2f
+        val buttonSize = Vec2(lineHeight + 3.0f, lineHeight)
+
+        val gizmoType0 = gizmoType
+        if (gizmoType0 == -1) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
+        if (button("Q", buttonSize)) gizmoType = -1; if (gizmoType0 == -1) popStyleColor()
+        if (gizmoType0 == 1) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
+        sameLine(); if (button("W", buttonSize)) gizmoType = 1; if (gizmoType0 == 1) popStyleColor()
+        if (gizmoType0 == 2) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
+        sameLine(); if (button("E", buttonSize)) gizmoType = 2; if (gizmoType0 == 2) popStyleColor()
+        if (gizmoType0 == 3) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
+        sameLine(); if (button("R", buttonSize)) gizmoType = 3; if (gizmoType0 == 3) popStyleColor()
+
+        popItemWidth()
+        popStyleVar()
+
+        end()
+
 
         val optFullscreen = optFullscreenPersistent
 
         var windowFlags: WindowFlags = WindowFlag.MenuBar.i or WindowFlag.NoDocking.i
         if (optFullscreen) {
             val viewport = mainViewport
-            setNextWindowPos(viewport.pos)
+            setNextWindowPos(viewport.pos + Vec2(0f, 60f))
             setNextWindowSize(viewport.size)
             setNextWindowViewport(viewport.id)
             pushStyleVar(StyleVar.WindowRounding, 0f)
@@ -105,32 +131,6 @@ class EditorLayer : Layer("Editor") {
 
         /**/val cr = contentRegionMax - Vec2(0f, 60f)
 
-        /**/setNextWindowPos(Vec2(0f, 22f))
-        /**/setNextWindowSize(Vec2(cr.x, 38f))
-        begin("Toolbar", null, WindowFlag.NoCollapse or WindowFlag.NoTitleBar or WindowFlag.NoScrollbar
-                or WindowFlag.NoMove or WindowFlag.NoResize or WindowFlag.NoDocking or WindowFlag.NoSavedSettings)
-
-        pushMultiItemsWidths(3, calcItemWidth())
-        pushStyleVar(StyleVar.ItemSpacing, Vec2(0, 0))
-
-        val lineHeight = font.fontSize + style.framePadding.y * 2f
-        val buttonSize = Vec2(lineHeight + 3.0f, lineHeight)
-
-        val gizmoType0 = gizmoType
-        if (gizmoType0 == -1) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
-        if (button("Q", buttonSize)) gizmoType = -1; if (gizmoType0 == -1) popStyleColor()
-        if (gizmoType0 == 1) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
-        sameLine(); if (button("W", buttonSize)) gizmoType = 1; if (gizmoType0 == 1) popStyleColor()
-        if (gizmoType0 == 2) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
-        sameLine(); if (button("E", buttonSize)) gizmoType = 2; if (gizmoType0 == 2) popStyleColor()
-        if (gizmoType0 == 3) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
-        sameLine(); if (button("R", buttonSize)) gizmoType = 3; if (gizmoType0 == 3) popStyleColor()
-
-        popItemWidth()
-        popStyleVar()
-
-        end()
-
         /**/setNextWindowPos(cr * Vec2(0f, 0.75f) + Vec2(0f, 59f))
         /**/setNextWindowSize(cr * Vec2(0.2f, 0.25f))
         ImGuiProfiler.onImGuiRender()
@@ -156,12 +156,12 @@ class EditorLayer : Layer("Editor") {
         image(framebuffer.colorAttachmentID, viewportSize, Vec2(0, 1), Vec2(1, 0))
 
         // GIZMOS
-        /*val selectedEntity = sceneHierarchyPanel.selectionContext
+        val selectedEntity = sceneHierarchyPanel.selectionContext
         if (selectedEntity != null && gizmoType != -1) {
             ImGuizmo.setOrthographic(false)
             ImGuizmo.setDrawlist()
 
-            ImGuizmo.setRect(windowPos.x, windowPos.y, windowWidth, windowHeight)
+            ImGuizmo.setRect(windowPos.x, windowPos.y + 22, windowWidth, windowHeight - 22)
 
             // Entity transform
             val tc = activeScene.registry.get<TransformComponent>(selectedEntity)
@@ -180,7 +180,7 @@ class EditorLayer : Layer("Editor") {
                 ImGuizmo.OPERATION.values()[gizmoType], ImGuizmo.MODE.LOCAL, tc,
                 null, if (snap) snapValues else null
             )
-        }*/
+        }
         end()
         popStyleVar()
 

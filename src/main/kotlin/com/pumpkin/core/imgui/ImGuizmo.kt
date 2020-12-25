@@ -1,5 +1,6 @@
 package com.pumpkin.core.imgui
 
+import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.scene.TransformComponent
 import glm_.glm
 import glm_.mat4x4.Mat4
@@ -53,6 +54,7 @@ object ImGuizmo {
     private var overMovetype = MOVETYPE.NONE
     private var using = false
 
+    private var translatePos0 = Vec2(); private var showTranslatePath = false
     private var scaleSizeM = floatArrayOf(1f, 1f, 1f)
 
     fun setOrthographic(orthographic: Boolean) {
@@ -112,18 +114,26 @@ object ImGuizmo {
         }
     }
 
-    fun calcGizmoPos() {
-        gizmoPos = (viewProj * pos0).xy * halfDisplay + mid
+    private fun calcGizmoPos() {
+        gizmoPos = (viewProj * transformedPos0).let { it.xy * Vec2(1f, -1f) / it.w } * halfDisplay + mid
     }
 
-    fun calcDirVecs() {
-        vx = ((viewProj * unaryDir[0]).normalizeAssign()).xy
-        vy = ((viewProj * -unaryDir[1]).normalizeAssign()).xy
-        vz = ((viewProj * unaryDir[2]).normalizeAssign()).xy
+    private fun calcDirVecs() {
+        val hdl = halfDisplay.length()
+        vx = (viewProj * unaryDir[0]).let { it.xy * Vec2(1f, -1f) } * halfDisplay / hdl
+        vy = (viewProj * unaryDir[1]).let { it.xy * Vec2(1f, -1f) } * halfDisplay / hdl
+        vz = (viewProj * unaryDir[2]).let { it.xy * Vec2(1f, -1f) } * halfDisplay / hdl
     }
 
     fun drawTranslationGizmo() {
         val over = this.over && overOperation == OPERATION.TRANSLATE
+        if (showTranslatePath) {
+            drawList.addCircle(translatePos0, 5f, circleCol - 0x7f000000)
+            drawList.addLine(translatePos0 + glm.normalize(gizmoPos - translatePos0) * 5f, gizmoPos, circleCol - 0x7f000000, 2f)
+        }
+        drawRect(gizmoPos, vy, vz, gizmoSize, dirCols[0] - 0x7f000000)
+        drawRect(gizmoPos, vx, vz, gizmoSize, dirCols[1] - 0x7f000000)
+        drawRect(gizmoPos, vx, vy, gizmoSize, dirCols[2] - 0x7f000000)
         drawArrow(gizmoPos, vx, gizmoSize, if (over && overMovetype == MOVETYPE.X) overCol else dirCols[0], 3f)
         drawArrow(gizmoPos, vy, gizmoSize, if (over && overMovetype == MOVETYPE.Y) overCol else dirCols[1], 3f)
         drawArrow(gizmoPos, vz, gizmoSize, if (over && overMovetype == MOVETYPE.Z) overCol else dirCols[2], 3f)
@@ -143,21 +153,28 @@ object ImGuizmo {
         drawECircle(gizmoPos, vz, vy, gizmoSize, if (over && overMovetype == MOVETYPE.X) overCol else dirCols[0], 2f)
         drawECircle(gizmoPos, vx, vz, gizmoSize, if (over && overMovetype == MOVETYPE.Y) overCol else dirCols[1], 2f)
         drawECircle(gizmoPos, -vx, vy, gizmoSize, if (over && overMovetype == MOVETYPE.Z) overCol else dirCols[2], 2f)
+        drawList.addCircle(gizmoPos, gizmoSize * max(abs(vx.x), abs(vz.y)), circleCol, 30, 2f)
     }
 
     private var mouseDelta = Vec2(); private var isUsing = false; private var storedTransform = TransformComponent(FloatArray(9))
     private fun handleOperation(transform: TransformComponent) {
         if (!using && !isUsing) return
-        if (isUsing && !ImGui.io.mouseDown[0]) {
+        if (isUsing && !ImGui.io.mouseDown[0]) { // END
             isUsing = false
             using = false
+
+            showTranslatePath = false
             scaleSizeM = floatArrayOf(1f, 1f, 1f)
+
             return
         }
-        if (!isUsing) {
+        if (!isUsing) { // START
             isUsing = true
             mouseDelta = Vec2()
             transform.t.copyInto(storedTransform.t)
+
+            translatePos0 = gizmoPos
+            showTranslatePath = true
         }
         mouseDelta plusAssign ImGui.io.mouseDelta
 
@@ -166,24 +183,26 @@ object ImGuizmo {
                 when (overMovetype) {
                     MOVETYPE.X -> {
                         transform.position = storedTransform.position + Vec3(
-                            2f * mouseDelta.abs(vx) / ymax,
+                            4f * mouseDelta.abs(vx) / ymax,
                             0f, 0f)
                     }
                     MOVETYPE.Y -> {
                         transform.position = storedTransform.position + Vec3(0f,
-                            2f * mouseDelta.abs(vy) / ymax,
+                            4f * mouseDelta.abs(vy) / ymax,
                             0f)
                     }
                     MOVETYPE.Z -> {
                         transform.position = storedTransform.position + Vec3(0f, 0f,
-                            2f * mouseDelta.abs(vz) / ymax)
+                            4f * mouseDelta.abs(vz) / ymax)
                     }
                 }
             }
             OPERATION.SCALE -> {
                 when (overMovetype) {
                     MOVETYPE.XYZ -> {
-                        transform.scale = storedTransform.scale * (1f + 4f * mouseDelta.length() / ymax)
+                        transform.scale = storedTransform.scale * (4f * mouseDelta.x / ymax).let {
+                            if (it < 0) -1 / (it-1) else it + 1f
+                        }.also { scaleSizeM[0] = it; scaleSizeM[1] = it; scaleSizeM[2] = it;  }
                     }
                     MOVETYPE.X -> {
                         transform.scale = storedTransform.scale * Vec3(
@@ -215,13 +234,22 @@ object ImGuizmo {
         return if (f < 0f) -1 else 1
     }
 
+    private fun drawRect(position: Vec2, vy: Vec2, vz: Vec2, size: Float, color: Int) {
+        drawList.addConvexPolyFilled(arrayListOf(
+            position + (vy + vz) * size * 0.2f,
+            position + vy * size * 0.6f + vz * size * 0.2f,
+            position + (vy + vz) * size * 0.6f,
+            position + vy * size * 0.2f + vz * size * 0.6f),
+            color
+        )
+    }
+
     private fun drawArrow(position: Vec2, dir: Vec2, length: Float, color: Int, thickness: Float) {
-        val d2 = Vec2(dir.y, dir.x)
         drawList.addLine(position, position + dir * length, color, thickness)
         drawList.addTriangleFilled(
-            position + dir * (length + 4 * thickness),
-            position + dir * (length - thickness) + d2 * thickness * 2,
-            position + dir * (length - thickness) - d2 * thickness * 2,
+            position + dir * length + glm.normalize(dir) * (4 * thickness),
+            position + dir * (length - thickness) + Vec2(-dir.y, dir.x).normalizeAssign() * thickness * 2,
+            position + dir * (length - thickness) + Vec2(dir.y, -dir.x).normalizeAssign() * thickness * 2,
             color
         )
     }
@@ -232,7 +260,7 @@ object ImGuizmo {
     }
 
     private fun drawECircle(position: Vec2, right: Vec2, up: Vec2, size: Float, color: Int, thickness: Float) {
-        val segments = 50f//(right.length() + up.length()) * 0.5f
+        val segments = 30f//(right.length() + up.length()) * 0.5f
         val points = mutableListOf<Vec2>()
         for (i in 0 until segments.toInt()) {
             val rad = (2 * PI * i) / segments
@@ -299,12 +327,10 @@ object ImGuizmo {
         return false
     }
 
-    private fun Vec2.abs(dir: Vec2): Float {
-        if (dir.x == 0f) return y
-        if (dir.y == 0f) return x
-        val div = this / dir
-        return -(div.x * div.y)
-    }
+    private fun Vec2.abs(dir: Vec2): Float = this.dot(dir) / dir.length()
+
+    @Suppress("NOTHING_TO_INLINE")
+    private inline fun Vec2.absToNormalized(dir: Vec2): Float = this.dot(dir)
 
     private fun Vec2.inVec(pos1: Vec2, pos2: Vec2): Boolean {
         val dir = (pos2 - pos1).normalizeAssign()
@@ -318,7 +344,7 @@ object ImGuizmo {
 
     private fun Vec2.inECircle(pos: Vec2, r: Vec2, u: Vec2): Boolean {
         val rpos = (this - pos).negateAssign()
-        return asin(rpos.x) == acos(rpos.y)
+        return acos(rpos.x) in asin(rpos.y) - 2f .. asin(rpos.y) + 2f
     }
 
     fun isOver(): Boolean = over

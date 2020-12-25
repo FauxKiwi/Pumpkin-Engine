@@ -13,6 +13,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 class Scene : Referencable() {
+    var name = "Scene"
     val registry: Registry = Registry()
 
     var viewportWidth: Int = 0

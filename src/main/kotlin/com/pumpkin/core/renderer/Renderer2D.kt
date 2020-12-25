@@ -189,8 +189,8 @@ object Renderer2D {
     fun drawQuad(position: Vec3, size: Vec2 = Vec2(1f), radians: Float = 0f, color: Vec4) =
         drawQuad(position, Vec3(size, 1f), Vec3(radians, 0f, 0f), color)
 
-    fun drawQuad(position: Vec2 = Vec2(), size: Vec3 = Vec3(1f), radians: Vec3 = Vec3(), color: Vec4) =
-        drawQuad(Vec3(position, 0f), size, radians, color)
+    /*fun drawQuad(position: Vec2 = Vec2(), size: Vec3 = Vec3(1f), radians: Vec3 = Vec3(), color: Vec4) =
+        drawQuad(Vec3(position, 0f), size, radians, color)*/
     fun drawQuad(position: Vec3, size: Vec3 = Vec3(1f), radians: Vec3 = Vec3(), color: Vec4) =
         //drawQuad(glm.translate(glm.rotateXYZ(glm.scale(Mat4.identity, size), radians.x, radians.y, radians.z), position), color)
         drawQuad(transform(position, radians, size), color)
