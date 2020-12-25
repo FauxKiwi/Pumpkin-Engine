@@ -3,7 +3,7 @@ package com.pumpkin.platform.opengl
 import com.pumpkin.core.Debug
 import com.pumpkin.core.renderer.GraphicsContext
 import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.GL11C
+import org.lwjgl.opengl.GL11C.*
 import uno.glfw.GlfwWindow
 
 class OpenGLContext(private val windowHandle: GlfwWindow) : GraphicsContext {
@@ -21,9 +21,9 @@ class OpenGLContext(private val windowHandle: GlfwWindow) : GraphicsContext {
 
     override fun swapBuffers() = windowHandle.swapBuffers()
 
-    private fun getVendor() = GL11C.glGetString(GL11C.GL_VENDOR)
+    private fun getVendor() = glGetString(GL_VENDOR)
 
-    private fun getRenderer() = GL11C.glGetString(GL11C.GL_RENDERER)
+    private fun getRenderer() = glGetString(GL_RENDERER)
 
-    private fun getVersion() = GL11C.glGetString(GL11C.GL_VERSION)
+    private fun getVersion() = glGetString(GL_VERSION)
 }

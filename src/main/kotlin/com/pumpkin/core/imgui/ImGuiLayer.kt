@@ -19,6 +19,7 @@ import imgui.font.FontConfig
 import imgui.impl.gl.ImplGL3
 import imgui.impl.glfw.ImplGlfw
 import org.lwjgl.glfw.GLFW
+import uno.glfw.GlfwWindow
 import uno.glfw.glfw
 
 class ImGuiLayer : Layer("ImGui") {
@@ -46,11 +47,11 @@ class ImGuiLayer : Layer("ImGui") {
         Settings.setTheme(0)
         ImGui.style.windowTitleAlign = Vec2(0.02f, 0.5f)
 
-        implGlfw = ImplGlfw.initForOpenGL(Window.getWindow().window, true)/*(Window.getWindow().window)*/
+        implGlfw = ImplGlfw.initForOpenGL(GlfwWindow.from(Window.getWindow().window), true)/*(Window.getWindow().window)*/
         implGL3 = ImplGL3()
 
         ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Black.ttf", 16f) // Bold
-        ImGui.io.fonts.addFontFromFileTTF("fonts/LigatureSymbols.ttf", 16f) // Icons
+        ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Medium.ttf", 16f) // Icons //TODO
         ImGui.io.fontDefault = ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Regular.ttf", 16f) // Default
     }
 

@@ -7,54 +7,56 @@ import com.pumpkin.core.renderer.GraphicsContext
 import com.pumpkin.core.window.EventCallbackFunction
 import com.pumpkin.core.window.Window
 import com.pumpkin.core.window.WindowProps
-import com.pumpkin.platform.opengl.OpenGLContext
 import gli_.gli
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2d
 import glm_.vec2.Vec2i
-import gln.glViewport
-import org.lwjgl.glfw.GLFW
+import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWImage
 import org.lwjgl.opengl.GL
-import uno.glfw.GlfwWindow
-import uno.glfw.VSync
-import uno.glfw.glfw
+import org.lwjgl.opengl.GL11C.glViewport
+import org.lwjgl.system.MemoryUtil
 
 class WindowsWindow : Window {
     private lateinit var data: WindowData
 
-    lateinit var window: GlfwWindow
+    /*lateinit*/ var window: Long = 0L//GlfwWindow
     private lateinit var context: GraphicsContext
 
+    val widthBuffer = MemoryUtil.memAllocInt(1)
+    val heightBuffer = MemoryUtil.memAllocInt(1)
+
     override val width: Int
-        get() = window.size[0]
+        get() = widthBuffer.get(0) //window.size[0]
 
     override val height: Int
-        get() = window.size[1]
+        get() = heightBuffer.get(0) //window.size[1]
 
-    override var vSync: Boolean
-        get() = glfw.swapInterval == VSync.ON
+    override var vSync: Boolean = false
+        //get() = glfw.swapInterval == VSync.ON
         set(value) {
-            glfw.swapInterval = if (value) VSync.ON else VSync.OFF
+            field = value
+            glfwSwapInterval(if (value) 1 else 0) //glfw.swapInterval = if (value) VSync.ON else VSync.OFF
         }
 
     override fun init(windowProps: WindowProps) {
         data = WindowData(windowProps.title, windowProps.width, windowProps.height, true, null)
 
-        glfw.init()
-        glfw.errorCallback = this::errorCallback
+        glfwInit() //glfw.init()
+        glfwSetErrorCallback(::errorCallback) //glfw.errorCallback = this::errorCallback
 
-        window = GlfwWindow(data.width, data.height, data.title)
-        window.maximize()
-        context = OpenGLContext(window)
-        context.init()
+        window = glfwCreateWindow(data.width, data.height, data.title, 0L, 0L) //GlfwWindow(data.width, data.height, data.title)
+        glfwMaximizeWindow(window) //window.maximize()
+        /*context = OpenGLContext(window)
+        context.init()*/
+        glfwMakeContextCurrent(window)
 
-        val icon = gli.load("./src/test/resources/textures/PumpkinLogo.png")
+        val icon = gli.load("./src/test/resources/textures/PumpkinLogo.png") //TODO
         val iconImage = GLFWImage.malloc()
         val iconImageBuffer = GLFWImage.malloc(1)
         iconImage.set(icon.extent()[0], icon.extent()[1], icon.data())
         iconImageBuffer.put(0, iconImage)
-        window.setIcon(iconImageBuffer)
+        glfwSetWindowIcon(window, iconImageBuffer) //window.setIcon(iconImageBuffer)
         iconImage.free()
         iconImageBuffer.free()
 
@@ -64,18 +66,14 @@ class WindowsWindow : Window {
 
         GL.createCapabilities()
 
-        window.windowSizeCB = this::windowSizeCallback
-        window.windowCloseCB = this::windowCloseCallback
+        glfwSetWindowSizeCallback(window) { _, width, height -> windowSizeCallback(Vec2i(width, height)) } //window.windowSizeCB = this::windowSizeCallback
+        glfwSetWindowCloseCallback(window) { windowCloseCallback() } //window.windowCloseCB = this::windowCloseCallback
 
-        window.keyCB = { key, _, action, _ ->
-            keyCallback(key, action)
-        }
+        glfwSetKeyCallback(window) /*window.keyCB =*/ { _, key, _, action, _ -> keyCallback(key, action) }
 
-        window.mouseButtonCB = { button, action, _ ->
-            mouseButtonCallback(button, action)
-        }
-        window.scrollCB = this::scrollCallback
-        window.cursorPosCB = this::cursorPosCallback
+        glfwSetMouseButtonCallback(window) /*window.mouseButtonCB =*/ { _, button, action, _ -> mouseButtonCallback(button, action) }
+        glfwSetScrollCallback(window) { _, offsetX, offsetY -> scrollCallback(Vec2d(offsetX, offsetY)) } //window.scrollCB = this::scrollCallback
+        glfwSetCursorPosCallback(window) {_, x, y -> cursorPosCallback(Vec2(x.toFloat(), y.toFloat())) } //window.cursorPosCB = this::cursorPosCallback
 
         Debug.logInfoCore("Installed Callbacks for Window \"${data.title}\"")
 
@@ -85,18 +83,25 @@ class WindowsWindow : Window {
     override fun run() = Application.get().runI().also { Application.get().shutdownI() }
 
     override fun onUpdate() {
-        glfw.pollEvents()
-        context.swapBuffers()
-        glViewport(window.framebufferSize)
+        glfwPollEvents() //glfw.pollEvents()
+        glfwSwapBuffers(window) //context.swapBuffers()
+        //glViewport(window.framebufferSize)
+        glfwGetFramebufferSize(window, widthBuffer, heightBuffer)
+        glViewport(0, 0, width, height)
     }
 
-    override fun shutdown() = glfw.terminate()
+    override fun shutdown() {
+        glfwTerminate()
+        MemoryUtil.memFree(widthBuffer)
+        MemoryUtil.memFree(heightBuffer)
+        //glfw.terminate()
+    }
 
     override fun setEventCallback(callback: EventCallbackFunction) {
         data.eventCallback = callback
     }
 
-    private fun errorCallback(error: glfw.Error, message: String) = Debug.logErrorCore("GLFW error (${error.name}): $message")
+    private fun errorCallback(error: /*glfw.Error*/ Int, message: /*String*/ Long) = Debug.logErrorCore("GLFW error ($error): ${MemoryUtil.memUTF8(message)}" /*"GLFW error (${error.name}): $message"*/)
 
     private fun windowSizeCallback(size: Vec2i) {
         data.width = size[0]
@@ -113,9 +118,9 @@ class WindowsWindow : Window {
 
     private fun keyCallback(key: Int, action: Int) {
         val event = when (action) {
-            GLFW.GLFW_PRESS -> KeyPressedEvent(key, 0)
-            GLFW.GLFW_RELEASE -> KeyReleasedEvent(key)
-            GLFW.GLFW_REPEAT -> KeyPressedEvent(key, 1)
+            GLFW_PRESS -> KeyPressedEvent(key, 0)
+            GLFW_RELEASE -> KeyReleasedEvent(key)
+            GLFW_REPEAT -> KeyPressedEvent(key, 1)
             else -> null
         }
         data.eventCallback?.let {
@@ -127,8 +132,8 @@ class WindowsWindow : Window {
 
     private fun mouseButtonCallback(button: Int, action: Int) {
         val event = when (action) {
-            GLFW.GLFW_PRESS -> MouseButtonPressedEvent(button)
-            GLFW.GLFW_RELEASE -> MouseButtonReleasedEvent(button)
+            GLFW_PRESS -> MouseButtonPressedEvent(button)
+            GLFW_RELEASE -> MouseButtonReleasedEvent(button)
             else -> null
         }
         data.eventCallback?.let {

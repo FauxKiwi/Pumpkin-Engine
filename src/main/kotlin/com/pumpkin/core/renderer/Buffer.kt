@@ -13,12 +13,6 @@ enum class ShaderDataType {
     Int, Int2, Int3, Int4,
     Bool;
 
-    fun toVertexAttrType() = when (this) {
-        Float, Float2, Float3, Float4, Mat3, Mat4 -> VertexAttrType.FLOAT
-        Int, Int2, Int3, Int4 -> VertexAttrType.INT
-        Bool -> VertexAttrType(GL20.GL_BOOL)
-    }
-
     fun size() = when (this) {
         Float, Int -> 4
         Float2, Int2 -> 4 * 2

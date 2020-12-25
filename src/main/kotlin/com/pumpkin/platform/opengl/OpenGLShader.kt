@@ -7,10 +7,10 @@ import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
-import gln.ShaderType
 import gln.gl
-import gln.identifiers.GlProgram
-import gln.identifiers.GlShader
+import org.lwjgl.opengl.GL20C.*
+import org.lwjgl.opengl.GL32C.GL_GEOMETRY_SHADER
+import org.lwjgl.opengl.GL43C.GL_COMPUTE_SHADER
 import java.io.File
 import java.io.FileReader
 import kotlin.math.max
@@ -18,7 +18,7 @@ import kotlin.math.max
 class OpenGLShader : Shader {
     override val name: String
 
-    private var rendererID: GlProgram? = null
+    private var rendererID = 0 //: GlProgram? = null
 
     constructor(filepath: String) {
         val source = FileReader(File(ClassLoader.getSystemResource(filepath).toURI())).readText()
@@ -31,12 +31,12 @@ class OpenGLShader : Shader {
     }
 
     constructor(name: String, vertexSrc: String, fragmentSrc: String) {
-        compile(hashMapOf(Pair(ShaderType.VERTEX_SHADER, vertexSrc), Pair(ShaderType.FRAGMENT_SHADER, fragmentSrc)))
+        compile(hashMapOf(GL_VERTEX_SHADER to vertexSrc, GL_FRAGMENT_SHADER to fragmentSrc))
         this.name = name
     }
 
-    private fun preProcess(source: String): HashMap<ShaderType, String> {
-        val shaderSources = HashMap<ShaderType, String>()
+    private fun preProcess(source: String): HashMap<Int, String> {
+        val shaderSources = HashMap<Int, String>()
         val typeToken = "#type"
         val typeTokenLength = typeToken.length
         var pos = source.indexOf(typeToken)
@@ -55,94 +55,94 @@ class OpenGLShader : Shader {
         return shaderSources
     }
 
-    private fun shaderTypeFromString(string: String): ShaderType? = when (string) {
-        "vertex" -> ShaderType.VERTEX_SHADER
-        "geometry" -> ShaderType.GEOMETRY_SHADER
-        "fragment" -> ShaderType.FRAGMENT_SHADER
-        "compute" -> ShaderType.COMPUTE_SHADER
-        else -> null
+    private fun shaderTypeFromString(string: String): Int /*ShaderType?*/ = when (string) {
+        "vertex" -> GL_VERTEX_SHADER //ShaderType.VERTEX_SHADER
+        "geometry" -> GL_GEOMETRY_SHADER //ShaderType.GEOMETRY_SHADER
+        "fragment" -> GL_FRAGMENT_SHADER //ShaderType.FRAGMENT_SHADER
+        "compute" -> GL_COMPUTE_SHADER //ShaderType.COMPUTE_SHADER
+        else -> 0
     }
 
-    private fun ShaderType.name() = when (this.i) {
-        ShaderType.VERTEX_SHADER.i -> "Vertex"
-        ShaderType.GEOMETRY_SHADER.i -> "Geometry"
-        ShaderType.FRAGMENT_SHADER.i -> "Fragment"
-        ShaderType.COMPUTE_SHADER.i -> "Compute"
+    private fun /*ShaderType.*/ name(shaderType: Int) = when (shaderType) {
+        GL_VERTEX_SHADER -> "Vertex"
+        GL_GEOMETRY_SHADER -> "Geometry"
+        GL_FRAGMENT_SHADER -> "Fragment"
+        GL_COMPUTE_SHADER -> "Compute"
         else -> "Unknown"
     }
 
-    private fun compile(sources: HashMap<ShaderType, String>) {
-        val program = gl.createProgram()
-        val shaderIDs = mutableListOf<GlShader>()
+    private fun compile(sources: HashMap<Int, String>) {
+        val program = glCreateProgram() //gl.createProgram()
+        val shaderIDs = mutableListOf<Int>()
         for ((shaderType, shaderSource) in sources) {
-            val shader = gl.createShader(shaderType)
+            val shader = glCreateShader(shaderType) //gl.createShader(shaderType)
 
-            gl.shaderSource(shader, shaderSource)
-            gl.compileShader(shader)
+            glShaderSource(shader, shaderSource) //gl.shaderSource(shader, shaderSource)
+            glCompileShader(shader) //gl.compileShader(shader)
 
-            if (!shader.compileStatus) {
+            /*if (!shader.compileStatus) {
                 Debug.logErrorCore("Shader (${shaderType.name()}) compile error: ${gl.getShaderInfoLog(shader)}")
                 gl.deleteShader(shader)
             } else {
                 Debug.logInfoCore("Compiled Shader (${shaderType.name()})")
-            }
+            }*/ //TODO
 
-            gl.attachShader(program, shader)
+            glAttachShader(program, shader)//gl.attachShader(program, shader)
             shaderIDs.add(shader)
         }
 
         rendererID = program
-        gl.linkProgram(rendererID!!)
+        glLinkProgram(rendererID) //gl.linkProgram(rendererID!!)
 
-        if (!rendererID!!.linkStatus) {
+        /*if (!rendererID!!.linkStatus) {
             Debug.logErrorCore("Shader link error ${gl.getProgramInfoLog(rendererID!!)}")
 
             gl.deleteProgram(rendererID!!)
             for (shader in shaderIDs) gl.deleteShader(shader)
         } else {
             Debug.logInfoCore("Linked Shader")
-        }
+        }*/ //TODO
 
-        for (shader in shaderIDs) gl.detachShader(rendererID!!, shader).also { gl.deleteShader(shader) }
+        for (shader in shaderIDs) glDetachShader(rendererID, shader).also { glDeleteShader(shader) } //gl.detachShader(rendererID!!, shader).also { gl.deleteShader(shader) }
     }
 
-    override fun close() = gl.deleteProgram(rendererID!!)
+    override fun close() = glDeleteProgram(rendererID) //gl.deleteProgram(rendererID!!)
 
-    override fun bind() = gl.useProgram(rendererID!!)
+    override fun bind() = glUseProgram(rendererID) //gl.useProgram(rendererID!!)
 
-    override fun unbind() = gl.useProgram(GlProgram.NULL)
+    override fun unbind() = glUseProgram(0) //gl.useProgram(GlProgram.NULL)
 
     override fun setFloat(name: String, value: Float) {
-        gl.uniform(rendererID!![name], value)
+        glUniform1f(glGetUniformLocation(rendererID, name), value) //gl.uniform(rendererID!![name], value)
     }
 
     override fun setFloat2(name: String, value: Vec2) {
-        gl.uniform(rendererID!![name], value)
+        glUniform2f(glGetUniformLocation(rendererID, name), value.x, value.y) //gl.uniform(rendererID!![name], value)
     }
 
     override fun setFloat3(name: String, value: Vec3) {
-        gl.uniform(rendererID!![name], value)
+        glUniform3f(glGetUniformLocation(rendererID, name), value.x, value.y, value.z) //gl.uniform(rendererID!![name], value)
     }
 
     override fun setFloat4(name: String, value: Vec4) {
-        gl.uniform(rendererID!![name], value)
+        glUniform4f(glGetUniformLocation(rendererID, name), value.x, value.y, value.z, value.w) //gl.uniform(rendererID!![name], value)
     }
 
     override fun setMat3(name: String, value: Mat3) {
-        gl.uniform(rendererID!![name], value)
+        gl.uniform(glGetUniformLocation(rendererID, name), value) //gl.uniform(rendererID!![name], value) //TODO
     }
 
     override fun setMat4(name: String, value: Mat4) {
-        gl.uniform(rendererID!![name], value)
+        gl.uniform(glGetUniformLocation(rendererID, name), value) //gl.uniform(rendererID!![name], value) //TODO
     }
 
     override fun setInt(name: String, value: Int) {
-        gl.uniform(rendererID!![name], value)
+        glUniform1i(glGetUniformLocation(rendererID, name), value) //gl.uniform(rendererID!![name], value)
     }
 
     override fun setIntArray(name: String, value: IntArray) {
         for (i in value.indices) {
-            gl.uniform(rendererID!![name] + i, value[i])
+            glUniform1i(glGetUniformLocation(rendererID, name) + i, value[i]) //gl.uniform(rendererID!![name] + i, value[i])
         }
     }
 }

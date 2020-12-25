@@ -3,52 +3,58 @@ package com.pumpkin.platform.opengl
 import com.pumpkin.core.Debug
 import com.pumpkin.core.renderer.BufferLayout
 import com.pumpkin.core.renderer.IndexBuffer
+import com.pumpkin.core.renderer.ShaderDataType
 import com.pumpkin.core.renderer.VertexBuffer
-import gln.BufferTarget
-import gln.gl
-import gln.identifiers.GlBuffer
-import org.lwjgl.opengl.GL15C
+import org.lwjgl.opengl.GL15C.*
+import org.lwjgl.opengl.GL20C.GL_BOOL
+import org.lwjgl.opengl.GL45C.glCreateBuffers
+
+fun ShaderDataType.toVertexAttrType() = when (this) {
+    ShaderDataType.Float, ShaderDataType.Float2, ShaderDataType.Float3, ShaderDataType.Float4, ShaderDataType.Mat3, ShaderDataType.Mat4 -> GL_FLOAT
+    ShaderDataType.Int, ShaderDataType.Int2, ShaderDataType.Int3, ShaderDataType.Int4 -> GL_INT
+    ShaderDataType.Bool -> GL_BOOL
+}
 
 class OpenGLVertexBuffer : VertexBuffer {
-    private val rendererID = gl.createBuffers()
+    private val rendererID = glCreateBuffers() //gl.createBuffers()
     override var layout: BufferLayout? = null
     get() = field ?: Debug.exception("No Layout specified")
 
     constructor(vertices: FloatArray) {
-        gl.bindBuffer(BufferTarget.ARRAY, rendererID)
-        GL15C.glBufferData(GL15C.GL_ARRAY_BUFFER, vertices, GL15C.GL_STATIC_DRAW)
+        glBindBuffer(GL_ARRAY_BUFFER, rendererID) //gl.bindBuffer(BufferTarget.ARRAY, rendererID)
+        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW)
     }
 
     constructor(size: Int) {
-        gl.bindBuffer(BufferTarget.ARRAY, rendererID)
-        GL15C.glBufferData(GL15C.GL_ARRAY_BUFFER, FloatArray(size), GL15C.GL_DYNAMIC_DRAW)
+        glBindBuffer(GL_ARRAY_BUFFER, rendererID) //gl.bindBuffer(BufferTarget.ARRAY, rendererID)
+        glBufferData(GL_ARRAY_BUFFER, FloatArray(size), GL_DYNAMIC_DRAW)
     }
 
     override fun setData(data: FloatArray) {
-        gl.bindBuffer(BufferTarget.ARRAY, rendererID)
-        GL15C.glBufferSubData(GL15C.GL_ARRAY_BUFFER, 0, data)
+        glBindBuffer(GL_ARRAY_BUFFER, rendererID) //gl.bindBuffer(BufferTarget.ARRAY, rendererID)
+        glBufferSubData(GL_ARRAY_BUFFER, 0, data)
     }
 
-    override fun close() = gl.deleteBuffers(rendererID)
+    override fun close() = glDeleteBuffers(rendererID) //gl.deleteBuffers(rendererID)
 
-    override fun bind() = gl.bindBuffer(BufferTarget.ARRAY, rendererID)
+    override fun bind() = glBindBuffer(GL_ARRAY_BUFFER, rendererID) //gl.bindBuffer(BufferTarget.ARRAY, rendererID)
 
-    override fun unbind() = gl.bindBuffer(BufferTarget.ARRAY, GlBuffer())
+    override fun unbind() = glBindBuffer(GL_ARRAY_BUFFER, 0) //gl.bindBuffer(BufferTarget.ARRAY, GlBuffer())
 }
 
 @ExperimentalUnsignedTypes
 class OpenGLIndexBuffer @ExperimentalUnsignedTypes constructor(indices: UIntArray) : IndexBuffer {
     override val count: Int = indices.size
-    private val rendererID = gl.createBuffers()
+    private val rendererID = glCreateBuffers() //gl.createBuffers()
 
     init {
-        gl.bindBuffer(BufferTarget.ARRAY, rendererID)
-        GL15C.glBufferData(GL15C.GL_ARRAY_BUFFER, indices.toIntArray(), GL15C.GL_STATIC_DRAW)
+        glBindBuffer(GL_ARRAY_BUFFER, rendererID) //gl.bindBuffer(BufferTarget.ARRAY, rendererID)
+        glBufferData(GL_ARRAY_BUFFER, indices.toIntArray(), GL_STATIC_DRAW)
     }
 
-    override fun close() = gl.deleteBuffers(rendererID)
+    override fun close() = glDeleteBuffers(rendererID) //gl.deleteBuffers(rendererID)
 
-    override fun bind() = gl.bindBuffer(BufferTarget.ELEMENT_ARRAY, rendererID)
+    override fun bind() = glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererID) //gl.bindBuffer(BufferTarget.ELEMENT_ARRAY, rendererID)
 
-    override fun unbind() = gl.bindBuffer(BufferTarget.ELEMENT_ARRAY, GlBuffer())
+    override fun unbind() = glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0) //gl.bindBuffer(BufferTarget.ELEMENT_ARRAY, GlBuffer())
 }
