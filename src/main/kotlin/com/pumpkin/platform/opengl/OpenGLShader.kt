@@ -2,12 +2,12 @@ package com.pumpkin.platform.opengl
 
 import com.pumpkin.core.Debug
 import com.pumpkin.core.renderer.Shader
+import com.pumpkin.core.stack
 import glm_.mat3x3.Mat3
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec4.Vec4
-import gln.gl
 import org.lwjgl.opengl.GL20C.*
 import org.lwjgl.opengl.GL32C.GL_GEOMETRY_SHADER
 import org.lwjgl.opengl.GL43C.GL_COMPUTE_SHADER
@@ -45,11 +45,11 @@ class OpenGLShader : Shader {
             if (eol == -1) Debug.exception("Syntax error")
             val begin = pos + typeTokenLength + 1
             val type = source.substring(begin, eol)
-            if (shaderTypeFromString(type) == null) Debug.exception("No valid shader type specified")
+            if (shaderTypeFromString(type) == 0) Debug.exception("No valid shader type specified")
             var nextLinePos = eol + 2
             while (source[nextLinePos + 1] == '\n') nextLinePos += 2
             pos = source.indexOf(typeToken, nextLinePos)
-            shaderSources[shaderTypeFromString(type)!!] =
+            shaderSources[shaderTypeFromString(type)] =
                 source.substring(nextLinePos, if (pos == -1) source.length - 1 else pos - 1).trim()
         }
         return shaderSources
@@ -85,7 +85,17 @@ class OpenGLShader : Shader {
                 gl.deleteShader(shader)
             } else {
                 Debug.logInfoCore("Compiled Shader (${shaderType.name()})")
-            }*/ //TODO
+            }*/
+            stack { stack ->
+                val isCompiled = stack.mallocInt(1)
+                glGetShaderiv(shader, GL_COMPILE_STATUS, isCompiled)
+                if (isCompiled.get(0) == GL_FALSE) {
+                    Debug.logErrorCore("Shader (${name(shaderType)}) compile error: ${glGetShaderInfoLog(shader)}")
+                    glDeleteShader(shader)
+                } else {
+                    Debug.logInfoCore("Compiled Shader (${name(shaderType)})")
+                }
+            }
 
             glAttachShader(program, shader)//gl.attachShader(program, shader)
             shaderIDs.add(shader)
@@ -101,7 +111,18 @@ class OpenGLShader : Shader {
             for (shader in shaderIDs) gl.deleteShader(shader)
         } else {
             Debug.logInfoCore("Linked Shader")
-        }*/ //TODO
+        }*/
+        stack { stack ->
+            val isLinked = stack.mallocInt(1)
+            glGetProgramiv(rendererID, GL_LINK_STATUS, isLinked)
+            if (isLinked.get(0) == GL_FALSE) {
+                Debug.logErrorCore("Shader link error ${glGetProgramInfoLog(rendererID)}")
+                glDeleteProgram(rendererID)
+                shaderIDs.forEach { glDeleteShader(it) }
+            } else {
+                Debug.logInfoCore("Linked Shader")
+            }
+        }
 
         for (shader in shaderIDs) glDetachShader(rendererID, shader).also { glDeleteShader(shader) } //gl.detachShader(rendererID!!, shader).also { gl.deleteShader(shader) }
     }
@@ -128,12 +149,12 @@ class OpenGLShader : Shader {
         glUniform4f(glGetUniformLocation(rendererID, name), value.x, value.y, value.z, value.w) //gl.uniform(rendererID!![name], value)
     }
 
-    override fun setMat3(name: String, value: Mat3) {
-        gl.uniform(glGetUniformLocation(rendererID, name), value) //gl.uniform(rendererID!![name], value) //TODO
+    override fun setMat3(name: String, value: Mat3) = stack { stack ->
+        glUniformMatrix3fv(glGetUniformLocation(rendererID, name), false, value.toFloatBuffer(stack)) //gl.uniform(rendererID!![name], value)
     }
 
-    override fun setMat4(name: String, value: Mat4) {
-        gl.uniform(glGetUniformLocation(rendererID, name), value) //gl.uniform(rendererID!![name], value) //TODO
+    override fun setMat4(name: String, value: Mat4) = stack { stack ->
+        glUniformMatrix4fv(glGetUniformLocation(rendererID, name), false, value.toFloatBuffer(stack)) //gl.uniform(rendererID!![name], value)
     }
 
     override fun setInt(name: String, value: Int) {
