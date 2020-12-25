@@ -15,6 +15,7 @@ import imgui.*
 import imgui.classes.Context
 import imgui.classes.Style
 import imgui.font.Font
+import imgui.font.FontConfig
 import imgui.impl.gl.ImplGL3
 import imgui.impl.glfw.ImplGlfw
 import org.lwjgl.glfw.GLFW
@@ -28,9 +29,6 @@ class ImGuiLayer : Layer("ImGui") {
     private lateinit var context: Context
     private lateinit var implGlfw: ImplGlfw
     private lateinit var implGL3: ImplGL3
-
-    private var font: Font? = null
-    private lateinit var style: Style
 
     var blockEvents = true
 
@@ -51,8 +49,9 @@ class ImGuiLayer : Layer("ImGui") {
         implGlfw = ImplGlfw.initForOpenGL(Window.getWindow().window, true)/*(Window.getWindow().window)*/
         implGL3 = ImplGL3()
 
-        ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Black.ttf", 16f)
-        ImGui.io.fontDefault = ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Regular.ttf", 16f)
+        ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Black.ttf", 16f) // Bold
+        ImGui.io.fonts.addFontFromFileTTF("fonts/LigatureSymbols.ttf", 16f) // Icons
+        ImGui.io.fontDefault = ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Regular.ttf", 16f) // Default
     }
 
     override fun onDetach() {

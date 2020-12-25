@@ -153,7 +153,7 @@ object ImGuizmo {
         drawECircle(gizmoPos, vz, vy, gizmoSize, if (over && overMovetype == MOVETYPE.X) overCol else dirCols[0], 2f)
         drawECircle(gizmoPos, vx, vz, gizmoSize, if (over && overMovetype == MOVETYPE.Y) overCol else dirCols[1], 2f)
         drawECircle(gizmoPos, -vx, vy, gizmoSize, if (over && overMovetype == MOVETYPE.Z) overCol else dirCols[2], 2f)
-        drawList.addCircle(gizmoPos, gizmoSize * max(abs(vx.x), abs(vz.y)), circleCol, 30, 2f)
+        //drawList.addCircle(gizmoPos, gizmoSize * max(abs(vx.x), abs(vz.y)), circleCol, 30, 2f)
     }
 
     private var mouseDelta = Vec2(); private var isUsing = false; private var storedTransform = TransformComponent(FloatArray(9))

@@ -25,11 +25,25 @@ class EditorCamera(
     var sceneProjection = 3
         set(value) {
             if (field != value) {
+                if (value == 2) {
+                    last3dPos = Vec3(_position)
+                    last3dDist = distance
+                    last3dYaw = _yaw; last3dPitch = _pitch
+
+                    _position.z = 0f
+                    _yaw = 0f; _pitch = 0f
+                } else if (value == 3) {
+                    _position = last3dPos
+                    distance = last3dDist
+                    _yaw = last3dYaw; _pitch = last3dPitch
+                }
                 field = value
-                distance = 10f; _pitch = 0f; _yaw = 0f
                 updateView(); updateProjection()
             }
         }
+    private var last3dPos = Vec3()
+    private var last3dDist = 10f
+    private var last3dYaw = 0f; private var last3dPitch = 0f
 
     var orthoSize = 10f; set(value) { field = value; updateProjection() }
 
@@ -59,11 +73,11 @@ class EditorCamera(
     private lateinit var viewMatrix: Mat4
     val view get() = viewMatrix
     val viewProjection get() = projection * viewMatrix
-    private var _position = Vec3(0.0f, 0.0f, 0.0f)
+    private var _position = Vec3()
     val position get() = _position
-    private val focalPoint = Vec3(0.0f, 0.0f, 0.0f)
+    private val focalPoint = Vec3()
 
-    private var initialMousePosition = Vec2(0.0f, 0.0f)
+    private var initialMousePosition = Vec2()
 
     var distance = 10.0f
     private var _pitch = 0.0f
@@ -114,41 +128,37 @@ class EditorCamera(
         updateView()
     }
 
-    fun onEvent(e: Event)
-    {
+    fun onEvent(e: Event) {
         val dispatcher = EventDispatcher(e)
         dispatcher.dispatch(::onMouseScroll)
     }
 
-    private fun onMouseScroll(e: MouseScrolledEvent): Boolean
-    {
+    private fun onMouseScroll(e: MouseScrolledEvent): Boolean {
         val delta = e.yOffset * 0.1f
         mouseZoom(delta)
         updateView()
         return false
     }
 
-    private fun mousePan(delta: Vec2)
-    {
+    private fun mousePan(delta: Vec2) {
         val (xSpeed, ySpeed) = panSpeed
         focalPoint += -rightDirection * delta.x * xSpeed * distance
         focalPoint += upDirection * delta.y * ySpeed * distance
     }
 
-    private fun mouseRotate(delta: Vec2)
-    {
-        val yawSign = if (upDirection.y < 0) -1.0f else 1.0f
-        _yaw += yawSign * delta.x * rotationSpeed
-        _pitch += delta.y * rotationSpeed
+    private fun mouseRotate(delta: Vec2) {
+        if (sceneProjection == 3) {
+            val yawSign = if (upDirection.y < 0) -1.0f else 1.0f
+            _yaw += yawSign * delta.x * rotationSpeed
+            _pitch += delta.y * rotationSpeed
+        }
     }
 
-    private fun mouseZoom(delta: Float)
-    {
+    private fun mouseZoom(delta: Float) {
         distance -= delta * zoomSpeed
-        if (distance < 1.0f)
-        {
+        if (distance < 1.0f) {
             focalPoint += forwardDirection
-            distance = 1.0f;
+            distance = 1.0f
         }
     }
 }
