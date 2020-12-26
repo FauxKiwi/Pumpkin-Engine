@@ -2,6 +2,7 @@ package glm
 
 open class Vec2T<T>(var x: T, var y: T) {
     operator fun get(i: Int): T = when (i) { 0 -> x; 1 -> y; else -> throw IndexOutOfBoundsException() }
+    operator fun set(i: Int, v: T) = when (i) { 0 -> x = v; 1 -> y = v; else -> throw IndexOutOfBoundsException() }
 }
 
 class Vec2(x: Float, y: Float) : Vec2T<Float>(x, y) {
@@ -19,6 +20,8 @@ class Vec2(x: Float, y: Float) : Vec2T<Float>(x, y) {
 }
 
 class Vec2i(x: Int, y: Int) : Vec2T<Int>(x, y)
+
+class Vec2ui(x: UInt, y: UInt) : Vec2T<UInt>(x, y)
 
 class Vec2d(x: Double, y: Double) : Vec2T<Double>(x, y)
 

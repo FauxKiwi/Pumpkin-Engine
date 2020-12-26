@@ -7,6 +7,7 @@ open class Vec4T<T>(var x: T, var y: T, var z: T, var w: T) {
     inline var a get() = w; set(v) { w = v }
 
     operator fun get(i: Int) = when (i) { 0 -> x; 1 -> y; 2 -> z; 3 -> w; else -> throw IndexOutOfBoundsException() }
+    operator fun set(i: Int, v: T) = when (i) { 0 -> x = v; 1 -> y = v; 2 -> z = v; 3 -> w = v; else -> throw IndexOutOfBoundsException() }
 }
 
 class Vec4(x: Float, y: Float, z: Float, w: Float) : Vec4T<Float>(x, y, z, w) {
@@ -16,6 +17,8 @@ class Vec4(x: Float, y: Float, z: Float, w: Float) : Vec4T<Float>(x, y, z, w) {
 }
 
 class Vec4i(x: Int, y: Int, z: Int, w: Int) : Vec4T<Int>(x, y, z, w)
+
+class Vec4ui(x: UInt, y: UInt, z: UInt, w: UInt) : Vec4T<UInt>(x, y, z, w)
 
 class Vec4d(x: Double, y: Double, z: Double, w: Double) : Vec4T<Double>(x, y, z, w)
 

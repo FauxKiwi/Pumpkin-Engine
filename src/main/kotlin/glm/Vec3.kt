@@ -1,7 +1,12 @@
 package glm
 
 open class Vec3T<T>(var x: T, var y: T, var z: T) {
+    inline var r get() = x; set(v) { x = v }
+    inline var g get() = y; set(v) { y = v }
+    inline var b get() = z; set(v) { z = v }
+
     operator fun get(i: Int) = when (i) { 0 -> x; 1 -> y; 2 -> z; else -> throw IndexOutOfBoundsException() }
+    operator fun set(i: Int, v: T) = when (i) { 0 -> x = v; 1 -> y = v; 2 -> z = v; else -> throw IndexOutOfBoundsException() }
 }
 
 class Vec3(x: Float, y: Float, z: Float) : Vec3T<Float>(x, y, z) {
@@ -32,6 +37,8 @@ class Vec3(x: Float, y: Float, z: Float) : Vec3T<Float>(x, y, z) {
 }
 
 class Vec3i(x: Int, y: Int, z: Int) : Vec3T<Int>(x, y, z)
+
+class Vec3ui(x: UInt, y: UInt, z: UInt) : Vec3T<UInt>(x, y, z)
 
 class Vec3d(x: Double, y: Double, z: Double) : Vec3T<Double>(x, y, z)
 

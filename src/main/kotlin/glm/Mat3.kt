@@ -7,7 +7,7 @@ open class Mat3T<T>(
 )
 
 class Mat3(
-    m0: Float, m1: Float, m2: Float,
-    m3: Float, m4: Float, m5: Float,
-    m6: Float, m7: Float, m8: Float
+    m0: Float = 1f, m1: Float = 0f, m2: Float = 0f,
+    m3: Float = 0f, m4: Float = 1f, m5: Float = 0f,
+    m6: Float = 0f, m7: Float = 0f, m8: Float = 1f
 ) : Mat3T<Float>(m0, m1, m2, m3, m4, m5, m6, m7, m8)
