@@ -7,3 +7,5 @@ if (file('vendor/imgui/build.gradle.kts').exists()) includeBuild("vendor/imgui")
         substitute module('com.github.kotlin-graphics.imgui:glfw') with project(':glfw')
     }
 }
+include 'PumpkinEditor'
+
