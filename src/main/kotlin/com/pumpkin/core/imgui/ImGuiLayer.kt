@@ -11,14 +11,13 @@ import glm_.vec2.Vec2
 import imgui.ConfigFlag
 import imgui.ImGui
 import imgui.classes.Context
-import imgui.font.FontConfig
 import imgui.has
 import imgui.impl.gl.ImplGL3
 import imgui.impl.glfw.ImplGlfw
 import imgui.or
-import org.lwjgl.glfw.GLFW
+import org.lwjgl.glfw.GLFW.glfwGetCurrentContext
+import org.lwjgl.glfw.GLFW.glfwMakeContextCurrent
 import uno.glfw.GlfwWindow
-import uno.glfw.glfw
 
 class ImGuiLayer : Layer("ImGui") {
     private var showDemoWindow = false
@@ -86,10 +85,10 @@ class ImGuiLayer : Layer("ImGui") {
         ImGui.drawData?.let { implGL3.renderDrawData(it) }
 
         if (ImGui.io.configFlags has ConfigFlag.ViewportsEnable) {
-            val backupCurrentContext = glfw.currentContext
+            val backupCurrentContext = glfwGetCurrentContext() //glfw.currentContext
             ImGui.updatePlatformWindows()
             ImGui.renderPlatformWindowsDefault()
-            GLFW.glfwMakeContextCurrent(backupCurrentContext.value)
+            glfwMakeContextCurrent(backupCurrentContext)
         }
     }
 }

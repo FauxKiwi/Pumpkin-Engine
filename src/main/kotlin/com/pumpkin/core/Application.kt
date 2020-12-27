@@ -11,7 +11,6 @@ import com.pumpkin.core.renderer.Renderer
 import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.window.Window
 import com.pumpkin.core.window.WindowProps
-import uno.glfw.glfw
 
 open class Application {
     companion object {
@@ -85,7 +84,7 @@ open class Application {
 
     internal fun runI() {
         while (running) {
-            val time: Float = glfw.time.toFloat()
+            val time: Float = Time.current.toFloat()
             val timestep: Timestep = time - lastFrameTime
             lastFrameTime = time
 
@@ -93,7 +92,7 @@ open class Application {
 
             if (!minimized)
                 for (layer in layerStack.layers) {
-                    layer.onUpdate(timestep)
+                    layer.onUpdate(timestep * Time.speed)
                 }
 
             imGuiLayer.begin()
