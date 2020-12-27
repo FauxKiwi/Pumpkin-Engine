@@ -17,7 +17,7 @@ class Mat4(
     inline var up get() = Vec4(m4, m5, m6, m7); set(v) { m4 = v.x; m5 = v.y; m6 = v.z; m7 = v.w }
     inline var dir get() = Vec4(m8, m9, m10, m11); set(v) { m8 = v.x; m9 = v.y; m10 = v.z; m11 = v.w }
     inline var position get() = Vec4(m12, m13, m14, m15); set(v) { m12 = v.x; m13 = v.y; m14 = v.z; m15 = v.w }
-    val array = floatArrayOf(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15)
+    val array get() = floatArrayOf(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15)
 
     constructor(f: Float) : this(f, 0f, 0f, 0f, 0f, f, 0f, 0f, 0f, 0f, f, 0f, 0f, 0f, 0f, f)
     constructor(a: FloatArray) : this(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15])

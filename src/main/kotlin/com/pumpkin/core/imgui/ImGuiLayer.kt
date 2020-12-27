@@ -11,6 +11,7 @@ import glm_.vec2.Vec2
 import imgui.ConfigFlag
 import imgui.ImGui
 import imgui.classes.Context
+import imgui.font.FontConfig
 import imgui.has
 import imgui.impl.gl.ImplGL3
 import imgui.impl.glfw.ImplGlfw
@@ -48,7 +49,7 @@ class ImGuiLayer : Layer("ImGui") {
         implGL3 = ImplGL3()
 
         ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Black.ttf", 16f) // Bold
-        ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Medium.ttf", 16f) // Icons //TODO
+        ImGui.io.fonts.addFontFromFileTTF("fonts/FontAwesome.ttf", 16f, glyphRanges = arrayOf(0xf368..0xf375)) // Icons
         ImGui.io.fontDefault = ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Regular.ttf", 16f) // Default
     }
 
