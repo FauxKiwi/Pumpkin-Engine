@@ -7,11 +7,12 @@ import com.pumpkin.core.event.Event
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.renderer.RendererCommand
-import com.pumpkin.imgui.ImGuiLayer
-import com.pumpkin.imgui.ImGuiProfiler
+import com.pumpkin.editor.imgui.ImGuiLayer
+import com.pumpkin.editor.imgui.ImGuiProfiler
 import glm.Vec2
 import glm.Vec4
 import imgui.ImGui
+import imgui.type.ImInt
 
 class StresstestLayer : Layer("Stresstest") {
     private val cameraController = OrthographicCameraController(16f / 9f, false)
@@ -46,8 +47,10 @@ class StresstestLayer : Layer("Stresstest") {
     override fun onImGuiRender() {
         ImGuiProfiler.onImGuiRender()
         ImGui.begin("Stresstest")
-        ImGui.dragInt("Number", ::sqrt, 1f, 1, 1000)
-        ImGui.inputInt("Capacity", Renderer2D::maxQuads)
+        val number = intArrayOf(sqrt)
+        ImGui.dragInt("Number", number, 1f, 1f, 1000f)
+        sqrt = number[0]
+        //ImGui.inputInt("Capacity", Renderer2D::maxQuads)
         ImGui.end()
     }
 

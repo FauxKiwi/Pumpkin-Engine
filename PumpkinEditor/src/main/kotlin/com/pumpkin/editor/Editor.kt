@@ -1,8 +1,8 @@
-package com.pumpkin
+package com.pumpkin.editor
 
 import com.pumpkin.core.Application
-import com.pumpkin.imgui.ImGuiLayer
-import com.pumpkin.settings.SettingsSerializer
+import com.pumpkin.editor.imgui.ImGuiLayer
+import com.pumpkin.editor.settings.SettingsSerializer
 
 internal lateinit var imGuiLayer: ImGuiLayer
 

@@ -1,4 +1,4 @@
-package com.pumpkin.settings
+package com.pumpkin.editor.settings
 
 import com.pumpkin.core.Debug
 import com.pumpkin.core.jsonFormat
@@ -54,7 +54,8 @@ object SettingsSerializer {
 
             val appearanceObject = jsonObject["Appearance"]!!.jsonObject
             Theme.current = appearanceObject["Theme"]!!.jsonPrimitive.int
-            ImGui.currentContext?.style = Theme[Theme.current].style
+            //ImGui.currentContext?.style = Theme[Theme.current].style
+            Theme[Theme.current].apply(ImGui.getStyle())
             val editorCameraObject = jsonObject["EditorCamera"]!!.jsonObject
             val editorCameraClearColor = editorCameraObject["ClearColor"]!!.jsonArray
             Settings.editorCameraClearColor = Vec4(

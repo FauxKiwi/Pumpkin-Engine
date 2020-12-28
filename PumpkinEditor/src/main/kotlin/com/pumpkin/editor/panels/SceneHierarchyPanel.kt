@@ -1,12 +1,16 @@
-package com.pumpkin.panels
+package com.pumpkin.editor.panels
 
 import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
 import com.pumpkin.ecs.Entity
 import com.pumpkin.ecs.Registry
-import glm_.vec2.Vec2
-import glm_.vec4.Vec4
+import glm.Vec2
+import glm.Vec4
 import imgui.*
+import imgui.flag.*
+import imgui.type.ImBoolean
+import imgui.type.ImInt
+import imgui.type.ImString
 import kotlin.reflect.KClass
 
 class SceneHierarchyPanel(var context: Scene) {
@@ -14,13 +18,14 @@ class SceneHierarchyPanel(var context: Scene) {
     var selectionContext: Entity? = null
 
     fun onImGuiRender() {
-        /**/val avail = ImGui.contentRegionMax - Vec2(0f, 60f)
-        /**/ImGui.setNextWindowPos(Vec2() + Vec2(0f, 60f))
-        /**/ImGui.setNextWindowSize(avail * Vec2(0.2f, 0.25f))
+        /**/val avail = Vec2(ImGui.getContentRegionMaxX(), ImGui.getContentRegionMaxY()) - Vec2(0f, 60f)
+        /**/ImGui.setNextWindowPos(0f, 60f)
+        var size = avail * Vec2(0.2f, 0.25f)
+        /**/ImGui.setNextWindowSize(size.x, size.y)
 
-        ImGui.begin("Hierarchy", null, WindowFlag.NoCollapse.i)
+        ImGui.begin("Hierarchy", ImBoolean(true), ImGuiWindowFlags.NoCollapse)
         registry.each(::drawEntityNode)
-        if (ImGui.beginPopupContextWindow(popupFlags = PopupFlag.MouseButtonRight.i or PopupFlag.NoOpenOverItems.i)) {
+        if (ImGui.beginPopupContextWindow(ImGuiPopupFlags.MouseButtonRight or ImGuiPopupFlags.NoOpenOverItems)) {
             if (ImGui.beginMenu("Create")) {
                 if (ImGui.menuItem("Empty Entity")) {
                     selectionContext = context.createEntity("Empty Entity").entityHandle
@@ -41,9 +46,11 @@ class SceneHierarchyPanel(var context: Scene) {
         }
         ImGui.end()
 
-        /**/ImGui.setNextWindowPos(avail * Vec2(0f, 0.25f) + Vec2(0f, 60f))
-        /**/ImGui.setNextWindowSize(avail * Vec2(0.2f, 0.5f))
-        ImGui.begin("Inspector", null, WindowFlag.NoCollapse.i)
+        var pos = avail * Vec2(0f, 0.25f) + Vec2(0f, 60f)
+        /**/ImGui.setNextWindowPos(pos.x, pos.y)
+        size = avail * Vec2(0.2f, 0.5f)
+        /**/ImGui.setNextWindowSize(size.x, size.y)
+        ImGui.begin("Inspector", ImBoolean(true), ImGuiWindowFlags.NoCollapse)
         if (selectionContext != null) {
             drawComponents(selectionContext!!)
         }
@@ -54,10 +61,10 @@ class SceneHierarchyPanel(var context: Scene) {
 
     private fun drawEntityNode(entity: Entity) {
         val tag = registry.get<TagComponent>(entity).str
-        val flags: TreeNodeFlags =
-            (if (selectionContext == entity) TreeNodeFlag.Selected.i else 0) or
-            TreeNodeFlag.OpenOnArrow.i or
-            TreeNodeFlag.SpanAvailWidth
+        val flags =
+            (if (selectionContext == entity) ImGuiTreeNodeFlags.Selected else 0) or
+                    ImGuiTreeNodeFlags.OpenOnArrow or
+                    ImGuiTreeNodeFlags.SpanAvailWidth
         val opened = ImGui.treeNodeEx(tag, flags)
         if (ImGui.isItemClicked())
             selectionContext = entity
@@ -84,19 +91,19 @@ class SceneHierarchyPanel(var context: Scene) {
         drawComponent(T::class, name, entity, uiFunction)
 
     fun <T : Any> drawComponent(clazz: KClass<T>, name: String, entity: Entity, uiFunction: (T) -> Unit) {
-            val treeNodeFlags = TreeNodeFlag.DefaultOpen or TreeNodeFlag.Framed or TreeNodeFlag.SpanAvailWidth or TreeNodeFlag.AllowItemOverlap or TreeNodeFlag.FramePadding;
+            val treeNodeFlags = ImGuiTreeNodeFlags.DefaultOpen or ImGuiTreeNodeFlags.Framed or ImGuiTreeNodeFlags.SpanAvailWidth or ImGuiTreeNodeFlags.AllowItemOverlap or ImGuiTreeNodeFlags.FramePadding;
             if (registry.has(clazz, entity)) {
                 val component = registry.get(clazz, entity)
-                val contentRegionAvailable = ImGui.contentRegionAvail
+                val contentRegionAvailable = Vec2(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY())
 
-                ImGui.pushStyleVar(StyleVar.FramePadding, Vec2(4, 4))
-                val lineHeight = ImGui.font.fontSize + ImGui.style.framePadding.y * 2.0f
+                ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, 4f)
+                val lineHeight = ImGui.getFont().fontSize + ImGui.getStyle().framePaddingY * 2.0f
                 ImGui.separator()
                 //ImGui.treeNodeEx(name, treeNodeFlags)
                 val open = ImGui.treeNodeEx(name, treeNodeFlags)
                 ImGui.popStyleVar()
                 ImGui.sameLine(contentRegionAvailable.x - lineHeight * 0.5f)
-                if (ImGui.button("+", Vec2(lineHeight, lineHeight))) {
+                if (ImGui.button("+", lineHeight, lineHeight)) {
                     ImGui.openPopup("ComponentSettings")
                 }
 
@@ -124,10 +131,10 @@ class SceneHierarchyPanel(var context: Scene) {
             registry.has<TagComponent>(entity)
         ) {
             val tag = registry.get<TagComponent>(entity)
-            ImGui.inputText("##Tag", byteArrayOf()/*tag.byteArray TODO*/)
+            ImGui.inputText("##Tag", ImString(0)/*tag.byteArray TODO*/)
         }
         ImGui.sameLine()
-        ImGui.pushItemWidth(-1)
+        ImGui.pushItemWidth(-1f)
         if (ImGui.button("Add Component"))
             ImGui.openPopup("AddComponent")
 
@@ -161,24 +168,24 @@ class SceneHierarchyPanel(var context: Scene) {
         }
 
         drawComponent<CameraComponent>("Camera", entity) { camera ->
-            ImGui.checkbox("Primary Camera", camera::primary)
-            ImGui.combo("Projection Type", camera.camera::projectionTypePtr, ProjectionType.projectionTypes)
+            ImGui.checkbox("Primary Camera", camera.primary)
+            ImGui.combo("Projection Type", ImInt( camera.camera.projectionTypePtr), /*ProjectionType.projectionTypes*/"Orthographic\u0000Perspective")
             if (camera.camera.projectionType == ProjectionType.Orthographic) {
-                ImGui.dragFloat("Orthographic Size", camera.camera::orthographicSize)
-                ImGui.dragFloat("Near Clip", camera.camera::orthographicNear)
-                ImGui.dragFloat("Far Clip", camera.camera::orthographicFar)
+                ImGui.dragFloat("Orthographic Size", floatArrayOf(camera.camera.orthographicSize))
+                ImGui.dragFloat("Near Clip", floatArrayOf(camera.camera.orthographicNear))
+                ImGui.dragFloat("Far Clip", floatArrayOf(camera.camera.orthographicFar))
             } else {
-                ImGui.dragFloat("Field of View", camera.camera::perspectiveFov)
-                ImGui.dragFloat("Near Clip", camera.camera::perspectiveNear)
-                ImGui.dragFloat("Far Clip", camera.camera::perspectiveFar)
+                ImGui.dragFloat("Field of View", floatArrayOf(camera.camera.perspectiveFov))
+                ImGui.dragFloat("Near Clip", floatArrayOf(camera.camera.perspectiveNear))
+                ImGui.dragFloat("Far Clip", floatArrayOf(camera.camera.perspectiveFar))
             }
-            ImGui.checkbox("Fixed Aspect Ratio", camera::fixedAspectRatio)
-            ImGui.colorEdit3("Clear Color", camera.camera.clearColor)
+            ImGui.checkbox("Fixed Aspect Ratio", camera.fixedAspectRatio)
+            ImGui.colorEdit3("Clear Color", camera.camera.clearColor.array)
         }
 
         drawComponent<SpriteRendererComponent>("Sprite Renderer", entity) { spriteRenderer ->
             val color = spriteRenderer.color
-            ImGui.colorEdit4("Color", color)
+            ImGui.colorEdit4("Color", color.array)
             spriteRenderer.color = color
         }
 
@@ -188,7 +195,7 @@ class SceneHierarchyPanel(var context: Scene) {
     }
 
     private fun drawVec3Control(label: String, values: glm.Vec3, resetValue: Float = 0f, columnWidth: Float = 100f) {
-        val font = ImGui.io.fonts.fonts[0]
+        //val font = ImGui.getIO().fonts
 
         ImGui.pushID(label)
 
@@ -197,54 +204,54 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.text(label)
         ImGui.nextColumn()
 
-        ImGui.pushMultiItemsWidths(3, ImGui.calcItemWidth())
-        ImGui.pushStyleVar(StyleVar.ItemSpacing, Vec2(0, 0))
+        //ImGui.pushMultiItemsWidths(3, ImGui.calcItemWidth())
+        ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0f)
 
-        val lineHeight = ImGui.font.fontSize + ImGui.style.framePadding.y * 2f
+        val lineHeight = ImGui.getFont().fontSize + ImGui.getStyle().framePaddingY * 2f
         val buttonSize = Vec2(lineHeight + 3.0f, lineHeight)
 
-        ImGui.pushStyleColor(Col.Button, Vec4(0.8f, 0.1f, 0.15f, 1f))
-        ImGui.pushStyleColor(Col.ButtonHovered, Vec4(0.9f, 0.2f, 0.2f, 1f))
-        ImGui.pushStyleColor(Col.ButtonActive, Vec4(0.8f, 0.1f, 0.15f, 1f))
-        ImGui.pushStyleColor(Col.Text, Vec4(1f, 1f, 1f, 1f))
-        ImGui.pushFont(font)
-        if (ImGui.button("X", buttonSize))
+        ImGui.pushStyleColor(ImGuiCol.Button, Vec4(0.8f, 0.1f, 0.15f, 1f).toColorInt())
+        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, Vec4(0.9f, 0.2f, 0.2f, 1f).toColorInt())
+        ImGui.pushStyleColor(ImGuiCol.ButtonActive, Vec4(0.8f, 0.1f, 0.15f, 1f).toColorInt())
+        ImGui.pushStyleColor(ImGuiCol.Text, Vec4(1f, 1f, 1f, 1f).toColorInt())
+        //ImGui.pushFont(font)
+        if (ImGui.button("X", buttonSize.x, buttonSize.y))
             values.x = resetValue
-        ImGui.popFont()
+        //ImGui.popFont()
         ImGui.popStyleColor(4)
 
         ImGui.sameLine()
-        ImGui.dragFloat("##X", values::x, 0.1f, 0.0f, 0.0f, "%.2f")
+        ImGui.dragFloat("##X", floatArrayOf(values.x), 0.1f, 0.0f, 0.0f, "%.2f")
         ImGui.popItemWidth()
         ImGui.sameLine()
 
-        ImGui.pushStyleColor(Col.Button, Vec4(0.2f, 0.7f, 0.2f, 1f))
-        ImGui.pushStyleColor(Col.ButtonHovered, Vec4(0.3f, 0.8f, 0.3f, 1f))
-        ImGui.pushStyleColor(Col.ButtonActive, Vec4(0.2f, 0.7f, 0.2f, 1f))
-        ImGui.pushStyleColor(Col.Text, Vec4(1f, 1f, 1f, 1f))
-        ImGui.pushFont(font)
-        if (ImGui.button("Y", buttonSize))
+        ImGui.pushStyleColor(ImGuiCol.Button, Vec4(0.2f, 0.7f, 0.2f, 1f).toColorInt())
+        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, Vec4(0.3f, 0.8f, 0.3f, 1f).toColorInt())
+        ImGui.pushStyleColor(ImGuiCol.ButtonActive, Vec4(0.2f, 0.7f, 0.2f, 1f).toColorInt())
+        ImGui.pushStyleColor(ImGuiCol.Text, Vec4(1f, 1f, 1f, 1f).toColorInt())
+        //ImGui.pushFont(font)
+        if (ImGui.button("Y", buttonSize.x, buttonSize.y))
             values.y = resetValue
-        ImGui.popFont()
+        //ImGui.popFont()
         ImGui.popStyleColor(4)
 
         ImGui.sameLine()
-        ImGui.dragFloat("##Y", values::y, 0.1f, 0.0f, 0.0f, "%.2f")
+        ImGui.dragFloat("##Y", floatArrayOf(values.y), 0.1f, 0.0f, 0.0f, "%.2f")
         ImGui.popItemWidth()
         ImGui.sameLine()
 
-        ImGui.pushStyleColor(Col.Button, Vec4(0.1f, 0.25f, 0.8f, 1f))
-        ImGui.pushStyleColor(Col.ButtonHovered, Vec4(0.2f, 0.35f, 0.9f, 1f))
-        ImGui.pushStyleColor(Col.ButtonActive, Vec4(0.1f, 0.25f, 0.8f, 1f))
-        ImGui.pushStyleColor(Col.Text, Vec4(1f, 1f, 1f, 1f))
-        ImGui.pushFont(font)
-        if (ImGui.button("Z", buttonSize))
+        ImGui.pushStyleColor(ImGuiCol.Button, Vec4(0.1f, 0.25f, 0.8f, 1f).toColorInt())
+        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, Vec4(0.2f, 0.35f, 0.9f, 1f).toColorInt())
+        ImGui.pushStyleColor(ImGuiCol.ButtonActive, Vec4(0.1f, 0.25f, 0.8f, 1f).toColorInt())
+        ImGui.pushStyleColor(ImGuiCol.Text, Vec4(1f, 1f, 1f, 1f).toColorInt())
+        //ImGui.pushFont(font)
+        if (ImGui.button("Z", buttonSize.x, buttonSize.y))
             values.z = resetValue
-        ImGui.popFont()
+        //ImGui.popFont()
         ImGui.popStyleColor(4)
 
         ImGui.sameLine()
-        ImGui.dragFloat("##Z", values::z, 0.1f, 0.0f, 0.0f, "%.2f")
+        ImGui.dragFloat("##Z", floatArrayOf(values.z), 0.1f, 0.0f, 0.0f, "%.2f")
         ImGui.popItemWidth()
 
         ImGui.popStyleVar()
@@ -254,9 +261,9 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.popID()
     }
 
-    fun ImGui.colorEdit3(label: String, color: glm.Vec4) {
+    /*fun ImGui.colorEdit3(label: String, color: glm.Vec4) {
         val fa = floatArrayOf(color.r, color.g, color.b)
-        colorEdit4(label, fa)
+        this.colorEdit4(label, fa)
         color.r = fa[0]; color.g = fa[1]; color.b = fa[2]
     }
 
@@ -264,5 +271,5 @@ class SceneHierarchyPanel(var context: Scene) {
         val fa = floatArrayOf(color.r, color.g, color.b, color.a)
         colorEdit4(label, fa)
         color.r = fa[0]; color.g = fa[1]; color.b = fa[2]; color.a = fa[3]
-    }
+    }*/
 }

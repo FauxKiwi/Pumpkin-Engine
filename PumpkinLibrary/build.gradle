@@ -29,19 +29,14 @@ kotlin {
 
                 implementation project(':Libraries')
 
-                implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1'
-
                 ["", "-glfw", "-opengl", "-stb", "-tinyfd"].each {
                     implementation "org.lwjgl:lwjgl$it:3.2.3"
+                    runtimeOnly "org.lwjgl:lwjgl$it::natives-windows"
                 }
 
-                ["-jemalloc", "-remotery", "-openal", "-opengles", "-jawt", "-vulkan"].each {
-                    runtimeOnly "org.lwjgl:lwjgl$it:3.2.3"
-                }
+                implementation platform("org.lwjgl:lwjgl-bom:3.2.3")
 
-                ["", "-jemalloc", "-glfw", "-opengl", "-tinyfd", "-remotery", "-stb", "-openal", "-opengles"].each {
-                    runtimeOnly "org.lwjgl:lwjgl$it:3.2.3:natives-windows"
-                }
+                implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1'
 
                 implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.10"
             }

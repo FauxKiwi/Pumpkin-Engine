@@ -7,8 +7,9 @@ group 'com.pumpkin'
 version '1.0'
 
 repositories {
+    jcenter()
     mavenCentral()
-    maven { url = "https://jitpack.io" }
+    //maven { url = "https://jitpack.io" }
 }
 
 compileKotlin {
@@ -16,6 +17,14 @@ compileKotlin {
     kotlinOptions {
         freeCompilerArgs = ["-Xinline-classes", "-Xopt-in=kotlin.ExperimentalUnsignedTypes"]
     }
+}
+
+ext {
+    lwjglVersion = '3.2.3'
+    imguiVersion = '1.79-1.4.0'
+
+    imguiNatives = "imgui-java-natives-windows"
+    lwjglNatives = "natives-windows"
 }
 
 dependencies {
@@ -26,24 +35,16 @@ dependencies {
 
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1'
 
-    ["gl", "glfw", "core"].each {
-        implementation "com.github.kotlin-graphics.imgui:$it:1.79"
-    }
-
-    compileOnly "com.github.kotlin-graphics:gln:0.5.2"
-    compileOnly "com.github.kotlin-graphics:gli:0.8.3.0-build-15"
+    implementation "io.imgui.java:imgui-java-binding:$imguiVersion"
+    implementation "io.imgui.java:imgui-java-lwjgl3:$imguiVersion"
+    runtimeOnly "io.imgui.java:$imguiNatives:$imguiVersion"
 
     ["", "-glfw", "-opengl", "-stb", "-tinyfd"].each {
-        implementation "org.lwjgl:lwjgl$it:3.2.3"
+        implementation "org.lwjgl:lwjgl$it:$lwjglVersion"
+        runtimeOnly "org.lwjgl:lwjgl$it::$lwjglNatives"
     }
 
-    ["-jemalloc", "-remotery", "-openal", "-opengles", "-jawt", "-vulkan"].each {
-        runtimeOnly "org.lwjgl:lwjgl$it:3.2.3"
-    }
-
-    ["", "-jemalloc", "-glfw", "-opengl", "-tinyfd", "-remotery", "-stb", "-openal", "-opengles"].each {
-        runtimeOnly "org.lwjgl:lwjgl$it:3.2.3:natives-windows"
-    }
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'

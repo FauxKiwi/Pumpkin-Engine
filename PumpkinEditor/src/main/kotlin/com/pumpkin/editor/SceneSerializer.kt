@@ -1,6 +1,5 @@
-package com.pumpkin
+package com.pumpkin.editor
 
-import com.pumpkin.core.Debug
 import com.pumpkin.core.jsonFormat
 import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
@@ -13,7 +12,6 @@ import java.io.FileWriter
 //import java.io.FileReader
 //import java.io.FileWriter
 //import java.lang.Exception
-import kotlin.reflect.KClass
 import com.pumpkin.ecs.Entity as EnTT
 
 class SceneSerializer(var scene: Scene) {

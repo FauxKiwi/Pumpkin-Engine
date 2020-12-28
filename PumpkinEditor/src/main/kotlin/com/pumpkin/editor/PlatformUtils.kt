@@ -1,4 +1,4 @@
-package com.pumpkin
+package com.pumpkin.editor
 
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryStack

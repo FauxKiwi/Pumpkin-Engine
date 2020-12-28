@@ -1,28 +1,30 @@
-package com.pumpkin
+package com.pumpkin.editor
 
 import com.pumpkin.core.*
-import com.pumpkin.core.Debug
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.KeyPressedEvent
-import com.pumpkin.imgui.ImGuiProfiler
-import com.pumpkin.imgui.ImGuizmo
+import com.pumpkin.editor.imgui.ImGuiProfiler
+import com.pumpkin.editor.imgui.ImGuizmo
 import com.pumpkin.core.input.Input
 import com.pumpkin.core.input.KeyCode
 import com.pumpkin.core.layer.Layer
-import com.pumpkin.panels.SceneHierarchyPanel
+import com.pumpkin.editor.panels.SceneHierarchyPanel
 import com.pumpkin.core.renderer.Framebuffer
 import com.pumpkin.core.renderer.FramebufferSpecification
 import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
-import com.pumpkin.settings.Settings
-import glm_.vec2.Vec2
-import glm_.vec4.Vec4
-import imgui.*
+import com.pumpkin.editor.settings.Settings
+import glm.Mat4
+import glm.Vec2
+import imgui.ImGui
+import imgui.ImVec4
+import imgui.flag.*
+import imgui.type.ImBoolean
 
 class EditorLayer : Layer("Editor") {
     private var dockspaceOpen = true
     private var optFullscreenPersistent = true
-    private var dockspaceFlags: DockNodeFlags = DockNodeFlag.None.i
+    private var dockspaceFlags: Int = ImGuiDockNodeFlags.None
 
     private val framebuffer = Framebuffer.create(FramebufferSpecification(1280, 720))
     private var viewportSize = Vec2()
@@ -71,75 +73,77 @@ class EditorLayer : Layer("Editor") {
         Application.get().getImGuiLayer().end()
     }
 
-    override fun onImGuiRender() = with(ImGui) {
-        /**/setNextWindowPos(Vec2(0f, 22f))
-        /**/setNextWindowSize(Vec2(mainViewport.size.x, 38f))
-        begin("Toolbar", null, WindowFlag.NoCollapse or WindowFlag.NoTitleBar or WindowFlag.NoScrollbar
-                or WindowFlag.NoMove or WindowFlag.NoResize or WindowFlag.NoDocking or WindowFlag.NoSavedSettings)
+    override fun onImGuiRender()  {
+        ImGui.setNextWindowPos(0f, 22f)
+        ImGui.setNextWindowSize(ImGui.getMainViewport().sizeX, 38f)
+        ImGui.begin("Toolbar", ImBoolean(true), ImGuiWindowFlags.NoCollapse or ImGuiWindowFlags.NoTitleBar or ImGuiWindowFlags.NoScrollbar
+                or ImGuiWindowFlags.NoMove or ImGuiWindowFlags.NoResize or ImGuiWindowFlags.NoDocking or ImGuiWindowFlags.NoSavedSettings)
 
-        pushMultiItemsWidths(3, calcItemWidth())
-        pushStyleVar(StyleVar.ItemSpacing, Vec2(0, 0))
+        //ImGui.pushMultiItemsWidths(3, calcItemWidth())
+        ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0f, 0f)
 
-        val lineHeight = font.fontSize + style.framePadding.y * 2f
+        val lineHeight = ImGui.getFont().fontSize + ImGui.getStyle().framePaddingY * 2f
         val buttonSize = Vec2(lineHeight + 3.0f, lineHeight)
 
         //val iconFont = ImGui.io.fonts.fonts[1]
         //pushFont(iconFont)
-        val gizmoType0 = gizmoType
-        if (gizmoType0 == -1) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
-        if (button("Q", buttonSize)) gizmoType = -1; if (gizmoType0 == -1) popStyleColor()
-        if (gizmoType0 == 1) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
-        sameLine(); if (button("W", buttonSize)) gizmoType = 1; if (gizmoType0 == 1) popStyleColor()
-        if (gizmoType0 == 2) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
-        sameLine(); if (button("E", buttonSize)) gizmoType = 2; if (gizmoType0 == 2) popStyleColor()
-        if (gizmoType0 == 3) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
-        sameLine(); if (button("R", buttonSize)) gizmoType = 3; if (gizmoType0 == 3) popStyleColor()
+        /*val gizmoType0 = gizmoType
+        if (gizmoType0 == -1) ImGui.pushStyleColor(ImGuiCol.Button, ImGui.getStyleColorVec4(ImGuiCol.ButtonActive))
+        if (ImGui.button("Q", buttonSize)) gizmoType = -1; if (gizmoType0 == -1) ImGui.popStyleColor()
+        if (gizmoType0 == 1) ImGui.pushStyleColor(ImGuiCol.Button, ImGui.getStyleColorVec4(Col.ButtonActive))
+        ImGui.sameLine(); if (ImGui.button("W", buttonSize)) gizmoType = 1; if (gizmoType0 == 1) ImGui.popStyleColor()
+        if (gizmoType0 == 2) ImGui.pushStyleColor(ImGuiCol.Button, ImGui.getStyleColorVec4(Col.ButtonActive))
+        ImGui.sameLine(); if (ImGui.button("E", buttonSize)) gizmoType = 2; if (gizmoType0 == 2) ImGui.popStyleColor()
+        if (gizmoType0 == 3) ImGui.pushStyleColor(ImGuiCol.Button, ImGui.getStyleColorVec4(Col.ButtonActive))
+        ImGui.sameLine(); if (ImGui.button("R", buttonSize)) gizmoType = 3; if (gizmoType0 == 3) ImGui.popStyleColor()*/
         //popFont()
 
-        popItemWidth()
-        popStyleVar()
+        //ImGui.popItemWidth()
+        ImGui.popStyleVar()
 
-        end()
+        ImGui.end()
 
 
         val optFullscreen = optFullscreenPersistent
 
-        var windowFlags: WindowFlags = WindowFlag.MenuBar.i or WindowFlag.NoDocking.i
+        var ImGuiWindowFlagss = ImGuiWindowFlags.MenuBar or ImGuiWindowFlags.NoDocking
         if (optFullscreen) {
-            val viewport = mainViewport
-            setNextWindowPos(viewport.pos + Vec2(0f, 60f))
-            setNextWindowSize(viewport.size)
-            setNextWindowViewport(viewport.id)
-            pushStyleVar(StyleVar.WindowRounding, 0f)
-            pushStyleVar(StyleVar.WindowBorderSize, 0f)
-            windowFlags =
-                windowFlags or WindowFlag.NoTitleBar.i or WindowFlag.NoCollapse.i or WindowFlag.NoResize.i or WindowFlag.NoMove.i
-            windowFlags = windowFlags or WindowFlag.NoBringToFrontOnFocus.i or WindowFlag.NoNavFocus.i
+            val viewport = ImGui.getMainViewport()
+            ImGui.setNextWindowPos(viewport.posX, viewport.posY + 60f)
+            ImGui.setNextWindowSize(viewport.sizeX, viewport.sizeY)
+            ImGui.setNextWindowViewport(viewport.id)
+            ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding, 0f)
+            ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f)
+            ImGuiWindowFlagss =
+                ImGuiWindowFlagss or ImGuiWindowFlags.NoTitleBar or ImGuiWindowFlags.NoCollapse or ImGuiWindowFlags.NoResize or ImGuiWindowFlags.NoMove
+            ImGuiWindowFlagss = ImGuiWindowFlagss or ImGuiWindowFlags.NoBringToFrontOnFocus or ImGuiWindowFlags.NoNavFocus
         }
-        if (dockspaceFlags and DockNodeFlag.PassthruCentralNode.i != 0)
-            windowFlags = windowFlags or WindowFlag.NoBackground.i
+        if (dockspaceFlags and ImGuiDockNodeFlags.PassthruCentralNode != 0)
+            ImGuiWindowFlagss = ImGuiWindowFlagss or ImGuiWindowFlags.NoBackground
 
-        pushStyleVar(StyleVar.WindowPadding, Vec2(0f, 0f))
-        begin("DockSpace Demo", ::dockspaceOpen, windowFlags)
-        popStyleVar()
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0f, 0f)
+        ImGui.begin("DockSpace Demo", ImBoolean(dockspaceOpen), ImGuiWindowFlagss)
+        ImGui.popStyleVar()
 
         if (optFullscreen)
-            popStyleVar(2)
+            ImGui.popStyleVar(2)
 
         menuBar()
 
-        val minWinSizeX = style.windowMinSize.x
-        style.windowMinSize.x = 370
-        if (io.configFlags and ConfigFlag.DockingEnable.i != 0) {
-            val dockspaceID = getID("MyDockSpace")
-            dockSpace(dockspaceID, Vec2(0f, 0f), dockspaceFlags)
+        val minWinSizeX = ImGui.getStyle().windowMinSizeX
+        ImGui.getStyle().setWindowMinSize(370f, ImGui.getStyle().windowMinSizeY)
+        if (ImGui.getIO().configFlags and ImGuiConfigFlags.DockingEnable != 0) {
+            val dockspaceID = ImGui.getID("MyDockSpace")
+            ImGui.dockSpace(dockspaceID, 0f, 0f, dockspaceFlags)
         }
-        style.windowMinSize.x = minWinSizeX
+        ImGui.getStyle().setWindowMinSize(minWinSizeX, ImGui.getStyle().windowMinSizeY)
 
-        /**/val cr = contentRegionMax - Vec2(0f, 60f)
+        //val cr = Vec2(ImGui.getContentRegionMaxX(), ImGui.getContentRegionMaxY() - 60f)
 
-        /**/setNextWindowPos(cr * Vec2(0f, 0.75f) + Vec2(0f, 59f))
-        /**/setNextWindowSize(cr * Vec2(0.2f, 0.25f))
+        //var pos = cr * Vec2(0f, 0.75f) + Vec2(0f, 59f)
+        //ImGui.setNextWindowPos(pos.x, pos.y)
+        //var size = cr * Vec2(0.2f, 0.25f)
+        //ImGui.setNextWindowSize(size.x, size.y)
         ImGuiProfiler.onImGuiRender()
 
         sceneHierarchyPanel.onImGuiRender()
@@ -147,20 +151,22 @@ class EditorLayer : Layer("Editor") {
         Settings.onImGuiRender()
         if (Settings.uEditorCameraView) { editorCamera.fov = Settings.editorCameraFov; editorCamera.updateProjection(); Settings.uEditorCameraView = false; }
 
-        /**/setNextWindowPos(cr * Vec2(0.2f, 0f) + Vec2(0f, 60f))
-        /**/setNextWindowSize(cr * Vec2(0.8f, 1f))
-        pushStyleVar(StyleVar.WindowPadding, Vec2())
-        pushStyleColor(Col.MenuBarBg, getStyleColorVec4(Col.TitleBg))
-        begin("Viewport", /**/null, WindowFlag.NoMove.i or WindowFlag.NoTitleBar.i or WindowFlag.MenuBar.i or WindowFlag.NoCollapse.i)
-        popStyleColor()
+        //pos = cr * Vec2(0.2f, 0f) + Vec2(0f, 60f)
+        //ImGui.setNextWindowPos(pos.x, pos.y)
+        //size = cr * Vec2(0.8f, 1f)
+        //ImGui.setNextWindowSize(size.x, size.y)
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0f, 0f)
+        //ImGui.pushStyleColor(ImGuiCol.MenuBarBg, ImGui.getStyleColorVec4(ImGuiStyleVar.TitleBg, ImVec4()))
+        ImGui.begin("Viewport", /**/ImBoolean(true), ImGuiWindowFlags.NoMove or ImGuiWindowFlags.NoTitleBar or ImGuiWindowFlags.MenuBar or ImGuiWindowFlags.NoCollapse)
+        //ImGui.popStyleColor()
 
         viewportMenuBar()
 
-        viewportSize = Vec2(contentRegionAvail.x, contentRegionAvail.y)
-        viewportFocused = isWindowFocused()
-        viewportHovered = isWindowHovered()
+        viewportSize = Vec2(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY())
+        viewportFocused = ImGui.isWindowFocused()
+        viewportHovered = ImGui.isWindowHovered()
         Application.get().getImGuiLayer().blockEvents = !viewportHovered && !viewportFocused
-        image(framebuffer.colorAttachmentID, viewportSize, Vec2(0, 1), Vec2(1, 0))
+        ImGui.image(framebuffer.colorAttachmentID, viewportSize.x, viewportSize.y, 0f, 1f, 1f, 0f)
 
         // GIZMOS
         val selectedEntity = sceneHierarchyPanel.selectionContext
@@ -168,7 +174,7 @@ class EditorLayer : Layer("Editor") {
             ImGuizmo.setOrthographic(false)
             ImGuizmo.setDrawlist()
 
-            ImGuizmo.setRect(windowPos.x, windowPos.y + 22, windowWidth, windowHeight - 22)
+            ImGuizmo.setRect(ImGui.getWindowPosX(), ImGui.getWindowPosY() + 22, ImGui.getWindowWidth(), ImGui.getWindowHeight() - 22)
 
             // Entity transform
             val tc = activeScene.registry.get<TransformComponent>(selectedEntity)
@@ -183,15 +189,15 @@ class EditorLayer : Layer("Editor") {
             val snapValues = floatArrayOf(snapValue, snapValue, snapValue)
 
             ImGuizmo.manipulate(
-                glm_.mat4x4.Mat4(editorCamera.viewProjection.array),
+                Mat4(editorCamera.viewProjection.array),
                 ImGuizmo.OPERATION.values()[gizmoType], ImGuizmo.MODE.LOCAL, tc,
                 null, if (snap) snapValues else null
             )
         }
-        end()
-        popStyleVar()
+        ImGui.end()
+        ImGui.popStyleVar()
 
-        end()
+        ImGui.end()
 
     }
 
@@ -269,8 +275,8 @@ private fun menuBar() {
 }
 
     private fun viewportMenuBar() {
-        ImGui.pushStyleVar(StyleVar.WindowPadding, Vec2(4f, 4f))
-        ImGui.pushStyleVar(StyleVar.ItemSpacing, Vec2(4f, 8f))
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 4f, 4f)
+        ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 4f, 8f)
         ImGui.beginMenuBar()
 
         if (ImGui.beginMenu("${editorCamera.sceneProjection}D")) {
