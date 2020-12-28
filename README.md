@@ -6,7 +6,7 @@
 [![discord](https://img.shields.io/discord/792041384679964722)](https://discord.gg/HP8XkSREwV)
 
 This is the Pumpkin Game Engine. A powerful and capable Kotlin 2D game engine using LWJGL and therefore your GPU. If you like the project, please consider to give it a star and support it. Also, your help with contributing is always welcome.<br>
-Current version: 1.1
+Current version: 1.2-dev
 ***
 ## Screenshots
 <!--### A demo of texture rendering
