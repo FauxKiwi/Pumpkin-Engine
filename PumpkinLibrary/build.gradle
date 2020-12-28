@@ -1,0 +1,67 @@
+plugins {
+    id 'org.jetbrains.kotlin.multiplatform'// version '1.4.10'
+}
+
+group 'com.pumpkin'
+version '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+kotlin {
+    /* Targets configuration omitted. 
+    *  To find out how to configure the targets, please follow the link:
+    *  https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html#setting-up-targets */
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = '11'
+        }
+        testRuns["test"].executionTask.configure {
+            useJUnit()
+        }
+    }
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation kotlin('stdlib-common')
+
+                implementation project(':Libraries')
+
+                implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1'
+
+                ["", "-glfw", "-opengl", "-stb", "-tinyfd"].each {
+                    implementation "org.lwjgl:lwjgl$it:3.2.3"
+                }
+
+                ["-jemalloc", "-remotery", "-openal", "-opengles", "-jawt", "-vulkan"].each {
+                    runtimeOnly "org.lwjgl:lwjgl$it:3.2.3"
+                }
+
+                ["", "-jemalloc", "-glfw", "-opengl", "-tinyfd", "-remotery", "-stb", "-openal", "-opengles"].each {
+                    runtimeOnly "org.lwjgl:lwjgl$it:3.2.3:natives-windows"
+                }
+
+                implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.10"
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation kotlin('test-common')
+                implementation kotlin('test-annotations-common')
+            }
+        }
+        jvmMain {
+
+        }
+        jvmTest {
+            dependencies {
+                implementation kotlin('test-junit')
+            }
+        }
+        all {
+            languageSettings.enableLanguageFeature("InlineClasses")
+        }
+    }
+}

@@ -8,12 +8,21 @@ version '1.0'
 
 repositories {
     mavenCentral()
+    maven { url = "https://jitpack.io" }
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = '11'
+    kotlinOptions {
+        freeCompilerArgs = ["-Xinline-classes", "-Xopt-in=kotlin.ExperimentalUnsignedTypes"]
+    }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
 
-    implementation project('PumpkinEngineJVM')
+    implementation project(':Libraries')
+    implementation project(':PumpkinLibrary')
 
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1'
 
@@ -24,11 +33,11 @@ dependencies {
     compileOnly "com.github.kotlin-graphics:gln:0.5.2"
     compileOnly "com.github.kotlin-graphics:gli:0.8.3.0-build-15"
 
-    ["", "-jemalloc", "-glfw", "-opengl", "-stb", "-tinyfd"].each {
+    ["", "-glfw", "-opengl", "-stb", "-tinyfd"].each {
         implementation "org.lwjgl:lwjgl$it:3.2.3"
     }
 
-    ["-remotery", "-openal", "-opengles", "-jawt", "-vulkan"].each {
+    ["-jemalloc", "-remotery", "-openal", "-opengles", "-jawt", "-vulkan"].each {
         runtimeOnly "org.lwjgl:lwjgl$it:3.2.3"
     }
 

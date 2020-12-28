@@ -26,25 +26,5 @@ java {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1'
 
-    ["gl", "glfw", "core"].each {
-        implementation "com.github.kotlin-graphics.imgui:$it:1.79"
-    }
-
-    compileOnly "com.github.kotlin-graphics:gln:0.5.2"
-    compileOnly "com.github.kotlin-graphics:gli:0.8.3.0-build-15"
-
-    ["", "-jemalloc", "-glfw", "-opengl", "-stb", "-tinyfd"].each {
-        implementation "org.lwjgl:lwjgl$it:3.2.3"
-    }
-
-    ["-remotery", "-openal", "-opengles", "-jawt", "-vulkan"].each {
-        runtimeOnly "org.lwjgl:lwjgl$it:3.2.3"
-    }
-
-    ["", "-jemalloc", "-glfw", "-opengl", "-tinyfd", "-remotery", "-stb", "-openal", "-opengles"].each {
-        runtimeOnly "org.lwjgl:lwjgl$it:3.2.3:natives-windows"
-    }
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.10"
 }
