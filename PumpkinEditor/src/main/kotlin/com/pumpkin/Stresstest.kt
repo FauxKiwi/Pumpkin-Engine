@@ -27,7 +27,7 @@ class StresstestLayer : Layer("Stresstest") {
     }
 
     override fun onUpdate(ts: Timestep) {
-        //ImGuiProfiler.onUpdate(ts)
+        ImGuiProfiler.onUpdate(ts)
         cameraController.onUpdate(ts)
 
         Renderer2D.beginScene(cameraController.camera)
@@ -38,13 +38,13 @@ class StresstestLayer : Layer("Stresstest") {
 
         Renderer2D.endScene()
 
-        /*ImGuiLayer.begin()
+        ImGuiLayer.begin()
         onImGuiRender()
-        ImGuiLayer.end()*/
+        ImGuiLayer.end()
     }
 
     override fun onImGuiRender() {
-        //ImGuiProfiler.onImGuiRender()
+        ImGuiProfiler.onImGuiRender()
         ImGui.begin("Stresstest")
         ImGui.dragInt("Number", ::sqrt, 1f, 1, 1000)
         ImGui.inputInt("Capacity", Renderer2D::maxQuads)
@@ -59,6 +59,7 @@ class StresstestLayer : Layer("Stresstest") {
 class StresstestApp : Application() {
 
     override fun init() {
+        pushOverlay(ImGuiLayer)
         pushLayer(StresstestLayer())
     }
 

@@ -65,6 +65,10 @@ class EditorLayer : Layer("Editor") {
         //activeScene.onUpdateRuntime(ts)
 
         framebuffer.unbind()
+
+        Application.get().getImGuiLayer().begin()
+        onImGuiRender()
+        Application.get().getImGuiLayer().end()
     }
 
     override fun onImGuiRender() = with(ImGui) {
@@ -79,8 +83,8 @@ class EditorLayer : Layer("Editor") {
         val lineHeight = font.fontSize + style.framePadding.y * 2f
         val buttonSize = Vec2(lineHeight + 3.0f, lineHeight)
 
-        val iconFont = ImGui.io.fonts.fonts[1]
-        pushFont(iconFont)
+        //val iconFont = ImGui.io.fonts.fonts[1]
+        //pushFont(iconFont)
         val gizmoType0 = gizmoType
         if (gizmoType0 == -1) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
         if (button("Q", buttonSize)) gizmoType = -1; if (gizmoType0 == -1) popStyleColor()
@@ -90,7 +94,7 @@ class EditorLayer : Layer("Editor") {
         sameLine(); if (button("E", buttonSize)) gizmoType = 2; if (gizmoType0 == 2) popStyleColor()
         if (gizmoType0 == 3) pushStyleColor(Col.Button, getStyleColorVec4(Col.ButtonActive))
         sameLine(); if (button("R", buttonSize)) gizmoType = 3; if (gizmoType0 == 3) popStyleColor()
-        popFont()
+        //popFont()
 
         popItemWidth()
         popStyleVar()
