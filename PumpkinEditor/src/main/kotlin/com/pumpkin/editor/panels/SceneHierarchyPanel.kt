@@ -4,6 +4,7 @@ import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
 import com.pumpkin.ecs.Entity
 import com.pumpkin.ecs.Registry
+import com.pumpkin.editor.imGuiLayer
 import com.pumpkin.editor.imgui.*
 import glm.Vec2
 import glm.Vec4
@@ -51,7 +52,7 @@ class SceneHierarchyPanel(var context: Scene) {
             (if (selectionContext == entity) ImGuiTreeNodeFlags.Selected else 0) or
                     ImGuiTreeNodeFlags.OpenOnArrow or
                     ImGuiTreeNodeFlags.SpanAvailWidth
-        val opened = ImGui.treeNodeEx(tag, flags)
+        val opened = fontAwesomeSymbol('\uf6d1').let { ImGui.treeNodeEx(tag, flags) }
         if (ImGui.isItemClicked())
             selectionContext = entity
 
@@ -88,7 +89,8 @@ class SceneHierarchyPanel(var context: Scene) {
             val open = ImGui.treeNodeEx(name, treeNodeFlags)
             ImGui.popStyleVar()
             ImGui.sameLine(contentRegionAvailable.x - lineHeight * 0.5f)
-            if (ImGui.button("+", lineHeight, lineHeight)) {
+            ImGui.pushFont(imGuiLayer.fonts[1])
+            if (ImGui.button("\uf141", lineHeight, lineHeight).also { ImGui.popFont() }) {
                 ImGui.openPopup("ComponentSettings")
             }
 
@@ -179,7 +181,7 @@ class SceneHierarchyPanel(var context: Scene) {
     }
 
     private fun drawVec3Control(label: String, values: glm.Vec3, resetValue: Float = 0f, columnWidth: Float = 100f) {
-        val font = ImGui.getFont()
+        val font = imGuiLayer.fonts[0]
 
         ImGui.pushID(label)
 

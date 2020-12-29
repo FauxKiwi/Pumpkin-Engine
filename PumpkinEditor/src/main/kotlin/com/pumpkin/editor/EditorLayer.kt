@@ -13,6 +13,7 @@ import com.pumpkin.core.renderer.FramebufferSpecification
 import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
 import com.pumpkin.editor.imgui.ImGuiWindow
+import com.pumpkin.editor.imgui.fontAwesomeSymbol
 import com.pumpkin.editor.settings.Settings
 import glm.Mat4
 import glm.Vec2
@@ -200,56 +201,57 @@ class EditorLayer : Layer("Editor") {
 private fun menuBar() {
     if (ImGui.beginMainMenuBar()) {
         if (ImGui.beginMenu("File")) {
-            if (ImGui.menuItem("New", "Ctrl+N")) { newScene() }
-            if (ImGui.menuItem("Open...", "Ctrl+O")) { openScene() }
-            if (ImGui.menuItem("Open Recent")) {}
-            if (ImGui.menuItem("Close Project", "Ctrl+W")) {}
+            fontAwesomeSymbol('\uf15b'); if (ImGui.menuItem("New", "Ctrl+N")) { newScene() }
+            fontAwesomeSymbol('\uf07c'); if (ImGui.menuItem("Open...", "Ctrl+O")) { openScene() }
+            fontAwesomeSymbol('\uf07c'); if (ImGui.menuItem("Open Recent")) {}
+            fontAwesomeSymbol('\uf410'); if (ImGui.menuItem("Close Project", "Ctrl+W")) {}
             ImGui.separator()
-            if (ImGui.menuItem("Settings", "Ctrl+Alt+S")) { Settings.open() }
-            if (ImGui.menuItem("Build Settings", "Ctrl+Alt+B")) {}
+            fontAwesomeSymbol('\uf013'); if (ImGui.menuItem("Settings", "Ctrl+Alt+S")) { Settings.open() }
+            fontAwesomeSymbol('\uf085'); if (ImGui.menuItem("Build Settings", "Ctrl+Alt+B")) {}
             ImGui.separator()
-            if (ImGui.menuItem("Save Scene", "Ctrl+S")) { saveSceneAs() }
-            if (ImGui.menuItem("Save As...", "Ctrl+Shift+S")) { saveSceneAs() }
-            if (ImGui.menuItem("Reload")) {}
+            fontAwesomeSymbol('\uf0c7'); if (ImGui.menuItem("Save Scene", "Ctrl+S")) { saveSceneAs() }
+            fontAwesomeSymbol('\uf0c7'); if (ImGui.menuItem("Save As...", "Ctrl+Shift+S")) { saveSceneAs() }
+            fontAwesomeSymbol('\uf01e'); if (ImGui.menuItem("Reload")) {}
             ImGui.separator()
-            if (ImGui.menuItem("Exit")) { Application.get().close() }
+            fontAwesomeSymbol('\uf011'); if (ImGui.menuItem("Exit")) { Application.get().close() }
             ImGui.endMenu()
         }
 
         if (ImGui.beginMenu("Edit")) {
-            if (ImGui.menuItem("Undo", "Ctrl+Z")) {}
-            if (ImGui.menuItem("Redo", "Ctrl+Y")) {}
+            fontAwesomeSymbol('\uf0e2'); if (ImGui.menuItem("Undo", "Ctrl+Z")) {}
+            fontAwesomeSymbol('\uf01e'); if (ImGui.menuItem("Redo", "Ctrl+Y")) {}
             ImGui.separator()
-            if (ImGui.menuItem("Cut", "Ctrl+X")) {}
-            if (ImGui.menuItem("Copy", "Ctrl+C")) {}
-            if (ImGui.menuItem("Paste", "Ctrl+V")) {}
-            if (ImGui.menuItem("Delete", "Del")) {}
+            fontAwesomeSymbol('\uf0c4'); if (ImGui.menuItem("Cut", "Ctrl+X")) {}
+            fontAwesomeSymbol('\uf328'); if (ImGui.menuItem("Copy", "Ctrl+C")) {}
+            fontAwesomeSymbol('\uf0ea'); if (ImGui.menuItem("Paste", "Ctrl+V")) {}
+            fontAwesomeSymbol('\uf24d'); if (ImGui.menuItem("Clone", "Ctrl+D")) {}
+            fontAwesomeSymbol('\uf1f8'); if (ImGui.menuItem("Delete", "Del")) {}
             ImGui.separator()
-            if (ImGui.menuItem("Find", "Ctrl+F")) {}
+            fontAwesomeSymbol('\uf002'); if (ImGui.menuItem("Find", "Ctrl+F")) {}
             ImGui.endMenu()
         }
 
         if (ImGui.beginMenu("View")) {
-            if (ImGui.menuItem("Windows")) {}
-            if (ImGui.menuItem("Appearance")) {}
+            fontAwesomeSymbol('\uf2d2', 2); if (ImGui.menuItem("Windows")) {}
+            fontAwesomeSymbol('\uf55d'); if (ImGui.menuItem("Appearance")) {}
             ImGui.endMenu()
         }
 
         if (ImGui.beginMenu("Build & Run")) {
-            if (ImGui.menuItem("Run")) {}
-            if (ImGui.menuItem("Build")) {}
+            fontAwesomeSymbol('\uf04b'); if (ImGui.menuItem("Run")) {}
+            fontAwesomeSymbol('\uf6e3'); if (ImGui.menuItem("Build")) {}
             ImGui.endMenu()
         }
 
         if (ImGui.beginMenu("Tools")) {
-            if (ImGui.menuItem("Tasks")) {}
+            fontAwesomeSymbol('\uf0ad'); if (ImGui.menuItem("Tasks")) {}
             ImGui.separator()
             //Plugins
             ImGui.endMenu()
         }
 
         if (ImGui.beginMenu("Help")) {
-            if (ImGui.menuItem("Help")) {}
+            fontAwesomeSymbol('\uf059'); if (ImGui.menuItem("Help")) {}
             ImGui.endMenu()
         }
 

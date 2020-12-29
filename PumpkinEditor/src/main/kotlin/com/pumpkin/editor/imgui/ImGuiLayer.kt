@@ -7,6 +7,7 @@ import com.pumpkin.core.input.KeyCode
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.editor.settings.Settings
 import com.pumpkin.core.window.Window
+import imgui.ImFont
 import imgui.ImGui
 import imgui.flag.ImGuiConfigFlags
 import imgui.gl3.ImGuiImplGl3
@@ -26,6 +27,8 @@ class ImGuiLayer : Layer("ImGui") {
 
     var blockEvents = true
 
+    val fonts = mutableListOf<ImFont>()
+
     override fun onAttach() {
         /*context =*/ ImGui.createContext()
 
@@ -39,16 +42,20 @@ class ImGuiLayer : Layer("ImGui") {
         else ImGui.styleColorsDark()
 
         Settings.setTheme(0)
-        ImGui.getStyle().setWindowTitleAlign(0.02f, 0.5f) //ImGui.style.windowTitleAlign = Vec2(0.02f, 0.5f)
+        ImGui.getStyle().setWindowTitleAlign(0.02f, 0.5f)
 
         implGlfw = ImGuiImplGlfw()
-        implGlfw.init(Window.getWindow().getWindow(), true) //initForOpenGL(GlfwWindow.from(Window.getWindow().getWindow()), true)
+        implGlfw.init(Window.getWindow().getWindow(), true)
         implGL3 = ImGuiImplGl3()
 
-        io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/Roboto-Black.ttf"), 16f) //io.fonts.addFontFromFileTTF("fonts/Roboto-Black.ttf", 16f) // Bold
-        io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/FontAwesome.ttf"), 16f) //io.fonts.addFontFromFileTTF("fonts/FontAwesome.ttf", 16f) // Icons
-        io.setFontDefault(io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/Roboto-Regular.ttf"), 16f))
-            //io.setFontDefault(io.fonts.addFontFromFileTTF("fonts/Roboto-Regular.ttf", 16f)) // Default*/
+        io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/Roboto-Black.ttf"), 16f).also { fonts.add(it) } // Bold
+        io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/FontAwesome-Solid.ttf"), 14f,
+            shortArrayOf(0x001e, 0x007a, 0xe048.toShort(), 0xf8e8.toShort())).also { fonts.add(it) }
+        io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/FontAwesome-Regular.ttf"), 14f,
+            shortArrayOf(0x001e, 0x007a, 0xe048.toShort(), 0xf8e8.toShort())).also { fonts.add(it) } // Icons
+        io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/FontAwesome-Brands.ttf"), 14f,
+            shortArrayOf(0x001e, 0x007a, 0xe048.toShort(), 0xf8e8.toShort())).also { fonts.add(it) }
+        io.setFontDefault(io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/Roboto-Regular.ttf"), 16f).also { fonts.add(it) }) // Default
 
         implGL3.init()
     }

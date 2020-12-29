@@ -1,5 +1,6 @@
 package com.pumpkin.editor.imgui
 
+import com.pumpkin.editor.imGuiLayer
 import glm.f
 import glm.floor
 import glm.max
@@ -28,4 +29,14 @@ fun pushMultiItemsWidths(components: Int, wFull: Float) {
         ImGui.pushItemWidth(wItemLast) //window.dc.itemWidthStack.push(wItemOne)
     //window.dc.itemWidth = window.dc.itemWidthStack.last()
     //g.nextItemData.flags = g.nextItemData.flags wo NextItemDataFlag.HasWidth
+}
+
+fun fontAwesomeSymbol(character: Char, fontIndex: Int = 1, color: Int = -1) {
+    ImGui.pushFont(imGuiLayer.fonts[fontIndex])
+    if (color == -1)
+        ImGui.text(character.toString())
+    else
+        ImGui.textColored(color, character.toString())
+    ImGui.popFont()
+    ImGui.sameLine()
 }
