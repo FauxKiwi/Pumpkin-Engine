@@ -44,11 +44,13 @@ class ImGuiLayer : Layer("ImGui") {
         implGlfw = ImGuiImplGlfw()
         implGlfw.init(Window.getWindow().getWindow(), true) //initForOpenGL(GlfwWindow.from(Window.getWindow().getWindow()), true)
         implGL3 = ImGuiImplGl3()
-        implGL3.init()
 
-        /*io.fonts.addFontFromFileTTF("fonts/Roboto-Black.ttf", 16f) // Bold
-        io.fonts.addFontFromFileTTF("fonts/FontAwesome.ttf", 16f, glyphRanges = arrayOf(0xf368..0xf375)) // Icons
-        io.setFontDefault().fontDefault = ImGui.io.fonts.addFontFromFileTTF("fonts/Roboto-Regular.ttf", 16f) // Default*/
+        io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/Roboto-Black.ttf"), 16f) //io.fonts.addFontFromFileTTF("fonts/Roboto-Black.ttf", 16f) // Bold
+        io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/FontAwesome.ttf"), 16f) //io.fonts.addFontFromFileTTF("fonts/FontAwesome.ttf", 16f) // Icons
+        io.setFontDefault(io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/Roboto-Regular.ttf"), 16f))
+            //io.setFontDefault(io.fonts.addFontFromFileTTF("fonts/Roboto-Regular.ttf", 16f)) // Default*/
+
+        implGL3.init()
     }
 
     override fun onDetach() {
