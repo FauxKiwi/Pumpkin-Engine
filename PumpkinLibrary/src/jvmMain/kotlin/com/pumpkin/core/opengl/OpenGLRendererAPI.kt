@@ -34,7 +34,7 @@ actual class OpenGLRendererAPI : RendererAPI {
         glEnable(GL_DEPTH_TEST)
     }
 
-    override fun setClearColor(color: Vec4) = glClearColor(color.r, color.g, color.b, color.a)
+    override fun setClearColor(color: Vec4) = glClearColor(color.x, color.y, color.z, color.w)
 
     override fun clear() = glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 

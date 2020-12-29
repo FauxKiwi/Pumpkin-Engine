@@ -8,6 +8,7 @@ import com.pumpkin.core.renderer.RendererCommand
 import com.pumpkin.core.scene.*
 import com.pumpkin.editor.imgui.ImGuiLayer
 import com.pumpkin.editor.settings.Settings
+import glm.Vec4
 
 fun Scene.onUpdateEditor(ts: Timestep, camera: EditorCamera) {
     RendererCommand.setClearColor(Settings.editorCameraClearColor)

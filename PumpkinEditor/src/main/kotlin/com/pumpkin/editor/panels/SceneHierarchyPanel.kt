@@ -4,14 +4,13 @@ import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
 import com.pumpkin.ecs.Entity
 import com.pumpkin.ecs.Registry
-import com.pumpkin.editor.imgui.pushMultiItemsWidths
+import com.pumpkin.editor.imgui.*
 import glm.Vec2
 import glm.Vec4
 import imgui.*
 import imgui.flag.*
 import imgui.type.ImBoolean
 import imgui.type.ImInt
-import imgui.type.ImString
 import kotlin.reflect.KClass
 
 class SceneHierarchyPanel(var context: Scene) {
@@ -116,7 +115,7 @@ class SceneHierarchyPanel(var context: Scene) {
             registry.has<TagComponent>(entity)
         ) {
             val tag = registry.get<TagComponent>(entity)
-            ImGui.inputText("##Tag", ImString(0))
+            editString("##Tag", tag::str)
         }
         ImGui.sameLine()
         ImGui.pushItemWidth(-1f)
@@ -153,24 +152,24 @@ class SceneHierarchyPanel(var context: Scene) {
         }
 
         drawComponent<CameraComponent>("Camera", entity) { camera ->
-            ImGui.checkbox("Primary Camera", camera.primary)
-            ImGui.combo("Projection Type", ImInt( camera.camera.projectionTypePtr),"Orthographic\u0000Perspective")
+            editBoolean("Primary Camera", camera::primary)
+            editEnum<ProjectionType>("Projection Type", camera.camera::projectionTypePtr)
             if (camera.camera.projectionType == ProjectionType.Orthographic) {
-                ImGui.dragFloat("Orthographic Size", floatArrayOf(camera.camera.orthographicSize))
-                ImGui.dragFloat("Near Clip", floatArrayOf(camera.camera.orthographicNear))
-                ImGui.dragFloat("Far Clip", floatArrayOf(camera.camera.orthographicFar))
+                editFloat("Orthographic Size", camera.camera::orthographicSize)
+                editFloat("Near Clip", camera.camera::orthographicNear)
+                editFloat("Far Clip", camera.camera::orthographicFar)
             } else {
-                ImGui.dragFloat("Field of View", floatArrayOf(camera.camera.perspectiveFov))
-                ImGui.dragFloat("Near Clip", floatArrayOf(camera.camera.perspectiveNear))
-                ImGui.dragFloat("Far Clip", floatArrayOf(camera.camera.perspectiveFar))
+                editFloat("Field of View", camera.camera::perspectiveFov)
+                editFloat("Near Clip", camera.camera::perspectiveNear)
+                editFloat("Far Clip", camera.camera::perspectiveFar)
             }
-            ImGui.checkbox("Fixed Aspect Ratio", camera.fixedAspectRatio)
-            ImGui.colorEdit3("Clear Color", camera.camera.clearColor.array)
+            editBoolean("Fixed Aspect Ratio", camera::fixedAspectRatio)
+            editColor3("Clear Color", camera.camera.clearColor)
         }
 
         drawComponent<SpriteRendererComponent>("Sprite Renderer", entity) { spriteRenderer ->
             val color = spriteRenderer.color
-            ImGui.colorEdit4("Color", color.array)
+            editColor4("Color", color)
             spriteRenderer.color = color
         }
 
@@ -207,7 +206,7 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.popStyleColor(4)
 
         ImGui.sameLine()
-        ImGui.dragFloat("##X", floatArrayOf(values.x), 0.1f, 0.0f, 0.0f, "%.2f")
+        editFloat("##X", values::x, 0.1f, 0.0f, 0.0f, "%.2f")
         ImGui.popItemWidth()
         ImGui.sameLine()
 
@@ -222,7 +221,7 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.popStyleColor(4)
 
         ImGui.sameLine()
-        ImGui.dragFloat("##Y", floatArrayOf(values.y), 0.1f, 0.0f, 0.0f, "%.2f")
+        editFloat("##Y", values::y, 0.1f, 0.0f, 0.0f, "%.2f")
         ImGui.popItemWidth()
         ImGui.sameLine()
 
@@ -237,7 +236,7 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.popStyleColor(4)
 
         ImGui.sameLine()
-        ImGui.dragFloat("##Z", floatArrayOf(values.z), 0.1f, 0.0f, 0.0f, "%.2f")
+        editFloat("##Z", values::z, 0.1f, 0.0f, 0.0f, "%.2f")
         ImGui.popItemWidth()
 
         ImGui.popStyleVar()

@@ -114,6 +114,7 @@ class EditorLayer : Layer("Editor") {
 
         viewportMenuBar()
 
+        val viewportPos = Vec2(ImGui.getWindowPosX(), ImGui.getWindowPosY())
         viewportSize = Vec2(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY())
         viewportFocused = ImGui.isWindowFocused()
         viewportHovered = ImGui.isWindowHovered()
@@ -121,18 +122,22 @@ class EditorLayer : Layer("Editor") {
         ImGui.image(framebuffer.colorAttachmentID, viewportSize.x, viewportSize.y, 0f, 1f, 1f, 0f)
 
         if (sceneHierarchyPanel.selectionContext?.let { sceneHierarchyPanel.context.registry.has<CameraComponent>(it) } == true) run {
-            val previewFb = Framebuffer.create(FramebufferSpecification(100, 100))
             val cc = sceneHierarchyPanel.context.registry.get<CameraComponent>(sceneHierarchyPanel.selectionContext!!)
             val tc = if (sceneHierarchyPanel.context.registry.has<TransformComponent>(sceneHierarchyPanel.selectionContext!!))
                 sceneHierarchyPanel.context.registry.get<TransformComponent>(sceneHierarchyPanel.selectionContext!!) else null
             if (tc == null) return@run
 
+            val fbWidth = 100 * cc.camera.aspectRatio
+            val previewFb = Framebuffer.create(FramebufferSpecification(fbWidth.toInt(), 100))
+
             previewFb.bind()
             sceneHierarchyPanel.context.onPreviewCamera(cc, tc)
             previewFb.unbind()
 
-            ImGuiWindow("Preview") {
-                ImGui.image(framebuffer.colorAttachmentID, 100f, 100f, 0f, 1f, 1f, 0f)
+            ImGui.setNextWindowPos(viewportPos.x + viewportSize.x - fbWidth - 20f, viewportPos.y + viewportSize.y - 80f)
+            ImGui.setNextWindowSize(fbWidth, 100f)
+            ImGuiWindow("Preview", windowFlags = ImGuiWindowFlags.NoTitleBar or ImGuiWindowFlags.NoMove or ImGuiWindowFlags.NoNavFocus or ImGuiWindowFlags.NoResize) {
+                ImGui.image(previewFb.colorAttachmentID, fbWidth, 100f, 0f, 1f, 1f, 0f)
             }
         }
 

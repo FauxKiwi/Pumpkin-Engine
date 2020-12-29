@@ -31,7 +31,7 @@
         {
             "Entity": 198932095031,
             "TagComponent": {
-                "Tag": "Left\u0000EEEEEEE"
+                "Tag": "Left"
             },
             "TransformComponent": {
                 "Transform": [
@@ -58,7 +58,7 @@
         {
             "Entity": 198932095031,
             "TagComponent": {
-                "Tag": "Top\u0000EEEEEEEE"
+                "Tag": "Top"
             },
             "TransformComponent": {
                 "Transform": [

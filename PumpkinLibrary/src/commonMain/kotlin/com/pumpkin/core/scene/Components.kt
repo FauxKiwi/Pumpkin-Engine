@@ -8,7 +8,7 @@ import glm.Vec4
 import kotlin.reflect.KClass
 //import kotlin.reflect.full.primaryConstructor
 
-class TagComponent(val str: String) {
+class TagComponent(var str: String) {
     /*var byteArray = str.toByteArray(64)
     var tag: String
         get() = byteArray.decodeToString()
