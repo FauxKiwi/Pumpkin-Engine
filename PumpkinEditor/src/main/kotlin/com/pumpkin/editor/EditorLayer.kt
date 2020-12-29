@@ -37,10 +37,15 @@ class EditorLayer : Layer("Editor") {
 
     private var gizmoType = -1
 
+    private var log = mutableListOf<Pair<Int, String>>()
+
     override fun onAttach() {
         activeScene = Scene()
         sceneHierarchyPanel = SceneHierarchyPanel(activeScene)
         sceneSerializer = SceneSerializer(activeScene)
+
+        Debug.subscribe { level, message -> log.add(level.color().toColorInt() to message) }
+        Debug.logInfo("Thank you for using the Pumpkin engine")
     }
 
     override fun onDetach() {
@@ -109,6 +114,12 @@ class EditorLayer : Layer("Editor") {
         Settings.onImGuiRender()
         if (Settings.uEditorCameraView) { editorCamera.fov = Settings.editorCameraFov; editorCamera.updateProjection(); Settings.uEditorCameraView = false; }
 
+        ImGuiWindow("Console") {
+            for ((c, m) in log) {
+                ImGui.textColored(c, m)
+            }
+        }
+
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0f, 0f)
         ImGui.begin("Scene", ImBoolean(true), ImGuiWindowFlags.MenuBar or ImGuiWindowFlags.NoCollapse)
 
@@ -171,7 +182,6 @@ class EditorLayer : Layer("Editor") {
         ImGui.popStyleVar()
 
         ImGui.end()
-
     }
 
     override fun onEvent(event: Event) {

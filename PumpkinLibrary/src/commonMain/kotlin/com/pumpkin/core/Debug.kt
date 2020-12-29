@@ -76,8 +76,7 @@ class Logger(private val name: String) {
     private val resetColor = "\u001B[0m"
 
     fun log(level: LogLevel, message: String) {
-        println("${color(level)}[${level.name}] $name: $message$resetColor")
-        subscribers.forEach { it(level, message) }
+        println(color(level) + "[${level.name}] $name: $message".also { subscribers.forEach { subscriber -> subscriber(level, it) } } + resetColor)
     }
 
     fun trace(message: String) { if (minLevel <= LogLevel.TRACE) {
