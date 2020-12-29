@@ -43,18 +43,6 @@ class Scene : Referencable() {
         registry.destroy(entity.entityHandle)
     }
 
-    /*fun onUpdateEditor(ts: Timestep, camera: EditorCamera) {
-        RendererCommand.setClearColor(Settings.editorCameraClearColor)
-        RendererCommand.clear()
-        Renderer2D.beginScene(camera)
-        val group = registry.group<TransformComponent, SpriteRendererComponent>()
-        for (entity in group) {
-            val (transform, sprite) = group.get(entity)
-            Renderer2D.drawQuad(transform.transform, sprite.color)
-        }
-        Renderer2D.endScene()
-    }*/
-
     fun onUpdateRuntime(ts: Timestep) {
         run {
             registry.view<NativeScriptComponent>().each { (entity, nsc) ->

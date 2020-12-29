@@ -12,6 +12,7 @@ import com.pumpkin.core.renderer.Framebuffer
 import com.pumpkin.core.renderer.FramebufferSpecification
 import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
+import com.pumpkin.editor.imgui.ImGuiWindow
 import com.pumpkin.editor.settings.Settings
 import glm.Mat4
 import glm.Vec2
@@ -118,6 +119,22 @@ class EditorLayer : Layer("Editor") {
         viewportHovered = ImGui.isWindowHovered()
         Application.get().getImGuiLayer().blockEvents = !viewportHovered && !viewportFocused
         ImGui.image(framebuffer.colorAttachmentID, viewportSize.x, viewportSize.y, 0f, 1f, 1f, 0f)
+
+        if (sceneHierarchyPanel.selectionContext?.let { sceneHierarchyPanel.context.registry.has<CameraComponent>(it) } == true) run {
+            val previewFb = Framebuffer.create(FramebufferSpecification(100, 100))
+            val cc = sceneHierarchyPanel.context.registry.get<CameraComponent>(sceneHierarchyPanel.selectionContext!!)
+            val tc = if (sceneHierarchyPanel.context.registry.has<TransformComponent>(sceneHierarchyPanel.selectionContext!!))
+                sceneHierarchyPanel.context.registry.get<TransformComponent>(sceneHierarchyPanel.selectionContext!!) else null
+            if (tc == null) return@run
+
+            previewFb.bind()
+            sceneHierarchyPanel.context.onPreviewCamera(cc, tc)
+            previewFb.unbind()
+
+            ImGuiWindow("Preview") {
+                ImGui.image(framebuffer.colorAttachmentID, 100f, 100f, 0f, 1f, 1f, 0f)
+            }
+        }
 
         // GIZMOS
         val selectedEntity = sceneHierarchyPanel.selectionContext
