@@ -18,10 +18,10 @@ class SceneHierarchyPanel(var context: Scene) {
     var selectionContext: Entity? = null
 
     fun onImGuiRender() {
-        /**/val avail = Vec2(ImGui.getContentRegionMaxX(), ImGui.getContentRegionMaxY()) - Vec2(0f, 60f)
-        /**/ImGui.setNextWindowPos(0f, 60f)
-        var size = avail * Vec2(0.2f, 0.25f)
-        /**/ImGui.setNextWindowSize(size.x, size.y)
+        //val avail = Vec2(ImGui.getContentRegionMaxX(), ImGui.getContentRegionMaxY()) - Vec2(0f, 60f)
+        //ImGui.setNextWindowPos(0f, 60f)
+        //var size = avail * Vec2(0.2f, 0.25f)
+        //ImGui.setNextWindowSize(size.x, size.y)
 
         ImGui.begin("Hierarchy", ImBoolean(true), ImGuiWindowFlags.NoCollapse)
         registry.each(::drawEntityNode)
@@ -46,10 +46,10 @@ class SceneHierarchyPanel(var context: Scene) {
         }
         ImGui.end()
 
-        var pos = avail * Vec2(0f, 0.25f) + Vec2(0f, 60f)
-        /**/ImGui.setNextWindowPos(pos.x, pos.y)
-        size = avail * Vec2(0.2f, 0.5f)
-        /**/ImGui.setNextWindowSize(size.x, size.y)
+        //var pos = avail * Vec2(0f, 0.25f) + Vec2(0f, 60f)
+        //ImGui.setNextWindowPos(pos.x, pos.y)
+        //size = avail * Vec2(0.2f, 0.5f)
+        //ImGui.setNextWindowSize(size.x, size.y)
         ImGui.begin("Inspector", ImBoolean(true), ImGuiWindowFlags.NoCollapse)
         if (selectionContext != null) {
             drawComponents(selectionContext!!)
@@ -96,7 +96,7 @@ class SceneHierarchyPanel(var context: Scene) {
                 val component = registry.get(clazz, entity)
                 val contentRegionAvailable = Vec2(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY())
 
-                ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, 4f)
+                ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, 4f, 4f)
                 val lineHeight = ImGui.getFont().fontSize + ImGui.getStyle().framePaddingY * 2.0f
                 ImGui.separator()
                 //ImGui.treeNodeEx(name, treeNodeFlags)
@@ -205,7 +205,8 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.nextColumn()
 
         //ImGui.pushMultiItemsWidths(3, ImGui.calcItemWidth())
-        ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0f)
+        //ImGui.pushItemWidth(ImGui.calcItemWidth())
+        ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0f, 0f)
 
         val lineHeight = ImGui.getFont().fontSize + ImGui.getStyle().framePaddingY * 2f
         val buttonSize = Vec2(lineHeight + 3.0f, lineHeight)
@@ -222,7 +223,7 @@ class SceneHierarchyPanel(var context: Scene) {
 
         ImGui.sameLine()
         ImGui.dragFloat("##X", floatArrayOf(values.x), 0.1f, 0.0f, 0.0f, "%.2f")
-        ImGui.popItemWidth()
+        //ImGui.popItemWidth()
         ImGui.sameLine()
 
         ImGui.pushStyleColor(ImGuiCol.Button, Vec4(0.2f, 0.7f, 0.2f, 1f).toColorInt())
@@ -237,7 +238,7 @@ class SceneHierarchyPanel(var context: Scene) {
 
         ImGui.sameLine()
         ImGui.dragFloat("##Y", floatArrayOf(values.y), 0.1f, 0.0f, 0.0f, "%.2f")
-        ImGui.popItemWidth()
+        //ImGui.popItemWidth()
         ImGui.sameLine()
 
         ImGui.pushStyleColor(ImGuiCol.Button, Vec4(0.1f, 0.25f, 0.8f, 1f).toColorInt())
@@ -252,7 +253,7 @@ class SceneHierarchyPanel(var context: Scene) {
 
         ImGui.sameLine()
         ImGui.dragFloat("##Z", floatArrayOf(values.z), 0.1f, 0.0f, 0.0f, "%.2f")
-        ImGui.popItemWidth()
+        //ImGui.popItemWidth()
 
         ImGui.popStyleVar()
 

@@ -10,7 +10,7 @@ repositories {
 }
 
 kotlin {
-    /* Targets configuration omitted. 
+    /* Targets configuration omitted.
     *  To find out how to configure the targets, please follow the link:
     *  https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html#setting-up-targets */
     jvm {
@@ -31,10 +31,10 @@ kotlin {
 
                 ["", "-glfw", "-opengl", "-stb", "-tinyfd"].each {
                     implementation "org.lwjgl:lwjgl$it:3.2.3"
-                    runtimeOnly "org.lwjgl:lwjgl$it::natives-windows"
+                    runtimeOnly "org.lwjgl:lwjgl$it:3.2.3:natives-windows"
                 }
 
-                implementation platform("org.lwjgl:lwjgl-bom:3.2.3")
+                //implementation platform("org.lwjgl:lwjgl-bom:3.2.3")
 
                 implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1'
 
