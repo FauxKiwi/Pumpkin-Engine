@@ -4,6 +4,7 @@ import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
 import com.pumpkin.ecs.Entity
 import com.pumpkin.ecs.Registry
+import com.pumpkin.editor.imgui.pushMultiItemsWidths
 import glm.Vec2
 import glm.Vec4
 import imgui.*
@@ -26,8 +27,7 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.begin("Hierarchy", ImBoolean(true), ImGuiWindowFlags.NoCollapse)
         registry.each(::drawEntityNode)
         if (ImGui.beginPopupContextWindow(ImGuiPopupFlags.MouseButtonRight or ImGuiPopupFlags.NoOpenOverItems)) {
-            if (ImGui.beginMenu("Create")) {
-                if (ImGui.menuItem("Empty Entity")) {
+                if (ImGui.menuItem("Create Empty")) {
                     selectionContext = context.createEntity("Empty Entity").entityHandle
                 }
                 if (ImGui.menuItem("Camera")) {
@@ -40,8 +40,6 @@ class SceneHierarchyPanel(var context: Scene) {
                         it.addComponent(SpriteRendererComponent(floatArrayOf(1f, 1f, 1f, 1f)))
                     }.entityHandle
                 }
-                ImGui.endMenu()
-            }
             ImGui.endPopup()
         }
         ImGui.end()
@@ -126,7 +124,7 @@ class SceneHierarchyPanel(var context: Scene) {
         }
 
     private fun drawComponents(entity: Entity) {
-        ImGui.text("Full ID: ${entity.fullID} -> ID: ${entity.id} | Version: ${entity.version}")
+        //ImGui.text("Full ID: ${entity.fullID} -> ID: ${entity.id} | Version: ${entity.version}")
         if (
             registry.has<TagComponent>(entity)
         ) {
@@ -195,7 +193,7 @@ class SceneHierarchyPanel(var context: Scene) {
     }
 
     private fun drawVec3Control(label: String, values: glm.Vec3, resetValue: Float = 0f, columnWidth: Float = 100f) {
-        //val font = ImGui.getIO().fonts
+        val font = ImGui.getFont()
 
         ImGui.pushID(label)
 
@@ -204,8 +202,8 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.text(label)
         ImGui.nextColumn()
 
-        //ImGui.pushMultiItemsWidths(3, ImGui.calcItemWidth())
-        //ImGui.pushItemWidth(ImGui.calcItemWidth())
+        pushMultiItemsWidths(3, ImGui.calcItemWidth())
+        ImGui.pushItemWidth(ImGui.calcItemWidth())
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0f, 0f)
 
         val lineHeight = ImGui.getFont().fontSize + ImGui.getStyle().framePaddingY * 2f
@@ -215,45 +213,45 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, Vec4(0.9f, 0.2f, 0.2f, 1f).toColorInt())
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, Vec4(0.8f, 0.1f, 0.15f, 1f).toColorInt())
         ImGui.pushStyleColor(ImGuiCol.Text, Vec4(1f, 1f, 1f, 1f).toColorInt())
-        //ImGui.pushFont(font)
+        ImGui.pushFont(font)
         if (ImGui.button("X", buttonSize.x, buttonSize.y))
             values.x = resetValue
-        //ImGui.popFont()
+        ImGui.popFont()
         ImGui.popStyleColor(4)
 
         ImGui.sameLine()
         ImGui.dragFloat("##X", floatArrayOf(values.x), 0.1f, 0.0f, 0.0f, "%.2f")
-        //ImGui.popItemWidth()
+        ImGui.popItemWidth()
         ImGui.sameLine()
 
         ImGui.pushStyleColor(ImGuiCol.Button, Vec4(0.2f, 0.7f, 0.2f, 1f).toColorInt())
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, Vec4(0.3f, 0.8f, 0.3f, 1f).toColorInt())
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, Vec4(0.2f, 0.7f, 0.2f, 1f).toColorInt())
         ImGui.pushStyleColor(ImGuiCol.Text, Vec4(1f, 1f, 1f, 1f).toColorInt())
-        //ImGui.pushFont(font)
+        ImGui.pushFont(font)
         if (ImGui.button("Y", buttonSize.x, buttonSize.y))
             values.y = resetValue
-        //ImGui.popFont()
+        ImGui.popFont()
         ImGui.popStyleColor(4)
 
         ImGui.sameLine()
         ImGui.dragFloat("##Y", floatArrayOf(values.y), 0.1f, 0.0f, 0.0f, "%.2f")
-        //ImGui.popItemWidth()
+        ImGui.popItemWidth()
         ImGui.sameLine()
 
         ImGui.pushStyleColor(ImGuiCol.Button, Vec4(0.1f, 0.25f, 0.8f, 1f).toColorInt())
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, Vec4(0.2f, 0.35f, 0.9f, 1f).toColorInt())
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, Vec4(0.1f, 0.25f, 0.8f, 1f).toColorInt())
         ImGui.pushStyleColor(ImGuiCol.Text, Vec4(1f, 1f, 1f, 1f).toColorInt())
-        //ImGui.pushFont(font)
+        ImGui.pushFont(font)
         if (ImGui.button("Z", buttonSize.x, buttonSize.y))
             values.z = resetValue
-        //ImGui.popFont()
+        ImGui.popFont()
         ImGui.popStyleColor(4)
 
         ImGui.sameLine()
         ImGui.dragFloat("##Z", floatArrayOf(values.z), 0.1f, 0.0f, 0.0f, "%.2f")
-        //ImGui.popItemWidth()
+        ImGui.popItemWidth()
 
         ImGui.popStyleVar()
 

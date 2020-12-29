@@ -19,9 +19,9 @@ class Vec4(x: Float, y: Float, z: Float, w: Float) : Vec4T<Float>(x, y, z, w) {
     constructor(v: Vec4) : this(v.x, v.y, v.z, v.w)
     constructor(xyzw: Float) : this(xyzw, xyzw, xyzw, xyzw)
 
-    fun toColorInt() = (((w * 255).toInt() and 0xff) shl 24) and
-            (((z * 255).toInt() and 0xff) shl 16) and
-            (((y * 255).toInt() and 0xff) shl 8) and
+    fun toColorInt() = (((w * 255).toInt() and 0xff) shl 24) or
+            (((z * 255).toInt() and 0xff) shl 16) or
+            (((y * 255).toInt() and 0xff) shl 8) or
             ((x * 255).toInt() and 0xff)
 }
 
