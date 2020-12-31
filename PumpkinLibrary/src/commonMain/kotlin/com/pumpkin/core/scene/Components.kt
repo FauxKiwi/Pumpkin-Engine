@@ -39,6 +39,10 @@ inline class TransformComponent(@ComponentSize(9) val t: FloatArray) {
         get() = inverseTransform(t)
 }
 
+inline class ChildComponent(val child: com.pumpkin.ecs.Entity)
+
+inline class ParentComponent(val parent: com.pumpkin.ecs.Entity)
+
 class CameraComponent(@ComponentSize(2) val camera: SceneCamera) {
     var primary = true
     var fixedAspectRatio = false

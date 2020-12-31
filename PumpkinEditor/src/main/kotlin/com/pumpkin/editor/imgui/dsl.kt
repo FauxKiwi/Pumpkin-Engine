@@ -97,6 +97,21 @@ inline fun ImGuiPopupContextItem(strId: String, popupFlags: Int = 0, body: () ->
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun ImGuiMenuItem(label: String, shortcut: String? = null, selected: ImBoolean? = null, enabled: Boolean = true, body: () -> Unit) {
-    if (ImGui.menuItem(label, shortcut, selected, enabled))
-        body()
+    if (enabled) {
+        if (selected == null) {
+            if (shortcut == null) {
+                if (ImGui.menuItem(label))
+                    body()
+            } else {
+                if (ImGui.menuItem(label, shortcut))
+                    body()
+            }
+        } else {
+            if (ImGui.menuItem(label, shortcut, selected))
+                body()
+        }
+    } else {
+        if (ImGui.menuItem(label, shortcut, selected, enabled))
+            body()
+    }
 }

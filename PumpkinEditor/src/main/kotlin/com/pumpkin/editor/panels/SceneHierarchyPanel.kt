@@ -60,6 +60,12 @@ class SceneHierarchyPanel(var context: Scene) {
         if (ImGui.beginPopupContextItem()) {
             if (ImGui.menuItem("Delete Entity"))
                 entityDeleted = true
+            ImGui.separator()
+            ImGuiMenuItem("Create Empty") {
+                val child = context.createEntity("Empty Child")
+                context.registry.insert(selectionContext!!, ChildComponent(child.entityHandle))
+                child.addComponent(ParentComponent(selectionContext!!))
+            }
             ImGui.endPopup()
         }
 
