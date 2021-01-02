@@ -21,7 +21,6 @@ kotlin {
             useJUnit()
         }
     }
-
     js {
         browser {
             webpackTask {
@@ -40,6 +39,16 @@ kotlin {
             }
         }
         binaries.executable()
+    }
+    mingwX64 {
+        compilations.main.cinterops {
+            glfw
+        }
+        binaries {
+            executable {
+                entryPoint = "com.pumpkin.platform.main"
+            }
+        }
     }
 
     sourceSets {
@@ -81,6 +90,14 @@ kotlin {
             }
         }
         jsTest {
+
+        }
+        mingwX64Main {
+            dependencies {
+                implementation project(':Libraries')
+            }
+        }
+        mingwX64Test {
 
         }
         all {

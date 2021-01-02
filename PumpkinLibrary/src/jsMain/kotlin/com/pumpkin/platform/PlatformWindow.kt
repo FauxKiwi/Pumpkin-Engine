@@ -37,7 +37,7 @@ actual class PlatformWindow : Window {
     override fun run() = Application.get().runI().also { Application.get().shutdownI() }
 
     override fun onUpdate() { window.requestAnimationFrame {
-        frameTime = it
+        frameTime += it
     }}
 
     override fun shutdown() {

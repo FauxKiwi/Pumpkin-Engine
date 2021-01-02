@@ -1,6 +1,6 @@
 package glm
 
-abstract class Vec2T<T>(var x: T, var y: T) {
+open class Vec2T<T>(var x: T, var y: T) {
     operator fun get(i: Int): T = when (i) { 0 -> x; 1 -> y; else -> throw IndexOutOfBoundsException() }
     operator fun set(i: Int, v: T) = when (i) { 0 -> x = v; 1 -> y = v; else -> throw IndexOutOfBoundsException() }
 }

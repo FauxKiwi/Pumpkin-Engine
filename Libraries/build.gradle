@@ -18,9 +18,7 @@ kotlin {
             useJUnit()
         }
     }
-    /* Targets configuration omitted. 
-    *  To find out how to configure the targets, please follow the link:
-    *  https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html#setting-up-targets */
+    mingwX64()
 
     sourceSets {
         commonMain {
@@ -33,12 +31,6 @@ kotlin {
                 implementation kotlin('test-common')
                 implementation kotlin('test-annotations-common')
             }
-        }
-        jvmMain {
-
-        }
-        jvmTest {
-
         }
     }
 }
