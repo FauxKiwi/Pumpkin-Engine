@@ -315,9 +315,10 @@ private fun keybinds(event: KeyPressedEvent) {
     fun openScene() {
         FileDialog.open("Open Scene", fileSelectorFilter)?.let {
             newScene()
-            sceneSerializer.deserialize(it)
+            deserialize(it)
         }
     }
+    fun deserialize(name: String) = sceneSerializer.deserialize(name)
 
     fun saveSceneAs() {
         FileDialog.save("Save Scene", fileSelectorFilter)?.let {
