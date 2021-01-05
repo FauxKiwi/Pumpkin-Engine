@@ -1,69 +1,74 @@
 package com.pumpkin.editor.settings
 
+import com.pumpkin.editor.imgui.editEnum
 import glm.Vec4
+import imgui.ImGui
 import imgui.ImGuiStyle
 import imgui.flag.ImGuiCol
+import imgui.flag.ImGuiTreeNodeFlags
+import imgui.flag.ImGuiWindowFlags
+import imgui.type.ImBoolean
+import imgui.type.ImInt
 
 object Settings {
-    var editorCameraClearColor = glm.Vec4(0.1f, 0.1f, 0.1f, 1f)
+    var editorCameraClearColor = Vec4(0.1f, 0.1f, 0.1f, 1f)
     var editorCameraFov = 45f; var uEditorCameraView = false
 
-    private var open = false
-    private var first = true
+    private val open = ImBoolean(false)
 
     fun open() {
-        open = true
-        first = true
+        open.set(true)
         if (!SettingsSerializer.load()) SettingsSerializer.save()
     }
 
     fun onImGuiRender() {
-        if (!open) return
+        if (!open.get()) return
 
-        /*if (first) {
-            ImGui.setNextWindowPos(ImGui.contentRegionMax * Vec2(0.25f, 0.167f))
-            ImGui.setNextWindowSize(ImGui.contentRegionMax * Vec2(0.5f, 0.667f))
-            first = false
-        }
-        ImGui.begin("Settings", Settings::open, WindowFlag.NoCollapse.i)
+        ImGui.setNextWindowPos(ImGui.getContentRegionMaxX() * 0.25f, ImGui.getContentRegionMaxY() * 0.167f)
+        ImGui.setNextWindowSize(ImGui.getContentRegionMaxX() * 0.5f, ImGui.getContentRegionMaxY() * 0.667f)
 
-        val childFlags = WindowFlag.NoCollapse.i or WindowFlag.NoTitleBar.i or WindowFlag.NoBackground.i or WindowFlag.NoResize.i
+        ImGui.begin("Settings", open, ImGuiWindowFlags.NoCollapse)
 
-        ImGui.beginColumns("SettingsColumns", 2, OldColumnsFlag.NoResize.i)
+        val childFlags = ImGuiWindowFlags.NoCollapse or ImGuiWindowFlags.NoTitleBar or ImGuiWindowFlags.NoBackground or ImGuiWindowFlags.NoResize
+
+        ImGui.columns(2)//ImGui.beginColumns("SettingsColumns", 2, OldColumnsFlag.NoResize.i)
         ImGui.setColumnWidth(-1, 250f)
-        ImGui.beginChild("SettingsTree", Vec2(ImGui.getColumnWidth(-1) - 15f, ImGui.windowHeight - 77), flags = childFlags)
+        ImGui.beginChild("SettingsTree", ImGui.getColumnWidth(-1) - 15f, ImGui.getWindowHeight() - 77, false, childFlags)
 
         var currentSettings = "None"
-        if (ImGui.treeNodeEx("Appearance", TreeNodeFlag.Leaf.i)) {
+        if (ImGui.treeNodeEx("Appearance", ImGuiTreeNodeFlags.Leaf)) {
             currentSettings = "Appearance"
             ImGui.treePop()
         }
 
         ImGui.endChild()
         ImGui.nextColumn()
-        ImGui.beginChild("SettingsDisplay", Vec2(0, ImGui.windowHeight - 77), flags = childFlags)
+        ImGui.beginChild("SettingsDisplay", 0f, ImGui.getWindowHeight() - 77, false, childFlags)
 
         when (currentSettings) {
             "None" -> ImGui.text("Open a context menu on the left to edit settings")
             "Appearance" -> {
-                if (ImGui.combo("Theme", Theme::current, "Dark\u0000Light"))
-                    ImGui.currentContext?.style = Theme[Theme.current].style
+                val imInt = ImInt(Theme.current)
+                if (ImGui.combo("Theme", imInt, arrayOf("Dark", "Light"), 2)) {
+                    Theme.current = imInt.get()
+                    Theme[Theme.current].apply(ImGui.getStyle())
+                }
             }
         }
 
         ImGui.endChild()
-        ImGui.endColumns()
+        //ImGui.nextColumn()//ImGui.endColumns()
 
         ImGui.spacing()
-        if (ImGui.button("OK", Vec2(100, 30))) {
-            SettingsSerializer.save(); open = false }
+        if (ImGui.button("OK", 100f, 30f)) {
+            SettingsSerializer.save(); open.set(false) }
         ImGui.sameLine()
-        if (ImGui.button("Cancel", Vec2(100, 30))) { open = false; SettingsSerializer.load()
-        }
+        if (ImGui.button("Cancel", 100f, 30f)) {
+            open.set(false); SettingsSerializer.load() }
         ImGui.sameLine()
-        if (ImGui.button("Apply", Vec2(100, 30))) SettingsSerializer.save()
+        if (ImGui.button("Apply", 100f, 30f)) SettingsSerializer.save()
 
-        ImGui.end()*/
+        ImGui.end()
     }
 
     fun setTheme(theme: Int) {
