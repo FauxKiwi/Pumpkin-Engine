@@ -1,5 +1,6 @@
 package com.pumpkin.editor
 
+import com.pumpkin.core.Debug
 import com.pumpkin.core.jsonFormat
 import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
@@ -12,7 +13,7 @@ import java.io.FileWriter
 //import java.io.FileReader
 //import java.io.FileWriter
 //import java.lang.Exception
-import com.pumpkin.ecs.Entity as EnTT
+import entt.Entity as EnTT
 
 class SceneSerializer(var scene: Scene) {
 
@@ -84,6 +85,7 @@ class SceneSerializer(var scene: Scene) {
         fileWriter.use {
             it.write(jsonString)
         }
+        Debug.logInfo("Serialized scene to: $absoluteFilepath")
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -143,7 +145,10 @@ class SceneSerializer(var scene: Scene) {
 
     fun deserialize(absoluteFilepath: String) {
         val file = File(absoluteFilepath)
-        if (!file.exists()) return
+        if (!file.exists()) {
+            Debug.logWarn("Could not open file: $absoluteFilepath")
+            return
+        }
         val fileReader = FileReader(file)
         var text: String
         fileReader.use {
@@ -154,5 +159,6 @@ class SceneSerializer(var scene: Scene) {
         for (entity in entities) {
             deserializeEntity(entity.jsonObject)
         }
+        Debug.logInfo("Deserialized scene from: $absoluteFilepath")
     }
 }

@@ -1,5 +1,8 @@
 .gradle
 .idea
+PumpkinOpenAs/PumpkinOpenAs/.vs
+PumpkinOpenAs/PumpkinOpenAs/x64
+bin
 build
 out
 

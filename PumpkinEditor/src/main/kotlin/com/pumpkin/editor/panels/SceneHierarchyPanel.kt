@@ -2,8 +2,8 @@ package com.pumpkin.editor.panels
 
 import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
-import com.pumpkin.ecs.Entity
-import com.pumpkin.ecs.Registry
+import entt.Entity
+import entt.Registry
 import com.pumpkin.editor.imGuiLayer
 import com.pumpkin.editor.imgui.*
 import glm.Vec2

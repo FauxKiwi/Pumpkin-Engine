@@ -24,6 +24,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation kotlin('stdlib-common')
+                implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.10"
             }
         }
         commonTest {
@@ -31,6 +32,13 @@ kotlin {
                 implementation kotlin('test-common')
                 implementation kotlin('test-annotations-common')
             }
+        }
+        jvmMain {
+        }
+        jvmTest {
+        }
+        all {
+            languageSettings.enableLanguageFeature("InlineClasses")
         }
     }
 }

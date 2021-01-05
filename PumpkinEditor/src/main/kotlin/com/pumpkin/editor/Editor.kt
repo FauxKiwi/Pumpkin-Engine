@@ -7,7 +7,7 @@ import com.pumpkin.editor.settings.SettingsSerializer
 internal lateinit var imGuiLayer: ImGuiLayer
 internal lateinit var editorLayer: EditorLayer
 
-class EditorApp(val sceneName: String?) : Application() {
+class EditorApp(private val sceneName: String?) : Application() {
 
     override fun init() {
         imGuiLayer = ImGuiLayer()

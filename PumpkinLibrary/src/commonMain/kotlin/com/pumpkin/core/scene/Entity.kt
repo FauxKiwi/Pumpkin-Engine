@@ -1,6 +1,6 @@
 package com.pumpkin.core.scene
 
-import com.pumpkin.ecs.Entity as EntityHandle
+import entt.Entity as EntityHandle
 
 class Entity(val entityHandle: EntityHandle, val scene: Scene) {
 

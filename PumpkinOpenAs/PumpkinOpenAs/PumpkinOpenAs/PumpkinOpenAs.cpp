@@ -3,9 +3,17 @@
 
 #include <iostream>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+int main(int argc, char** argv)
+{   
+    if (argc < 2) return -1;
+
+    char command[256];
+    char* cc = *(argv);
+    sprintf_s(command, "D:/IdeaProjects/PumpkinEngineJVM/scripts/runEditor.bat %s", cc);
+
+    system(command);
+
+    return 0;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

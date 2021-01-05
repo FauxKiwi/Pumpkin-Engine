@@ -7,7 +7,7 @@ import com.pumpkin.core.renderer.Camera
 import com.pumpkin.core.renderer.Renderer2D
 import com.pumpkin.core.renderer.RendererCommand
 //import com.pumpkin.core.settings.Settings
-import com.pumpkin.ecs.Registry
+import entt.Registry
 import glm.Vec4
 
 class Scene : Referencable() {
