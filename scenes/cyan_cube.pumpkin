@@ -1,0 +1,86 @@
+{
+    "Scene": "Untitled",
+    "Entities": [
+        {
+            "Entity": 198932095031,
+            "TagComponent": {
+                "Tag": "Front"
+            },
+            "TransformComponent": {
+                "Transform": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "SpriteRendererComponent": {
+                "Color": [
+                    0.014532872,
+                    0.7411765,
+                    0.73197836,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Entity": 198932095031,
+            "TagComponent": {
+                "Tag": "Left"
+            },
+            "TransformComponent": {
+                "Transform": [
+                    -0.5,
+                    0.0,
+                    -0.5,
+                    0.0,
+                    1.5705,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "SpriteRendererComponent": {
+                "Color": [
+                    0.0,
+                    0.4627451,
+                    0.45730102,
+                    1.0
+                ]
+            }
+        },
+        {
+            "Entity": 198932095031,
+            "TagComponent": {
+                "Tag": "Top"
+            },
+            "TransformComponent": {
+                "Transform": [
+                    0.0,
+                    0.5,
+                    -0.5,
+                    1.5705,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "SpriteRendererComponent": {
+                "Color": [
+                    0.0,
+                    1.0,
+                    0.98823524,
+                    1.0
+                ]
+            }
+        }
+    ]
+}

@@ -1,11 +1,17 @@
-.gradle
-.idea
-PumpkinOpenAs/PumpkinOpenAs/.vs
-PumpkinOpenAs/PumpkinOpenAs/x64
-bin
-build
-out
+.gradle/
+.idea/
+.vs/
+x86/
+x64/
+Debug/
+bin/
+build/
+out/
 
 *.log
 *.lck
-/imgui.ini
+#*.ini
+
+*.sln
+*.filters
+*.user
