@@ -17,7 +17,10 @@ fun Scene.onUpdateEditor(ts: Timestep, camera: EditorCamera) {
     val group = registry.group<TransformComponent, SpriteRendererComponent>()
     for (entity in group) {
         val (transform, sprite) = group.get(entity)
-        Renderer2D.drawQuad(transform.transform, sprite.color)
+        if (registry.has<ParentComponent>(entity))
+            Renderer2D.drawQuad((transform + registry.get<TransformComponent>(registry.get<ParentComponent>(entity).parent)).transform, sprite.color)
+        else
+            Renderer2D.drawQuad(transform.transform, sprite.color)
     }
     Renderer2D.endScene()
 }

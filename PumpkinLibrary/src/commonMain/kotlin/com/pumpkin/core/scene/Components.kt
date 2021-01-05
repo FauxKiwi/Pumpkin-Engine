@@ -37,6 +37,13 @@ inline class TransformComponent(@ComponentSize(9) val t: FloatArray) {
         get() = com.pumpkin.core.math.transform(t)
     val inverse: Mat4
         get() = inverseTransform(t)
+
+    operator fun plus(other: TransformComponent): TransformComponent =
+        TransformComponent(floatArrayOf(
+            t[0] + other.t[0], t[1] + other.t[1], t[2] + other.t[2],
+            t[3] + other.t[3], t[4] + other.t[4], t[5] + other.t[5],
+            t[6] * other.t[6], t[7] * other.t[7], t[8] * other.t[8],
+        ))
 }
 
 inline class ChildComponent(val child: entt.Entity)

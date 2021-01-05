@@ -20,7 +20,7 @@ class SceneHierarchyPanel(var context: Scene) {
 
     fun onImGuiRender() {
         ImGui.begin("Hierarchy", ImBoolean(true), ImGuiWindowFlags.NoCollapse)
-        registry.each(::drawEntityNode)
+        try { registry.each(::drawEntityNode) } catch (ignored: ConcurrentModificationException) {}
         if (ImGui.beginPopupContextWindow(ImGuiPopupFlags.MouseButtonRight or ImGuiPopupFlags.NoOpenOverItems)) {
             if (ImGui.menuItem("Create Empty")) {
                 selectionContext = context.createEntity("Empty Entity").entityHandle
@@ -46,30 +46,34 @@ class SceneHierarchyPanel(var context: Scene) {
         ImGui.end()
     }
 
-    private fun drawEntityNode(entity: Entity) {
+    private fun drawEntityNode(entity: Entity, force: Boolean = false) {
+        if (!force && registry.has<ParentComponent>(entity)) return
+
         val tag = registry.get<TagComponent>(entity).str
         val flags =
             (if (selectionContext == entity) ImGuiTreeNodeFlags.Selected else 0) or
-                    ImGuiTreeNodeFlags.OpenOnArrow or
+                    (if (registry.has<ChildComponent>(entity)) ImGuiTreeNodeFlags.OpenOnArrow else ImGuiTreeNodeFlags.Leaf) or
                     ImGuiTreeNodeFlags.SpanAvailWidth
         val opened = fontAwesomeSymbol('\uf6d1').let { ImGui.treeNodeEx(tag, flags) }
         if (ImGui.isItemClicked())
             selectionContext = entity
 
         var entityDeleted = false
+        var shouldAddChild = false
         if (ImGui.beginPopupContextItem()) {
             if (ImGui.menuItem("Delete Entity"))
                 entityDeleted = true
             ImGui.separator()
             ImGuiMenuItem("Create Empty") {
-                val child = context.createEntity("Empty Child")
-                context.registry.insert(selectionContext!!, ChildComponent(child.entityHandle))
-                child.addComponent(ParentComponent(selectionContext!!))
+                shouldAddChild = true
             }
             ImGui.endPopup()
         }
 
         if (opened) {
+            if (registry.has<ChildComponent>(entity)) {
+                drawEntityNode(registry.get<ChildComponent>(entity).child, true)
+            }
             ImGui.treePop()
         }
 
@@ -77,6 +81,14 @@ class SceneHierarchyPanel(var context: Scene) {
             registry.destroy(entity)
             if (selectionContext == entity)
                 selectionContext = null
+        }
+
+        if (shouldAddChild) {
+            val child = context.createEntity("Empty Child")
+            context.registry.insert(entity, ChildComponent(child.entityHandle))
+            child.addComponent(ParentComponent(entity))
+            if (selectionContext != entity)
+                selectionContext = entity
         }
     }
 
@@ -119,9 +131,7 @@ class SceneHierarchyPanel(var context: Scene) {
     }
 
     private fun drawComponents(entity: Entity) {
-        if (
-            registry.has<TagComponent>(entity)
-        ) {
+        if (registry.has<TagComponent>(entity)) {
             val tag = registry.get<TagComponent>(entity)
             editString("##Tag", tag::str)
         }
