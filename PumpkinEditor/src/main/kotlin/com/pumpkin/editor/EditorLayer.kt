@@ -7,13 +7,12 @@ import com.pumpkin.editor.imgui.ImGuizmo
 import com.pumpkin.core.input.Input
 import com.pumpkin.core.input.KeyCode
 import com.pumpkin.core.layer.Layer
-import com.pumpkin.editor.panels.SceneHierarchyPanel
 import com.pumpkin.core.renderer.Framebuffer
 import com.pumpkin.core.renderer.FramebufferSpecification
 import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
 import com.pumpkin.editor.imgui.ImGuiWindow
-import com.pumpkin.editor.imgui.fontAwesomeSymbol
+import com.pumpkin.editor.panels.*
 import com.pumpkin.editor.settings.Settings
 import glm.Mat4
 import glm.Vec2
@@ -32,21 +31,19 @@ class EditorLayer : Layer("Editor") {
     private var viewportHovered = false
 
     private var activeScene by Reference<Scene>()
-    private lateinit var sceneHierarchyPanel: SceneHierarchyPanel
     private lateinit var sceneSerializer: SceneSerializer
     private val editorCamera = EditorCamera()
 
     private var gizmoType = -1
 
-    private var log = mutableListOf<Pair<Int, String>>()
+    private val menuBar = MenuBar(this)
 
     override fun onAttach() {
         activeScene = Scene()
-        sceneHierarchyPanel = SceneHierarchyPanel(activeScene)
-        sceneSerializer = SceneSerializer(activeScene)
 
-        Debug.subscribe { level, message -> log.add(level.color().toColorInt() to message) }
-        Debug.logInfo("Thank you for using the Pumpkin engine")
+        Panels.init(activeScene)
+
+        sceneSerializer = SceneSerializer(activeScene)
     }
 
     override fun onDetach() {
@@ -94,13 +91,13 @@ class EditorLayer : Layer("Editor") {
             dockspaceWfs = dockspaceWfs or ImGuiWindowFlags.NoBackground
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0f, 0f)
-        ImGui.begin("DockSpace Demo", ImBoolean(dockspaceOpen), dockspaceWfs)
+        ImGui.begin("Dockspace", ImBoolean(dockspaceOpen), dockspaceWfs)
         ImGui.popStyleVar()
 
         if (optFullscreen)
             ImGui.popStyleVar(2)
 
-        menuBar()
+        menuBar.showMenuBar()
 
         val minWinSizeX = ImGui.getStyle().windowMinSizeX
         ImGui.getStyle().setWindowMinSize(370f, ImGui.getStyle().windowMinSizeY)
@@ -110,16 +107,10 @@ class EditorLayer : Layer("Editor") {
         }
         ImGui.getStyle().setWindowMinSize(minWinSizeX, ImGui.getStyle().windowMinSizeY)
 
-        sceneHierarchyPanel.onImGuiRender()
+        Panels.onImGuiRender()
 
         Settings.onImGuiRender()
         if (Settings.uEditorCameraView) { editorCamera.fov = Settings.editorCameraFov; editorCamera.updateProjection(); Settings.uEditorCameraView = false; }
-
-        ImGuiWindow("Console") {
-            for ((c, m) in log) {
-                ImGui.textColored(c, m)
-            }
-        }
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0f, 0f)
         ImGui.begin("Scene", ImBoolean(true), ImGuiWindowFlags.MenuBar or ImGuiWindowFlags.NoCollapse)
@@ -133,17 +124,18 @@ class EditorLayer : Layer("Editor") {
         Application.get().getImGuiLayer().blockEvents = !viewportHovered && !viewportFocused
         ImGui.image(framebuffer.colorAttachmentID, viewportSize.x, viewportSize.y, 0f, 1f, 1f, 0f)
 
-        if (sceneHierarchyPanel.selectionContext?.let { sceneHierarchyPanel.context.registry.has<CameraComponent>(it) } == true) run {
-            val cc = sceneHierarchyPanel.context.registry.get<CameraComponent>(sceneHierarchyPanel.selectionContext!!)
-            val tc = if (sceneHierarchyPanel.context.registry.has<TransformComponent>(sceneHierarchyPanel.selectionContext!!))
-                sceneHierarchyPanel.context.registry.get<TransformComponent>(sceneHierarchyPanel.selectionContext!!) else null
+        // Camera Preview
+        /*if (hierarchyPanel.selectionContext?.let { hierarchyPanel.context.registry.has<CameraComponent>(it) } == true) run {
+            val cc = hierarchyPanel.context.registry.get<CameraComponent>(hierarchyPanel.selectionContext!!)
+            val tc = if (hierarchyPanel.context.registry.has<TransformComponent>(hierarchyPanel.selectionContext!!))
+                hierarchyPanel.context.registry.get<TransformComponent>(hierarchyPanel.selectionContext!!) else null
             if (tc == null) return@run
 
             val fbWidth = 100 * cc.camera.aspectRatio
             val previewFb = Framebuffer.create(FramebufferSpecification(fbWidth.toInt(), 100))
 
             previewFb.bind()
-            sceneHierarchyPanel.context.onPreviewCamera(cc, tc)
+            hierarchyPanel.context.onPreviewCamera(cc, tc)
             previewFb.unbind()
 
             ImGui.setNextWindowPos(viewportPos.x + viewportSize.x - fbWidth - 20f, viewportPos.y + viewportSize.y - 80f)
@@ -151,10 +143,10 @@ class EditorLayer : Layer("Editor") {
             ImGuiWindow("Preview", windowFlags = ImGuiWindowFlags.NoTitleBar or ImGuiWindowFlags.NoMove or ImGuiWindowFlags.NoNavFocus or ImGuiWindowFlags.NoResize) {
                 ImGui.image(previewFb.colorAttachmentID, fbWidth, 100f, 0f, 1f, 1f, 0f)
             }
-        }
+        }*/
 
         // GIZMOS
-        val selectedEntity = sceneHierarchyPanel.selectionContext
+        /*val selectedEntity = hierarchyPanel.selectionContext
         if (selectedEntity != null && gizmoType != -1) {
             ImGuizmo.setOrthographic(false)
             ImGuizmo.setDrawlist()
@@ -178,7 +170,7 @@ class EditorLayer : Layer("Editor") {
                 ImGuizmo.OPERATION.values()[gizmoType], ImGuizmo.MODE.LOCAL, tc,
                 null, if (snap) snapValues else null
             )
-        }
+        }*/
         ImGui.end()
         ImGui.popStyleVar()
 
@@ -197,67 +189,6 @@ class EditorLayer : Layer("Editor") {
             }
         }
     }
-
-private fun menuBar() {
-    if (ImGui.beginMainMenuBar()) {
-        if (ImGui.beginMenu("File")) {
-            fontAwesomeSymbol('\uf15b'); if (ImGui.menuItem("New", "Ctrl+N")) { newScene() }
-            fontAwesomeSymbol('\uf07c'); if (ImGui.menuItem("Open...", "Ctrl+O")) { openScene() }
-            fontAwesomeSymbol('\uf07c'); if (ImGui.menuItem("Open Recent")) {}
-            fontAwesomeSymbol('\uf410'); if (ImGui.menuItem("Close Project", "Ctrl+W")) {}
-            ImGui.separator()
-            fontAwesomeSymbol('\uf013'); if (ImGui.menuItem("Settings", "Ctrl+Alt+S")) { Settings.open() }
-            fontAwesomeSymbol('\uf085'); if (ImGui.menuItem("Build Settings", "Ctrl+Alt+B")) {}
-            ImGui.separator()
-            fontAwesomeSymbol('\uf0c7'); if (ImGui.menuItem("Save Scene", "Ctrl+S")) { saveSceneAs() }
-            fontAwesomeSymbol('\uf0c7'); if (ImGui.menuItem("Save As...", "Ctrl+Shift+S")) { saveSceneAs() }
-            fontAwesomeSymbol('\uf01e'); if (ImGui.menuItem("Reload")) {}
-            ImGui.separator()
-            fontAwesomeSymbol('\uf011'); if (ImGui.menuItem("Exit")) { Application.get().close() }
-            ImGui.endMenu()
-        }
-
-        if (ImGui.beginMenu("Edit")) {
-            fontAwesomeSymbol('\uf0e2'); if (ImGui.menuItem("Undo", "Ctrl+Z")) {}
-            fontAwesomeSymbol('\uf01e'); if (ImGui.menuItem("Redo", "Ctrl+Y")) {}
-            ImGui.separator()
-            fontAwesomeSymbol('\uf0c4'); if (ImGui.menuItem("Cut", "Ctrl+X")) {}
-            fontAwesomeSymbol('\uf328'); if (ImGui.menuItem("Copy", "Ctrl+C")) {}
-            fontAwesomeSymbol('\uf0ea'); if (ImGui.menuItem("Paste", "Ctrl+V")) {}
-            fontAwesomeSymbol('\uf24d'); if (ImGui.menuItem("Clone", "Ctrl+D")) {}
-            fontAwesomeSymbol('\uf1f8'); if (ImGui.menuItem("Delete", "Del")) {}
-            ImGui.separator()
-            fontAwesomeSymbol('\uf002'); if (ImGui.menuItem("Find", "Ctrl+F")) {}
-            ImGui.endMenu()
-        }
-
-        if (ImGui.beginMenu("View")) {
-            fontAwesomeSymbol('\uf2d2', 2); if (ImGui.menuItem("Windows")) {}
-            fontAwesomeSymbol('\uf55d'); if (ImGui.menuItem("Appearance")) {}
-            ImGui.endMenu()
-        }
-
-        if (ImGui.beginMenu("Build & Run")) {
-            fontAwesomeSymbol('\uf04b'); if (ImGui.menuItem("Run")) {}
-            fontAwesomeSymbol('\uf6e3'); if (ImGui.menuItem("Build")) {}
-            ImGui.endMenu()
-        }
-
-        if (ImGui.beginMenu("Tools")) {
-            fontAwesomeSymbol('\uf0ad'); if (ImGui.menuItem("Tasks")) {}
-            ImGui.separator()
-            //Plugins
-            ImGui.endMenu()
-        }
-
-        if (ImGui.beginMenu("Help")) {
-            fontAwesomeSymbol('\uf059'); if (ImGui.menuItem("Help")) {}
-            ImGui.endMenu()
-        }
-
-        ImGui.endMainMenuBar()
-    }
-}
 
     private fun viewportMenuBar() {
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 4f, 4f)
@@ -281,33 +212,33 @@ private fun menuBar() {
         ImGui.popStyleVar(2)
     }
 
-private fun keybinds(event: KeyPressedEvent) {
-    if (event.repeatCount > 0) return
+    private fun keybinds(event: KeyPressedEvent) {
+        if (event.repeatCount > 0) return
 
-    val ctrl = Input.isKeyPressed(KeyCode.LEFT_CONTROL) || Input.isKeyPressed(KeyCode.RIGHT_CONTROL)
-    if (!ctrl) return
-    val shift = Input.isKeyPressed(KeyCode.LEFT_SHIFT) || Input.isKeyPressed(KeyCode.RIGHT_SHIFT)
-    val alt = Input.isKeyPressed(KeyCode.LEFT_ALT) || Input.isKeyPressed(KeyCode.RIGHT_ALT)
+        val ctrl = Input.isKeyPressed(KeyCode.LEFT_CONTROL) || Input.isKeyPressed(KeyCode.RIGHT_CONTROL)
+        if (!ctrl) return
+        val shift = Input.isKeyPressed(KeyCode.LEFT_SHIFT) || Input.isKeyPressed(KeyCode.RIGHT_SHIFT)
+        val alt = Input.isKeyPressed(KeyCode.LEFT_ALT) || Input.isKeyPressed(KeyCode.RIGHT_ALT)
 
-    when (event.keyCode) {
-        KeyCode.S ->
-            if (!shift) {
-                if (alt)
-                    Settings.open()
-                else
-                    saveSceneAs()
-            } else saveSceneAs()
-        KeyCode.O ->
-            if (!shift && !alt) openScene()
-        KeyCode.N ->
-            if (!shift && !alt) newScene()
+        when (event.keyCode) {
+            KeyCode.S ->
+                if (!shift) {
+                    if (alt)
+                        Settings.open()
+                    else
+                        saveSceneAs()
+                } else saveSceneAs()
+            KeyCode.O ->
+                if (!shift && !alt) openScene()
+            KeyCode.N ->
+                if (!shift && !alt) newScene()
+        }
     }
-}
 
     fun newScene() {
         activeScene = Scene()
-        sceneHierarchyPanel.context = activeScene
-        sceneHierarchyPanel.selectionContext = null
+        Panels.hierarchyPanel.context = activeScene
+        Panels.hierarchyPanel.selectionContext = null
         sceneSerializer.scene = activeScene
         activeScene.onViewportResize(viewportSize.x.toInt(), viewportSize.y.toInt())
     }
