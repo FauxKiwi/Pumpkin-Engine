@@ -8,6 +8,8 @@ bin/
 build/
 out/
 
+generatedProject
+
 *.log
 *.lck
 #*.ini
