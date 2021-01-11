@@ -26,8 +26,8 @@ class EditorApp(private val sceneName: String?) : Application() {
 }
 
 fun main(args: Array<String>) {
-    ProjectStructure.generateStructure("Test", "com.test", "./generatedProject/")
-    return
+    //ProjectStructure.generateStructure("Test", "com.test", "./generatedProject/")
+    //return
 
     val sceneName = if (args.isNotEmpty()) args[0] else null
     Application.set(EditorApp(sceneName))

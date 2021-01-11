@@ -2,15 +2,10 @@ package com.pumpkin.editor.panels
 
 import com.pumpkin.core.scene.Scene
 
-object Panels {
-    internal lateinit var hierarchyPanel: HierarchyPanel
-    private lateinit var inspectorPanel: InspectorPanel
+class Panels(activeScene: Scene) {
+    internal val hierarchyPanel: HierarchyPanel = HierarchyPanel(activeScene)
+    private val inspectorPanel: InspectorPanel = InspectorPanel(hierarchyPanel)
     private val consolePanel = ConsolePanel()
-
-    fun init(activeScene: Scene) {
-        hierarchyPanel = HierarchyPanel(activeScene)
-        inspectorPanel = InspectorPanel(hierarchyPanel)
-    }
 
     fun onImGuiRender() {
         hierarchyPanel.onImGuiRender()

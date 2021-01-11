@@ -1,4 +1,6 @@
 package com.pumpkin.editor.project
 
-class Project {
+import com.pumpkin.core.scene.Scene
+
+class Project(val name: String, val scenes: MutableList<Scene> = mutableListOf()) {
 }

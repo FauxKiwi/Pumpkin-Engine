@@ -104,20 +104,15 @@ class Logger(private val name: String) {
     }}
 }
 
-enum class LogLevel {
-    TRACE,
-    DEBUG,
-    INFO,
-    WARN,
-    ERROR,
-    FATAL;
+enum class LogLevel(val color: Vec4) {
+    TRACE(Vec4(0.5f, 0.5f, 0.5f, 1f)),
+    DEBUG(Vec4(0.4f, 0.6f, 0.8f, 1f)),
+    INFO(Vec4(0.5f, 0.8f, 0.4f, 1f)),
+    WARN(Vec4(0.8f, 0.7f, 0.4f, 1f)),
+    ERROR(Vec4(0.8f, 0.3f, 0.4f, 1f)),
+    FATAL(Vec4(1f, 0f, 0.2f, 1f));
 
-    fun color() = when (this) {
-        TRACE -> Vec4(0.5f, 0.5f, 0.5f, 1f)
-        DEBUG -> Vec4(0f, 0f, 1f, 1f)
-        INFO -> Vec4(0f, 1f, 0f, 1f)
-        WARN -> Vec4(1f, 1f, 0f, 1f)
-        ERROR -> Vec4(1f, 0f, 0f, 1f)
-        FATAL -> Vec4(1f, 0f, 1f, 1f)
-    }
+    @Deprecated("Use property instead", ReplaceWith("color")) fun color() = color
+
+    fun colorInt() = color.toColorInt()
 }

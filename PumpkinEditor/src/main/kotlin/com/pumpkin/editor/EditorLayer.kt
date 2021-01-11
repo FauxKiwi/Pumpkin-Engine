@@ -36,12 +36,13 @@ class EditorLayer : Layer("Editor") {
 
     private var gizmoType = -1
 
+    private lateinit var panels: Panels
     private val menuBar = MenuBar(this)
 
     override fun onAttach() {
         activeScene = Scene()
 
-        Panels.init(activeScene)
+        panels = Panels(activeScene)
 
         sceneSerializer = SceneSerializer(activeScene)
     }
@@ -107,7 +108,7 @@ class EditorLayer : Layer("Editor") {
         }
         ImGui.getStyle().setWindowMinSize(minWinSizeX, ImGui.getStyle().windowMinSizeY)
 
-        Panels.onImGuiRender()
+        panels.onImGuiRender()
 
         Settings.onImGuiRender()
         if (Settings.uEditorCameraView) { editorCamera.fov = Settings.editorCameraFov; editorCamera.updateProjection(); Settings.uEditorCameraView = false; }
@@ -237,8 +238,8 @@ class EditorLayer : Layer("Editor") {
 
     fun newScene() {
         activeScene = Scene()
-        Panels.hierarchyPanel.context = activeScene
-        Panels.hierarchyPanel.selectionContext = null
+        panels.hierarchyPanel.context = activeScene
+        panels.hierarchyPanel.selectionContext = null
         sceneSerializer.scene = activeScene
         activeScene.onViewportResize(viewportSize.x.toInt(), viewportSize.y.toInt())
     }

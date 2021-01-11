@@ -71,7 +71,7 @@ class SceneSerializer(var scene: Scene) {
 
     fun serialize(absoluteFilepath: String) {
         val jsonObject = buildJsonObject {
-            put("Scene", JsonPrimitive("Untitled"))
+            put("Scene", scene.name)
             putJsonArray("Entities") {
                 for (entity in scene.registry.entities) {
                     entity?.let { add(serializeEntity(it)) }

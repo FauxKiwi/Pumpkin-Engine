@@ -19,9 +19,18 @@ object ProjectStructure {
           |-...
         |-com/pumpkin
           |-EntryPoint.kt
-      |-engine
-        |-com/pumpkin
-          |-//Library sources
+      //|-engine
+        //|-com/pumpkin
+          //|-//Library sources
+    |-Gradle
+      |-build.gradle
+      |-settings.gradle
+      |-gradle.properties
+      |-gradlew
+      |-gradlew.bat
+      |-wrapper
+        |-gradle-wrapper.jar
+        |-gradle-wrapper.properties
      */
 
     fun generateStructure(name: String, companyID: String, path: String): Boolean {
@@ -47,7 +56,19 @@ object ProjectStructure {
     private fun generateFoldersAndFiles(projectName: String, companyID: String, rootDir: File) {
         val rdp = rootDir.path
 
-        File("$rdp/$projectName.peproj").createNewFile()
+        FileWriter(File("$rdp/$projectName.peproj").also { it.createNewFile() }).use { w ->
+            w.append("""
+                {
+                    "Project": "$projectName",
+                    "Scenes": [
+                    ],
+                    "Settings": {
+                        "EditorCamera": {
+                        }
+                    }
+                }
+            """.trimIndent())
+        }
 
         val assets = File("$rdp/Assets").also { it.mkdir() }
 
