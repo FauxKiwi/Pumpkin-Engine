@@ -3,9 +3,10 @@ package com.pumpkin.editor.panels
 import com.pumpkin.core.Debug
 import com.pumpkin.core.LogLevel
 import com.pumpkin.editor.imGuiLayer
-import com.pumpkin.editor.imgui.ImGuiWindow
+import com.pumpkin.editor.imgui.*
 import imgui.ImGui
 import imgui.flag.ImGuiCol
+import imgui.flag.ImGuiStyleVar
 import imgui.flag.ImGuiWindowFlags
 
 class ConsolePanel {
@@ -29,38 +30,49 @@ class ConsolePanel {
         ImGuiWindow("Console", windowFlags = ImGuiWindowFlags.MenuBar) {
             ImGui.beginMenuBar()
             ImGui.pushFont(imGuiLayer.fonts[1])
+            ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0f, 8f)
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.TRACE.colorInt())
-            ImGui.button("\uf4ad") // Trace
+            ImGui.button(TraceIconChar.toString()) // Trace
             ImGui.popStyleColor()
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.DEBUG.colorInt())
-            ImGui.button("\uf188") // Debug
+            ImGui.button(DebugIconChar.toString()) // Debug
             ImGui.popStyleColor()
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.INFO.colorInt())
-            ImGui.button("\uf05a") // Info
+            ImGui.button(InfoIconChar.toString()) // Info
             ImGui.popStyleColor()
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.WARN.colorInt())
-            ImGui.button("\uf071") // Warn
+            ImGui.button(WarnIconChar.toString()) // Warn
             ImGui.popStyleColor()
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.ERROR.colorInt())
-            ImGui.button("\uf06a") // Error
+            ImGui.button(ErrorIconChar.toString()) // Error
             ImGui.popStyleColor()
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.FATAL.colorInt())
-            ImGui.button("\uf1e2") // Fatal
+            ImGui.button(FatalIconChar.toString()) // Fatal
             ImGui.popStyleColor()
 
+            ImGui.popStyleVar()
             ImGui.popFont()
             ImGui.endMenuBar()
 
+
+            //ImGui.pushStyleVar(ImGuiStyleVar.)
+            //ImGui.showDemoWindow()
+            ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 8f, 10f)
+
             for ((l, m) in log) {
                 if (l.ordinal < minLevel) continue
-                ImGui.textColored(l.colorInt(), m)
+                fontAwesomeSymbol(l.iconChar, color = l.colorInt())
+                ImGui.textColored(if(l == LogLevel.TRACE || l == LogLevel.FATAL) l.colorInt() else -1, m)
+                ImGui.separator()
             }
+
+            ImGui.popStyleVar()
         }
     }
 }

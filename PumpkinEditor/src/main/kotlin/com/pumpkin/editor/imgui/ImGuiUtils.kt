@@ -1,5 +1,6 @@
 package com.pumpkin.editor.imgui
 
+import com.pumpkin.core.LogLevel
 import com.pumpkin.editor.imGuiLayer
 import glm.f
 import glm.floor
@@ -40,3 +41,19 @@ fun fontAwesomeSymbol(character: Char, fontIndex: Int = 1, color: Int = -1) {
     ImGui.popFont()
     ImGui.sameLine()
 }
+
+val LogLevel.iconChar get() = when (this) {
+    LogLevel.TRACE -> TraceIconChar
+    LogLevel.DEBUG -> DebugIconChar
+    LogLevel.INFO -> InfoIconChar
+    LogLevel.WARN -> WarnIconChar
+    LogLevel.ERROR -> ErrorIconChar
+    LogLevel.FATAL -> FatalIconChar
+}
+
+const val TraceIconChar = ''
+const val DebugIconChar = ''
+const val InfoIconChar = ''
+const val WarnIconChar = ''
+const val ErrorIconChar = ''
+const val FatalIconChar = ''
