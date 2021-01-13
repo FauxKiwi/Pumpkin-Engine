@@ -1,6 +1,6 @@
 package com.pumpkin.editor.project
 
-import com.pumpkin.core.Debug
+import com.pumpkin.editor.editorLogger
 import java.io.File
 import java.io.FileWriter
 
@@ -36,15 +36,15 @@ object ProjectStructure {
     fun generateStructure(name: String, companyID: String, path: String): Boolean {
         val directory = File(path)
         if (!directory.exists()) {
-            Debug.logInfo("The specified project directory does not exist, so it will be created")
+            editorLogger.info("The specified project directory does not exist, so it will be created")
             directory.mkdir()
         }
         if (!directory.isDirectory) {
-            Debug.logWarn("The specified path does not point to a directory")
+            editorLogger.warn("The specified path does not point to a directory")
             return false
         }
         if (directory.listFiles()?.isNotEmpty() == true) {
-            Debug.logWarn("The specified project directory is not empty")
+            editorLogger.warn("The specified project directory is not empty")
             return false
         }
 

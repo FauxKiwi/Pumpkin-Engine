@@ -85,7 +85,7 @@ class SceneSerializer(var scene: Scene) {
         fileWriter.use {
             it.write(jsonString)
         }
-        Debug.logInfo("Serialized scene to: $absoluteFilepath")
+        editorLogger.info("Serialized scene to: $absoluteFilepath")
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -138,7 +138,7 @@ class SceneSerializer(var scene: Scene) {
                 val clazz = Class.forName(className).kotlin as KClass<ScriptableEntity>
                 entity.addComponent<NativeScriptComponent>().bind(clazz)
             } catch (e: Exception) {
-                Debug.logError("(caught) Exception in scene deserialization", e)
+                editorLogger.error("(caught) Exception in scene deserialization", e)
             }*/
         }
     }
@@ -146,7 +146,7 @@ class SceneSerializer(var scene: Scene) {
     fun deserialize(absoluteFilepath: String) {
         val file = File(absoluteFilepath)
         if (!file.exists()) {
-            Debug.logWarn("Could not open file: $absoluteFilepath")
+           editorLogger.warn("Could not open file: $absoluteFilepath")
             return
         }
         val fileReader = FileReader(file)
@@ -159,6 +159,6 @@ class SceneSerializer(var scene: Scene) {
         for (entity in entities) {
             deserializeEntity(entity.jsonObject)
         }
-        Debug.logInfo("Deserialized scene from: $absoluteFilepath")
+        editorLogger.info("Deserialized scene from: $absoluteFilepath")
     }
 }

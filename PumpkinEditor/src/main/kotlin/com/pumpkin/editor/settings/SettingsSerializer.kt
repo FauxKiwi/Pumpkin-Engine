@@ -2,6 +2,7 @@ package com.pumpkin.editor.settings
 
 import com.pumpkin.core.Debug
 import com.pumpkin.core.jsonFormat
+import com.pumpkin.editor.editorLogger
 import glm.Vec4
 import imgui.ImGui
 import kotlinx.serialization.encodeToString
@@ -68,7 +69,7 @@ object SettingsSerializer {
             Settings.uEditorCameraView = true
             return true
         } catch (e: Exception) {
-            Debug.logWarn("Could not parse editorconfig")
+            editorLogger.warn("Could not parse editorconfig")
             return false
         }
     }

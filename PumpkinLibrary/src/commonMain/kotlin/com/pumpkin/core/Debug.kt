@@ -6,9 +6,14 @@ object Debug {
     private val coreLogger = Logger("Pumpkin")
     private val appLogger = Logger("Application")
 
-    fun subscribe(callback: (LogLevel, String) -> Unit) {
+    fun subscribe(callback: LoggerCallback) {
         coreLogger.subscribers.add(callback)
         appLogger.subscribers.add(callback)
+    }
+
+    fun setLogMinLevel(level: LogLevel) {
+        coreLogger.minLevel = level
+        appLogger.minLevel = level
     }
 
     internal fun logCore(level: LogLevel, message: String) = coreLogger.log(level, message)
@@ -71,7 +76,7 @@ class Logger(private val name: String) {
 
     internal val subscribers = mutableListOf<(LogLevel, String) -> Unit>()
 
-    val minLevel = LogLevel.DEBUG
+    var minLevel = LogLevel.DEBUG
 
     private val resetColor = "\u001B[0m"
 
@@ -102,7 +107,13 @@ class Logger(private val name: String) {
     fun fatal(message: String) { if (minLevel <= LogLevel.FATAL) {
         log(LogLevel.FATAL, message)
     }}
+
+    fun addSubscriber(callback: LoggerCallback) {
+        subscribers.add(callback)
+    }
 }
+
+typealias LoggerCallback = (LogLevel, String) -> Unit
 
 enum class LogLevel(val color: Vec4) {
     TRACE(Vec4(0.5f, 0.5f, 0.5f, 1f)),

@@ -26,13 +26,3 @@ abstract class Referencable : AutoCloseable {
 
     abstract fun destruct()
 }
-
-class TestIt : Referencable() {
-    init {
-        Debug.logFatal("Init")
-    }
-
-    override fun destruct() {
-        Debug.logFatal("Destruct")
-    }
-}

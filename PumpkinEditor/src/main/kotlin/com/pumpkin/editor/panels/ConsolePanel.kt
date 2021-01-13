@@ -2,6 +2,7 @@ package com.pumpkin.editor.panels
 
 import com.pumpkin.core.Debug
 import com.pumpkin.core.LogLevel
+import com.pumpkin.editor.editorLogger
 import com.pumpkin.editor.imGuiLayer
 import com.pumpkin.editor.imgui.*
 import imgui.ImGui
@@ -14,15 +15,18 @@ class ConsolePanel {
     private var log = mutableListOf<Pair<LogLevel, String>>()
 
     init {
-        Debug.subscribe { level, message -> log.add(level to message) }
-        Debug.logInfo("Thank you for using the Pumpkin engine")
+        val callback: (LogLevel, String) -> Unit = { level, message -> log.add(level to message) }
+        Debug.subscribe(callback)
+        editorLogger.addSubscriber(callback)
 
-        Debug.logTrace("Trace test")
-        Debug.logDebug("Debug test")
-        Debug.logInfo("Info test")
-        Debug.logWarn("Warn test")
-        Debug.logError("Error test")
-        Debug.logFatal("Fatal test")
+        editorLogger.info("Thank you for using the Pumpkin engine")
+
+        editorLogger.trace("Trace test")
+        editorLogger.debug("Debug test")
+        editorLogger.info("Info test")
+        editorLogger.warn("Warn test")
+        editorLogger.error("Error test")
+        editorLogger.fatal("Fatal test")
     }
 
     private var minLevel = 0
@@ -34,32 +38,41 @@ class ConsolePanel {
             ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0f, 8f)
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.TRACE.colorInt())
-            ImGui.button(TraceIconChar.toString()) // Trace
-            if (ImGui.isItemClicked()) Debug.logInfo("EnabledTrace")
+            if (ImGui.button(TraceIconChar.toString())) // Trace
+                setAllLoggersMinLevel(LogLevel.TRACE)
             ImGui.popStyleColor()
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.DEBUG.colorInt())
-            ImGui.button(DebugIconChar.toString()) // Debug
+            if (ImGui.button(DebugIconChar.toString())) // Debug
+                setAllLoggersMinLevel(LogLevel.DEBUG)
             ImGui.popStyleColor()
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.INFO.colorInt())
-            ImGui.button(InfoIconChar.toString()) // Info
+            if (ImGui.button(InfoIconChar.toString())) // Info
+                setAllLoggersMinLevel(LogLevel.INFO)
             ImGui.popStyleColor()
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.WARN.colorInt())
-            ImGui.button(WarnIconChar.toString()) // Warn
+            if (ImGui.button(WarnIconChar.toString())) // Warn
+                setAllLoggersMinLevel(LogLevel.WARN)
             ImGui.popStyleColor()
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.ERROR.colorInt())
-            ImGui.button(ErrorIconChar.toString()) // Error
+            if (ImGui.button(ErrorIconChar.toString())) // Error
+                setAllLoggersMinLevel(LogLevel.ERROR)
             ImGui.popStyleColor()
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.FATAL.colorInt())
-            ImGui.button(FatalIconChar.toString()) // Fatal
+            if (ImGui.button(FatalIconChar.toString())) // Fatal
+                setAllLoggersMinLevel(LogLevel.FATAL)
             ImGui.popStyleColor()
 
             ImGui.popStyleVar()
             ImGui.popFont()
+
+            //ImGui.sameLine(ImGui.getWindowWidth() - 100)
+            //ImGui.button("clear")
+
             ImGui.endMenuBar()
 
 
@@ -81,5 +94,10 @@ class ConsolePanel {
             ImGui.popStyleColor()
             ImGui.popStyleVar()
         }
+    }
+
+    private fun setAllLoggersMinLevel(level: LogLevel) {
+        Debug.setLogMinLevel(level)
+        editorLogger.minLevel = level
     }
 }
