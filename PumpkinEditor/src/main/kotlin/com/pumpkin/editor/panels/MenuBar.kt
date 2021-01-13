@@ -2,6 +2,7 @@ package com.pumpkin.editor.panels
 
 import com.pumpkin.core.Application
 import com.pumpkin.editor.EditorLayer
+import com.pumpkin.editor.imgui.ImGuiMenuItem
 import com.pumpkin.editor.imgui.fontAwesomeSymbol
 import com.pumpkin.editor.settings.Settings
 import imgui.ImGui
@@ -42,7 +43,12 @@ class MenuBar(val editorLayer: EditorLayer) {
             }
 
             if (ImGui.beginMenu("View")) {
-                fontAwesomeSymbol('\uf2d2', 2); if (ImGui.menuItem("Windows")) {}
+                fontAwesomeSymbol('\uf2d2', 2); if (ImGui.beginMenu("Windows")) {
+                    ImGuiMenuItem("Hierarchy", "", editorLayer.panels::showHierarchyPanel)
+                    ImGuiMenuItem("Inspector", "", editorLayer.panels::showInspectorPanel)
+                    ImGuiMenuItem("Console", "", editorLayer.panels::showConsolePanel)
+                    ImGui.endMenu()
+                }
                 fontAwesomeSymbol('\uf55d'); if (ImGui.menuItem("Appearance")) {}
                 ImGui.endMenu()
             }
@@ -55,6 +61,7 @@ class MenuBar(val editorLayer: EditorLayer) {
 
             if (ImGui.beginMenu("Tools")) {
                 fontAwesomeSymbol('\uf0ad'); if (ImGui.menuItem("Tasks")) {}
+                fontAwesomeSymbol(''); ImGuiMenuItem("Demo") { editorLayer.imGuiDemo.set(true) }
                 ImGui.separator()
                 //Plugins
                 ImGui.endMenu()

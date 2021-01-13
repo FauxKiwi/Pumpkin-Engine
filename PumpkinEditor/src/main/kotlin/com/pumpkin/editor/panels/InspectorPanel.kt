@@ -12,17 +12,17 @@ import imgui.flag.ImGuiCol
 import imgui.flag.ImGuiStyleVar
 import imgui.flag.ImGuiTreeNodeFlags
 import imgui.flag.ImGuiWindowFlags
-import imgui.type.ImBoolean
 import kotlin.reflect.KClass
+import kotlin.reflect.KMutableProperty0
 
 class InspectorPanel(private val hierarchyPanel: HierarchyPanel) {
 
-    fun onImGuiRender() {
-        ImGui.begin("Inspector", ImBoolean(true), ImGuiWindowFlags.NoCollapse)
-        if (hierarchyPanel.selectionContext != null) {
-            drawComponents(hierarchyPanel.selectionContext!!)
+    fun onImGuiRender(show: KMutableProperty0<Boolean>) {
+        ImGuiWindow("Inspector", show, ImGuiWindowFlags.NoCollapse) {
+            if (hierarchyPanel.selectionContext != null) {
+                drawComponents(hierarchyPanel.selectionContext!!)
+            }
         }
-        ImGui.end()
     }
 
     inline fun <reified T : Any> drawComponent(name: String, entity: Entity, noinline uiFunction: (T) -> Unit) =

@@ -8,6 +8,7 @@ import imgui.ImGui
 import imgui.flag.ImGuiCol
 import imgui.flag.ImGuiStyleVar
 import imgui.flag.ImGuiWindowFlags
+import kotlin.reflect.KMutableProperty0
 
 class ConsolePanel {
     private var log = mutableListOf<Pair<LogLevel, String>>()
@@ -26,14 +27,15 @@ class ConsolePanel {
 
     private var minLevel = 0
 
-    fun onImGuiRender() {
-        ImGuiWindow("Console", windowFlags = ImGuiWindowFlags.MenuBar) {
+    fun onImGuiRender(show: KMutableProperty0<Boolean>) {
+        ImGuiWindow("Console", show, ImGuiWindowFlags.MenuBar) {
             ImGui.beginMenuBar()
             ImGui.pushFont(imGuiLayer.fonts[1])
             ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0f, 8f)
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.TRACE.colorInt())
             ImGui.button(TraceIconChar.toString()) // Trace
+            if (ImGui.isItemClicked()) Debug.logInfo("EnabledTrace")
             ImGui.popStyleColor()
 
             ImGui.pushStyleColor(ImGuiCol.Text, LogLevel.DEBUG.colorInt())
@@ -63,15 +65,20 @@ class ConsolePanel {
 
             //ImGui.pushStyleVar(ImGuiStyleVar.)
             //ImGui.showDemoWindow()
-            ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 8f, 10f)
+            ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 8f, 8f)
+            ImGui.pushStyleColor(ImGuiCol.Separator, ImGui.getColorU32(ImGuiCol.Button))
 
             for ((l, m) in log) {
                 if (l.ordinal < minLevel) continue
                 fontAwesomeSymbol(l.iconChar, color = l.colorInt())
-                ImGui.textColored(if(l == LogLevel.TRACE || l == LogLevel.FATAL) l.colorInt() else -1, m)
+                if(l == LogLevel.TRACE || l == LogLevel.FATAL)
+                    ImGui.textColored( l.colorInt(), m)
+                else
+                    ImGui.text(m)
                 ImGui.separator()
             }
 
+            ImGui.popStyleColor()
             ImGui.popStyleVar()
         }
     }

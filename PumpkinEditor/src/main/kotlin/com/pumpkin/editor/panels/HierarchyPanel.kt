@@ -2,6 +2,7 @@ package com.pumpkin.editor.panels
 
 import com.pumpkin.core.scene.*
 import com.pumpkin.editor.imgui.ImGuiMenuItem
+import com.pumpkin.editor.imgui.ImGuiWindow
 import com.pumpkin.editor.imgui.fontAwesomeSymbol
 import entt.Entity
 import entt.Registry
@@ -9,32 +10,36 @@ import imgui.ImGui
 import imgui.flag.ImGuiPopupFlags
 import imgui.flag.ImGuiTreeNodeFlags
 import imgui.flag.ImGuiWindowFlags
-import imgui.type.ImBoolean
+import kotlin.reflect.KMutableProperty0
 
 class HierarchyPanel(var context: Scene) {
     internal val registry: Registry get() = context.registry
     var selectionContext: Entity? = null
 
-    fun onImGuiRender() {
-        ImGui.begin("Hierarchy", ImBoolean(true), ImGuiWindowFlags.NoCollapse)
-        try { registry.each(::drawEntityNode) } catch (ignored: ConcurrentModificationException) {}
-        if (ImGui.beginPopupContextWindow(ImGuiPopupFlags.MouseButtonRight or ImGuiPopupFlags.NoOpenOverItems)) {
-            if (ImGui.menuItem("Create Empty")) {
-                selectionContext = context.createEntity("Empty Entity").entityHandle
+    fun onImGuiRender(show: KMutableProperty0<Boolean>) {
+        if (!show()) return
+        ImGuiWindow("Hierarchy", show, ImGuiWindowFlags.NoCollapse) {
+            try {
+                registry.each(::drawEntityNode)
+            } catch (ignored: ConcurrentModificationException) {
             }
-            if (ImGui.menuItem("Camera")) {
-                selectionContext = context.createEntity("Camera").also {
-                    it.addComponent(CameraComponent(SceneCamera()))
-                }.entityHandle
+            if (ImGui.beginPopupContextWindow(ImGuiPopupFlags.MouseButtonRight or ImGuiPopupFlags.NoOpenOverItems)) {
+                if (ImGui.menuItem("Create Empty")) {
+                    selectionContext = context.createEntity("Empty Entity").entityHandle
+                }
+                if (ImGui.menuItem("Camera")) {
+                    selectionContext = context.createEntity("Camera").also {
+                        it.addComponent(CameraComponent(SceneCamera()))
+                    }.entityHandle
+                }
+                if (ImGui.menuItem("2D Sprite")) {
+                    selectionContext = context.createEntity("Sprite").also {
+                        it.addComponent(SpriteRendererComponent(floatArrayOf(1f, 1f, 1f, 1f)))
+                    }.entityHandle
+                }
+                ImGui.endPopup()
             }
-            if (ImGui.menuItem("2D Sprite")) {
-                selectionContext = context.createEntity("Sprite").also {
-                    it.addComponent(SpriteRendererComponent(floatArrayOf(1f, 1f, 1f, 1f)))
-                }.entityHandle
-            }
-            ImGui.endPopup()
         }
-        ImGui.end()
     }
 
     private fun drawEntityNode(entity: Entity, force: Boolean = false) {

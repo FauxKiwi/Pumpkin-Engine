@@ -36,8 +36,10 @@ class EditorLayer : Layer("Editor") {
 
     private var gizmoType = -1
 
-    private lateinit var panels: Panels
+    internal lateinit var panels: Panels
     private val menuBar = MenuBar(this)
+
+    internal val imGuiDemo = ImBoolean(false)
 
     override fun onAttach() {
         activeScene = Scene()
@@ -125,6 +127,8 @@ class EditorLayer : Layer("Editor") {
         Application.get().getImGuiLayer().blockEvents = !viewportHovered && !viewportFocused
         ImGui.image(framebuffer.colorAttachmentID, viewportSize.x, viewportSize.y, 0f, 1f, 1f, 0f)
 
+        imGuiLayer.blockEvents = !ImGui.isWindowHovered()
+
         // Camera Preview
         /*if (hierarchyPanel.selectionContext?.let { hierarchyPanel.context.registry.has<CameraComponent>(it) } == true) run {
             val cc = hierarchyPanel.context.registry.get<CameraComponent>(hierarchyPanel.selectionContext!!)
@@ -174,6 +178,10 @@ class EditorLayer : Layer("Editor") {
         }*/
         ImGui.end()
         ImGui.popStyleVar()
+
+        if(imGuiDemo.get()) {
+            ImGui.showDemoWindow(imGuiDemo)
+        }
 
         ImGui.end()
     }

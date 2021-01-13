@@ -7,9 +7,13 @@ class Panels(activeScene: Scene) {
     private val inspectorPanel: InspectorPanel = InspectorPanel(hierarchyPanel)
     private val consolePanel = ConsolePanel()
 
+    internal var showHierarchyPanel = true
+    internal var showInspectorPanel = true
+    internal var showConsolePanel = true
+
     fun onImGuiRender() {
-        hierarchyPanel.onImGuiRender()
-        inspectorPanel.onImGuiRender()
-        consolePanel.onImGuiRender()
+        hierarchyPanel.onImGuiRender(::showHierarchyPanel)
+        inspectorPanel.onImGuiRender(::showInspectorPanel)
+        consolePanel.onImGuiRender(::showConsolePanel)
     }
 }

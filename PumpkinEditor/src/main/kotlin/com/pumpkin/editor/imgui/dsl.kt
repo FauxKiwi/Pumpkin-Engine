@@ -2,9 +2,10 @@ package com.pumpkin.editor.imgui
 
 import imgui.ImGui
 import imgui.type.ImBoolean
+import kotlin.reflect.KMutableProperty0
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun withStyleVar(styleVar: Int, value: Float, body: () -> Unit) {
+inline fun withStyleVar(styleVar: Int, value: Float, body: () -> Unit = {}) {
     try {
         ImGui.pushStyleVar(styleVar, value)
         body()
@@ -14,7 +15,7 @@ inline fun withStyleVar(styleVar: Int, value: Float, body: () -> Unit) {
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun withStyleVar(styleVar: Int, valX: Float, valY: Float, body: () -> Unit) {
+inline fun withStyleVar(styleVar: Int, valX: Float, valY: Float, body: () -> Unit = {}) {
     try {
         ImGui.pushStyleVar(styleVar, valX, valY)
         body()
@@ -24,7 +25,7 @@ inline fun withStyleVar(styleVar: Int, valX: Float, valY: Float, body: () -> Uni
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun withItemWidth(itemWidth: Float, body: () -> Unit) {
+inline fun withItemWidth(itemWidth: Float, body: () -> Unit = {}) {
     try {
         ImGui.pushItemWidth(itemWidth)
         body()
@@ -33,9 +34,14 @@ inline fun withItemWidth(itemWidth: Float, body: () -> Unit) {
     }
 }
 
+fun ImGuiWindow(title: String, open: KMutableProperty0<Boolean>, windowFlags: Int = 0, body: () -> Unit = {}) {
+    val imBoolean = ImBoolean(open())
+    ImGuiWindow(title, imBoolean, windowFlags, body)
+    open.set(imBoolean.get())
+}
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun ImGuiWindow(title: String, open: ImBoolean? = null, windowFlags: Int = 0, body: () -> Unit) {
+inline fun ImGuiWindow(title: String, open: ImBoolean? = null, windowFlags: Int = 0, body: () -> Unit = {}) {
     if (open?.get() == false) return
     try {
         ImGui.begin(title, open ?: ImBoolean(true), windowFlags)
@@ -46,7 +52,7 @@ inline fun ImGuiWindow(title: String, open: ImBoolean? = null, windowFlags: Int 
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun ImGuiPopup(strId: String, windowFlags: Int = 0, body: () -> Unit) {
+inline fun ImGuiPopup(strId: String, windowFlags: Int = 0, body: () -> Unit = {}) {
     try {
         if (ImGui.beginPopup(strId, windowFlags))
             body()
@@ -56,7 +62,7 @@ inline fun ImGuiPopup(strId: String, windowFlags: Int = 0, body: () -> Unit) {
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun ImGuiPopupContextWindow(popupFlags: Int = 0, body: () -> Unit) {
+inline fun ImGuiPopupContextWindow(popupFlags: Int = 0, body: () -> Unit = {}) {
     try {
         if (ImGui.beginPopupContextWindow(popupFlags))
             body()
@@ -66,7 +72,7 @@ inline fun ImGuiPopupContextWindow(popupFlags: Int = 0, body: () -> Unit) {
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun ImGuiPopupContextWindow(strId: String, popupFlags: Int = 0, body: () -> Unit) {
+inline fun ImGuiPopupContextWindow(strId: String, popupFlags: Int = 0, body: () -> Unit = {}) {
     try {
         if (ImGui.beginPopupContextWindow(strId, popupFlags))
             body()
@@ -76,7 +82,7 @@ inline fun ImGuiPopupContextWindow(strId: String, popupFlags: Int = 0, body: () 
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun ImGuiPopupContextItem(popupFlags: Int = 0, body: () -> Unit) {
+inline fun ImGuiPopupContextItem(popupFlags: Int = 0, body: () -> Unit = {}) {
     try {
         if (ImGui.beginPopupContextItem(popupFlags))
             body()
@@ -86,7 +92,7 @@ inline fun ImGuiPopupContextItem(popupFlags: Int = 0, body: () -> Unit) {
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun ImGuiPopupContextItem(strId: String, popupFlags: Int = 0, body: () -> Unit) {
+inline fun ImGuiPopupContextItem(strId: String, popupFlags: Int = 0, body: () -> Unit = {}) {
     try {
         if (ImGui.beginPopupContextItem(strId, popupFlags))
             body()
@@ -95,8 +101,14 @@ inline fun ImGuiPopupContextItem(strId: String, popupFlags: Int = 0, body: () ->
     }
 }
 
+fun ImGuiMenuItem(label: String, shortcut: String? = null, selected: KMutableProperty0<Boolean>, enabled: Boolean = true, body: () -> Unit = {}) {
+    val imBoolean = ImBoolean(selected())
+    ImGuiMenuItem(label, shortcut, imBoolean, enabled, body)
+    selected.set(imBoolean.get())
+}
+
 @Suppress("NOTHING_TO_INLINE")
-inline fun ImGuiMenuItem(label: String, shortcut: String? = null, selected: ImBoolean? = null, enabled: Boolean = true, body: () -> Unit) {
+inline fun ImGuiMenuItem(label: String, shortcut: String? = null, selected: ImBoolean? = null, enabled: Boolean = true, body: () -> Unit = {}) {
     if (enabled) {
         if (selected == null) {
             if (shortcut == null) {

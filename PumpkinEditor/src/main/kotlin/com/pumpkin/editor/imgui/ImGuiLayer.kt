@@ -3,6 +3,7 @@ package com.pumpkin.editor.imgui
 import com.pumpkin.core.event.Event
 import com.pumpkin.core.event.EventCategory
 import com.pumpkin.core.event.KeyPressedEvent
+import com.pumpkin.core.event.MouseScrolledEvent
 import com.pumpkin.core.input.KeyCode
 import com.pumpkin.core.layer.Layer
 import com.pumpkin.editor.settings.Settings
@@ -78,6 +79,7 @@ class ImGuiLayer : Layer("ImGui") {
             event.handled = event.handled or (event.isInCategory(EventCategory.Mouse) and ImGui.getIO().wantCaptureMouse)
             event.handled = event.handled or (event.isInCategory(EventCategory.Keyboard) and ImGui.getIO().wantCaptureKeyboard)
         }
+        event.handled = event.handled || (event is MouseScrolledEvent && blockEvents)
     }
 
     fun begin() {
