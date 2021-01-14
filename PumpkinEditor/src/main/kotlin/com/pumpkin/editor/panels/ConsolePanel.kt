@@ -23,12 +23,12 @@ class ConsolePanel {
 
         editorLogger.info("Thank you for using the Pumpkin engine")
 
-        editorLogger.trace("Trace test")
+        /*editorLogger.trace("Trace test")
         editorLogger.debug("Debug test")
         editorLogger.info("Info test")
         editorLogger.warn("Warn test")
         editorLogger.error("Error test")
-        editorLogger.fatal("Fatal test")
+        editorLogger.fatal("Fatal test")*/
     }
 
     private var minLevel = 0

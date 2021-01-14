@@ -1,6 +1,5 @@
 package com.pumpkin.editor.settings
 
-import com.pumpkin.editor.imgui.editEnum
 import glm.Vec4
 import imgui.ImGui
 import imgui.ImGuiStyle

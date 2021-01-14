@@ -2,12 +2,14 @@ package com.pumpkin.editor.panels
 
 import com.pumpkin.core.Application
 import com.pumpkin.editor.EditorLayer
+import com.pumpkin.editor.activeProject
+import com.pumpkin.editor.editorLogger
 import com.pumpkin.editor.imgui.ImGuiMenuItem
 import com.pumpkin.editor.imgui.fontAwesomeSymbol
 import com.pumpkin.editor.settings.Settings
 import imgui.ImGui
 
-class MenuBar(val editorLayer: EditorLayer) {
+class MenuBar(private val editorLayer: EditorLayer) {
 
     fun showMenuBar() {
         if (ImGui.beginMainMenuBar()) {
@@ -18,7 +20,9 @@ class MenuBar(val editorLayer: EditorLayer) {
                 fontAwesomeSymbol('\uf410'); if (ImGui.menuItem("Close Project", "Ctrl+W")) {}
                 ImGui.separator()
                 fontAwesomeSymbol('\uf013'); if (ImGui.menuItem("Settings", "Ctrl+Alt+S")) { Settings.open() }
-                fontAwesomeSymbol('\uf085'); if (ImGui.menuItem("Build Settings", "Ctrl+Alt+B")) {}
+                fontAwesomeSymbol('\uf085'); ImGuiMenuItem("Build Settings", "Ctrl+Alt+B") {
+                    activeProject?.apply { buildSettings.open() } ?: editorLogger.warn("No Project opened")
+                }
                 ImGui.separator()
                 fontAwesomeSymbol('\uf0c7'); if (ImGui.menuItem("Save Scene", "Ctrl+S")) { editorLayer.saveSceneAs() }
                 fontAwesomeSymbol('\uf0c7'); if (ImGui.menuItem("Save As...", "Ctrl+Shift+S")) { editorLayer.saveSceneAs() }

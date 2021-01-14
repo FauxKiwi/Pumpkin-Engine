@@ -13,12 +13,16 @@ import com.pumpkin.core.renderer.ProjectionType
 import com.pumpkin.core.scene.*
 import com.pumpkin.editor.imgui.ImGuiWindow
 import com.pumpkin.editor.panels.*
+import com.pumpkin.editor.project.Project
 import com.pumpkin.editor.settings.Settings
 import glm.Mat4
 import glm.Vec2
 import imgui.ImGui
 import imgui.flag.*
 import imgui.type.ImBoolean
+
+// Project
+internal var activeProject: Project? = Project("TestProject")//null
 
 class EditorLayer : Layer("Editor") {
     private var dockspaceOpen = true
@@ -30,6 +34,7 @@ class EditorLayer : Layer("Editor") {
     private var viewportFocused = false
     private var viewportHovered = false
 
+    // Scene
     private var activeScene by Reference<Scene>()
     private lateinit var sceneSerializer: SceneSerializer
     private val editorCamera = EditorCamera()
@@ -110,10 +115,15 @@ class EditorLayer : Layer("Editor") {
         }
         ImGui.getStyle().setWindowMinSize(minWinSizeX, ImGui.getStyle().windowMinSizeY)
 
+        // ImGui
+
         panels.onImGuiRender()
 
         Settings.onImGuiRender()
         if (Settings.uEditorCameraView) { editorCamera.fov = Settings.editorCameraFov; editorCamera.updateProjection(); Settings.uEditorCameraView = false; }
+
+        activeProject?.buildSettings?.onImGuiRender()
+
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0f, 0f)
         ImGui.begin("Scene", ImBoolean(true), ImGuiWindowFlags.MenuBar or ImGuiWindowFlags.NoCollapse)
