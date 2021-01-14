@@ -6,6 +6,7 @@ import glm.f
 import glm.floor
 import glm.max
 import imgui.ImGui
+import imgui.flag.ImGuiCol
 import java.io.ByteArrayOutputStream
 
 fun loadFromResources(fileName: String): ByteArray? {
@@ -32,7 +33,8 @@ fun pushMultiItemsWidths(components: Int, wFull: Float) {
     //g.nextItemData.flags = g.nextItemData.flags wo NextItemDataFlag.HasWidth
 }
 
-fun fontAwesomeSymbol(character: Char, fontIndex: Int = 1, color: Int = -1) {
+@Deprecated("Does 'same line'")
+fun fontAwesomeSymbolSL(character: Char, fontIndex: Int = 1, color: Int = ImGui.getColorU32(ImGuiCol.Text)) {
     ImGui.pushFont(imGuiLayer.fonts[fontIndex])
     if (color == -1)
         ImGui.text(character.toString())
@@ -40,6 +42,16 @@ fun fontAwesomeSymbol(character: Char, fontIndex: Int = 1, color: Int = -1) {
         ImGui.textColored(color, character.toString())
     ImGui.popFont()
     ImGui.sameLine()
+}
+
+fun fontAwesomeSymbol(character: Char, fontIndex: Int = 1, color: Int = ImGui.getColorU32(ImGuiCol.Text)) {
+    ImGui.pushFont(imGuiLayer.fonts[fontIndex])
+    if (color == -1)
+        ImGui.text(character.toString())
+    else
+        ImGui.textColored(color, character.toString())
+    ImGui.popFont()
+    //ImGui.sameLine()
 }
 
 val LogLevel.iconChar get() = when (this) {

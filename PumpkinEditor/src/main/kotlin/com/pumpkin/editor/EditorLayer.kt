@@ -38,6 +38,7 @@ class EditorLayer : Layer("Editor") {
     private var activeScene by Reference<Scene>()
     private lateinit var sceneSerializer: SceneSerializer
     private val editorCamera = EditorCamera()
+    internal val showSceneView = ImBoolean(true)
 
     private var gizmoType = -1
 
@@ -126,21 +127,21 @@ class EditorLayer : Layer("Editor") {
 
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0f, 0f)
-        ImGui.begin("Scene", ImBoolean(true), ImGuiWindowFlags.MenuBar or ImGuiWindowFlags.NoCollapse)
+        ImGuiWindow("Scene", showSceneView, ImGuiWindowFlags.MenuBar or ImGuiWindowFlags.NoCollapse) {
 
-        viewportMenuBar()
+            viewportMenuBar()
 
-        val viewportPos = Vec2(ImGui.getWindowPosX(), ImGui.getWindowPosY())
-        viewportSize = Vec2(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY())
-        viewportFocused = ImGui.isWindowFocused()
-        viewportHovered = ImGui.isWindowHovered()
-        Application.get().getImGuiLayer().blockEvents = !viewportHovered && !viewportFocused
-        ImGui.image(framebuffer.colorAttachmentID, viewportSize.x, viewportSize.y, 0f, 1f, 1f, 0f)
+            //val viewportPos = Vec2(ImGui.getWindowPosX(), ImGui.getWindowPosY())
+            viewportSize = Vec2(ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailY())
+            viewportFocused = ImGui.isWindowFocused()
+            viewportHovered = ImGui.isWindowHovered()
+            Application.get().getImGuiLayer().blockEvents = !viewportHovered && !viewportFocused
+            ImGui.image(framebuffer.colorAttachmentID, viewportSize.x, viewportSize.y, 0f, 1f, 1f, 0f)
 
-        imGuiLayer.blockEvents = !ImGui.isWindowHovered()
+            imGuiLayer.blockEvents = !ImGui.isWindowHovered()
 
-        // Camera Preview
-        /*if (hierarchyPanel.selectionContext?.let { hierarchyPanel.context.registry.has<CameraComponent>(it) } == true) run {
+            // Camera Preview
+            /*if (hierarchyPanel.selectionContext?.let { hierarchyPanel.context.registry.has<CameraComponent>(it) } == true) run {
             val cc = hierarchyPanel.context.registry.get<CameraComponent>(hierarchyPanel.selectionContext!!)
             val tc = if (hierarchyPanel.context.registry.has<TransformComponent>(hierarchyPanel.selectionContext!!))
                 hierarchyPanel.context.registry.get<TransformComponent>(hierarchyPanel.selectionContext!!) else null
@@ -160,8 +161,8 @@ class EditorLayer : Layer("Editor") {
             }
         }*/
 
-        // GIZMOS
-        /*val selectedEntity = hierarchyPanel.selectionContext
+            // GIZMOS
+            /*val selectedEntity = hierarchyPanel.selectionContext
         if (selectedEntity != null && gizmoType != -1) {
             ImGuizmo.setOrthographic(false)
             ImGuizmo.setDrawlist()
@@ -186,7 +187,7 @@ class EditorLayer : Layer("Editor") {
                 null, if (snap) snapValues else null
             )
         }*/
-        ImGui.end()
+        }
         ImGui.popStyleVar()
 
         if(imGuiDemo.get()) {
@@ -251,6 +252,8 @@ class EditorLayer : Layer("Editor") {
                 if (!shift && !alt) openScene()
             KeyCode.N ->
                 if (!shift && !alt) newScene()
+            KeyCode.B ->
+                if (!shift && alt) activeProject?.buildSettings?.open()
         }
     }
 

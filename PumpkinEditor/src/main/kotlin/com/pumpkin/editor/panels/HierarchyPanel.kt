@@ -3,7 +3,7 @@ package com.pumpkin.editor.panels
 import com.pumpkin.core.scene.*
 import com.pumpkin.editor.imgui.ImGuiMenuItem
 import com.pumpkin.editor.imgui.ImGuiWindow
-import com.pumpkin.editor.imgui.fontAwesomeSymbol
+import com.pumpkin.editor.imgui.fontAwesomeSymbolSL
 import entt.Entity
 import entt.Registry
 import imgui.ImGui
@@ -50,7 +50,7 @@ class HierarchyPanel(var context: Scene) {
             (if (selectionContext == entity) ImGuiTreeNodeFlags.Selected else 0) or
                     (if (registry.has<ChildComponent>(entity)) ImGuiTreeNodeFlags.OpenOnArrow else ImGuiTreeNodeFlags.Leaf) or
                     ImGuiTreeNodeFlags.SpanAvailWidth
-        val opened = fontAwesomeSymbol('\uf6d1').let { ImGui.treeNodeEx(tag, flags) }
+        val opened = fontAwesomeSymbolSL('\uf6d1').let { ImGui.treeNodeEx(tag, flags) }
         if (ImGui.isItemClicked())
             selectionContext = entity
 

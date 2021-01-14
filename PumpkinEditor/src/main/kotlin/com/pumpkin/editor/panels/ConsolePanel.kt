@@ -95,7 +95,7 @@ class ConsolePanel {
 
             for ((l, m) in log) {
                 if (l.ordinal < minLevel) continue
-                fontAwesomeSymbol(l.iconChar, color = l.colorInt())
+                fontAwesomeSymbolSL(l.iconChar, color = l.colorInt())
                 if(l == LogLevel.TRACE || l == LogLevel.FATAL)
                     ImGui.textColored( l.colorInt(), m)
                 else

@@ -50,11 +50,13 @@ class ImGuiLayer : Layer("ImGui") {
         implGL3 = ImGuiImplGl3()
 
         io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/Roboto-Black.ttf"), 16f).also { fonts.add(it) } // Bold
-        io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/FontAwesome-Solid.ttf"), 14f,
+        /*1*/io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/FontAwesome-Solid.ttf"), 14f,
             shortArrayOf(0x001e, 0x007a, 0xe048.toShort(), 0xf8e8.toShort())).also { fonts.add(it) }
-        io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/FontAwesome-Regular.ttf"), 14f,
+        /*2*/io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/FontAwesome-Regular.ttf"), 14f,
             shortArrayOf(0x001e, 0x007a, 0xe048.toShort(), 0xf8e8.toShort())).also { fonts.add(it) } // Icons
-        io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/FontAwesome-Brands.ttf"), 14f,
+        /*3*/io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/FontAwesome-Brands.ttf"), 14f,
+            shortArrayOf(0x001e, 0x007a, 0xe048.toShort(), 0xf8e8.toShort())).also { fonts.add(it) }
+        /*4*/io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/FontAwesome-Brands.ttf"), 40f,
             shortArrayOf(0x001e, 0x007a, 0xe048.toShort(), 0xf8e8.toShort())).also { fonts.add(it) }
         io.setFontDefault(io.fonts.addFontFromMemoryTTF(loadFromResources("fonts/Roboto-Regular.ttf"), 16f).also { fonts.add(it) }) // Default
 
