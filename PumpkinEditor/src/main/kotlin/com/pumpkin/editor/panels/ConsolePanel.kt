@@ -7,8 +7,10 @@ import com.pumpkin.editor.imGuiLayer
 import com.pumpkin.editor.imgui.*
 import imgui.ImGui
 import imgui.flag.ImGuiCol
+import imgui.flag.ImGuiInputTextFlags
 import imgui.flag.ImGuiStyleVar
 import imgui.flag.ImGuiWindowFlags
+import imgui.type.ImString
 import kotlin.reflect.KMutableProperty0
 
 class ConsolePanel {
@@ -68,16 +70,26 @@ class ConsolePanel {
             ImGui.popStyleColor()
 
             ImGui.popStyleVar()
+
+            ImGui.text("   \uf002")
+
             ImGui.popFont()
 
-            //ImGui.sameLine(ImGui.getWindowWidth() - 100)
-            //ImGui.button("clear")
+            //ImGui.pushStyleColor(ImGuiCol)
+            ImGui.pushStyleVar(ImGuiStyleVar.FrameRounding, 16f)
+            ImGui.pushItemWidth(ImGui.calcItemWidth() - 200f)
+
+            val searchFor = ImString("Search...")
+            ImGui.inputText("", searchFor, ImGuiInputTextFlags.AutoSelectAll /*or ImGuiInputTextFlags.CallbackAlways*/)
+
+            ImGui.popItemWidth()
+            ImGui.popStyleVar()
+
+            ImGui.button("Clear")
 
             ImGui.endMenuBar()
 
 
-            //ImGui.pushStyleVar(ImGuiStyleVar.)
-            //ImGui.showDemoWindow()
             ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 8f, 8f)
             ImGui.pushStyleColor(ImGuiCol.Separator, ImGui.getColorU32(ImGuiCol.Button))
 

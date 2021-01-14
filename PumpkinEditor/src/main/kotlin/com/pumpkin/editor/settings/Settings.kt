@@ -5,6 +5,7 @@ import glm.Vec4
 import imgui.ImGui
 import imgui.ImGuiStyle
 import imgui.flag.ImGuiCol
+import imgui.flag.ImGuiCond
 import imgui.flag.ImGuiTreeNodeFlags
 import imgui.flag.ImGuiWindowFlags
 import imgui.type.ImBoolean
@@ -24,15 +25,15 @@ object Settings {
     fun onImGuiRender() {
         if (!open.get()) return
 
-        ImGui.setNextWindowPos(ImGui.getContentRegionMaxX() * 0.25f, ImGui.getContentRegionMaxY() * 0.167f)
-        ImGui.setNextWindowSize(ImGui.getContentRegionMaxX() * 0.5f, ImGui.getContentRegionMaxY() * 0.667f)
+        ImGui.setNextWindowPos(ImGui.getContentRegionMaxX() * 0.25f, ImGui.getContentRegionMaxY() * 0.167f, ImGuiCond.FirstUseEver)
+        ImGui.setNextWindowSize(ImGui.getContentRegionMaxX() * 0.5f, ImGui.getContentRegionMaxY() * 0.667f, ImGuiCond.FirstUseEver)
 
         ImGui.begin("Settings", open, ImGuiWindowFlags.NoCollapse)
 
         val childFlags = ImGuiWindowFlags.NoCollapse or ImGuiWindowFlags.NoTitleBar or ImGuiWindowFlags.NoBackground or ImGuiWindowFlags.NoResize
 
         ImGui.columns(2)//ImGui.beginColumns("SettingsColumns", 2, OldColumnsFlag.NoResize.i)
-        ImGui.setColumnWidth(-1, 250f)
+        ImGui.setColumnWidth(-1, glm.min(250f, ImGui.getWindowWidth() / 3f))
         ImGui.beginChild("SettingsTree", ImGui.getColumnWidth(-1) - 15f, ImGui.getWindowHeight() - 77, false, childFlags)
 
         var currentSettings = "None"
