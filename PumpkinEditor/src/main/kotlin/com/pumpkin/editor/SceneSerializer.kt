@@ -144,21 +144,32 @@ class SceneSerializer(var scene: Scene) {
     }
 
     fun deserialize(absoluteFilepath: String) {
-        val file = File(absoluteFilepath)
-        if (!file.exists()) {
-           editorLogger.warn("Could not open file: $absoluteFilepath")
-            return
-        }
-        val fileReader = FileReader(file)
-        var text: String
-        fileReader.use {
-            text = it.readText()
-        }
-        val jsonObject = jsonFormat.parseToJsonElement(text).jsonObject
+        val jsonObject = getJsonObjectOfFile(absoluteFilepath) ?: return
         val entities = jsonObject["Entities"]?.jsonArray ?: return
         for (entity in entities) {
             deserializeEntity(entity.jsonObject)
         }
         editorLogger.info("Deserialized scene from: $absoluteFilepath")
+    }
+
+    companion object {
+        fun getJsonObjectOfFile(absoluteFilepath: String): JsonObject? {
+            val file = File(absoluteFilepath)
+            if (!file.exists()) {
+                editorLogger.warn("Could not open file: $absoluteFilepath")
+                return null
+            }
+            val fileReader = FileReader(file)
+            var text: String
+            fileReader.use {
+                text = it.readText()
+            }
+            return jsonFormat.parseToJsonElement(text).jsonObject
+        }
+
+        fun getSceneName(absoluteFilepath: String): String? {
+            val jsonObject = getJsonObjectOfFile(absoluteFilepath) ?: return null
+            return jsonObject["Scene"]?.jsonPrimitive?.content
+        }
     }
 }

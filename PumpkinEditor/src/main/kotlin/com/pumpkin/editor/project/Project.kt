@@ -1,8 +1,6 @@
 package com.pumpkin.editor.project
 
-import com.pumpkin.core.scene.Scene
-
-class Project(val name: String, val scenes: MutableList<Scene> = mutableListOf()) {
-    val buildSettings = BuildSettings(this)
+class Project(val name: String, val scenes: MutableList<Pair<String /*relative filepath*/, String /*name*/>> = mutableListOf()) {
+    val buildSettings = BuildSettings()
     init { buildSettings.loadSerialized() }
 }

@@ -9,7 +9,7 @@ class ProjectSerializer(var project: Project) {
             put("Project", project.name)
             putJsonArray("Scenes") {
                 project.scenes.forEach {
-                    add(it.name)
+                    add(it.second)
                 }
             }
             putJsonObject("Settings") {
