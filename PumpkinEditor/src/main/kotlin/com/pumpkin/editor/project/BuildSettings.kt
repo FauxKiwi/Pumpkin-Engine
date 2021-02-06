@@ -36,6 +36,9 @@ class BuildSettings {
             activeProject?.scenes?.let {
                 for (scene in it) {
                     ImGui.checkbox("   ${scene.second}", true)
+                    val width = ImGui.calcItemWidth()
+                    ImGui.sameLine(ImGui.getCursorPosX() + width)
+                    ImGui.button("F")
                 }
             }
             if (ImGui.button("Add Scene")) run {
@@ -103,6 +106,7 @@ class BuildSettings {
     }
 
     fun loadSerialized(): Boolean {
+
         return true
     }
 

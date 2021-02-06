@@ -22,7 +22,7 @@ import imgui.flag.*
 import imgui.type.ImBoolean
 
 // Project
-internal var activeProject: Project? = Project("TestProject")//null
+internal var activeProject: Project? = Project("TestProject", ""/*TODO*/)//null
 
 class EditorLayer : Layer("Editor") {
     private var dockspaceOpen = true
