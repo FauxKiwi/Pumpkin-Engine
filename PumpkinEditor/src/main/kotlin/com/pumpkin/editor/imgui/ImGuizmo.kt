@@ -102,14 +102,41 @@ object ImGuizmo {
         calcDirVecs()
         calcOver(operation)
 
-        handleOperation(transform)
+        //handleOperation(transform)
 
         when (operation) {
             OPERATION.TRANSLATE -> drawTranslationGizmo()
             OPERATION.ROTATE -> drawRotationGizmo()
             OPERATION.SCALE -> drawScaleGizmo()
+            else -> return
         }
+        //drawList.addLine(xmin, ymin, xmax, ymax, -1)
     }
+
+    /*private fun calcGizmoPos() {
+        gizmoPos = (viewProj * transformedPos0).let { it.xy * Vec2(1f, -1f) / it.w } * halfDisplay + mid
+    }
+
+    private fun calcDirVecs() {
+
+    }
+
+    private fun calcOver(operation: OPERATION) {
+
+    }
+
+    private fun drawTranslationGizmo() {
+        drawList.addLine(gizmoPos.x, gizmoPos.y, gizmoPos.x - 10, gizmoPos.y - 10, -1)
+    }
+
+    private fun drawRotationGizmo() {
+
+    }
+
+    private fun drawScaleGizmo() {
+
+    }*/
+
 
     private fun calcGizmoPos() {
         gizmoPos = (viewProj * transformedPos0).let { it.xy * Vec2(1f, -1f) / it.w } * halfDisplay + mid
@@ -362,9 +389,9 @@ object ImGuizmo {
         return acos(rpos.x) in asin(rpos.y) - 2f .. asin(rpos.y) + 2f
     }
 
-    fun isOver(): Boolean = over
+    //fun isOver(): Boolean = over
 
-    fun isUsing(): Boolean = using
+    //fun isUsing(): Boolean = using
 
     fun decomposeFromMatrix(matrix: Mat4, translation: Vec3, rotation: Vec3, scale: Vec3) {
         //TODO("Not yet implemented")

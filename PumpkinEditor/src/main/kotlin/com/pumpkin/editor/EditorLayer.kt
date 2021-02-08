@@ -162,7 +162,7 @@ class EditorLayer : Layer("Editor") {
         }*/
 
             // GIZMOS
-            /*val selectedEntity = hierarchyPanel.selectionContext
+            val selectedEntity = panels.hierarchyPanel.selectionContext
         if (selectedEntity != null && gizmoType != -1) {
             ImGuizmo.setOrthographic(false)
             ImGuizmo.setDrawlist()
@@ -186,7 +186,7 @@ class EditorLayer : Layer("Editor") {
                 ImGuizmo.OPERATION.values()[gizmoType], ImGuizmo.MODE.LOCAL, tc,
                 null, if (snap) snapValues else null
             )
-        }*/
+        }
         }
         ImGui.popStyleVar()
 
