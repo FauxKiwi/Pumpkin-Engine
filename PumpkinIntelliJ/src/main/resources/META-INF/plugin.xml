@@ -1,0 +1,21 @@
+<idea-plugin>
+    <id>com.pumpkin.PumpkinIntelliJ</id>
+    <name>Pumpkin Engine Integration</name>
+    <vendor email="support@pumpkin.com" url="http://pumpkin-engine.github.io">Pumpkin</vendor>
+
+    <description><![CDATA[
+    This plugin enables integration for the Pumpkin Engine in IntelliJ IDEA
+    ]]></description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <moduleType id="PUMPKIN_MODULE_TYPE" implementationClass="com.pumpkin.intellij.PumpkinModuleType"/>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
